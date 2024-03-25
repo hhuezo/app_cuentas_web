@@ -84,7 +84,7 @@ class PrestamoController extends Controller
             'interes' => 'required|integer|min:0',
             'tipo_pago_id' => 'required|integer',
             'fecha' => 'required|date_format:d/m/Y',
-            'amortizacion' => 'nullable|in:0,1',
+            'amortizacion' => 'nullable|boolean',
             'comprobante' => 'nullable|string', // Dependiendo de cómo manejes los largos textos, podrías necesitar ajustar esto
             'administrador' => 'required|integer',
             'pago_especifico' => 'nullable|numeric|min:0',
@@ -104,7 +104,7 @@ class PrestamoController extends Controller
             $codigo = is_null($max) ? 1 : $max + 1;
 
             $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha);
-            $amortizacion = $request->has('amortizacion') ? $request->amortizacion : '0';
+
 
             $prestamo = new Prestamo();
             $prestamo->persona_id = $request->persona_id;
@@ -112,7 +112,7 @@ class PrestamoController extends Controller
             $prestamo->interes = $request->interes;
             $prestamo->tipo_pago_id = $request->tipo_pago_id;
             $prestamo->fecha = $fechaCarbon->format('Y-m-d');
-            $prestamo->amortizacion = $amortizacion;
+            $prestamo->amortizacion = $request->amortizacion;
             $prestamo->comprobante = $request->comprobante;
             $prestamo->administrador = $request->administrador;
             $prestamo->pago_especifico = $request->pago_especifico;
