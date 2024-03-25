@@ -143,7 +143,25 @@ class PrestamoController extends Controller
 
     public function edit($id)
     {
-        //
+        try {
+            $prestamo = Prestamo::findOrFail($id);
+            $personas = Persona::select('id', 'nombre')->where('activo', 1)->get();
+            $usuarios = User::select('id', 'username')->get();
+            $tipos_pago = TipoPago::get();
+
+            $response = ["prestamo" => $prestamo, "personas" => $personas, "usuarios" => $usuarios, "tipos_pago" => $tipos_pago];
+            // Devolver respuesta JSON con los datos obtenidos
+            return response()->json([
+                'success' => true,
+                'message' => 'Prestamos encontrados',
+                'data' => $response
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function update(Request $request, $id)
