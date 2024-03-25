@@ -82,6 +82,7 @@ class PrestamoController extends Controller
             'persona_id' => 'required|integer',
             'cantidad' => 'required|numeric|min:0',
             'interes' => 'required|integer|min:0',
+            'numero_pagos' => 'required|integer|min:1',
             'tipo_pago_id' => 'required|integer',
             'fecha' => 'required|date_format:d/m/Y',
             'amortizacion' => 'nullable|boolean',
@@ -118,6 +119,7 @@ class PrestamoController extends Controller
             $prestamo->pago_especifico = $request->pago_especifico;
             $prestamo->observacion = $request->observacion;
             $prestamo->codigo = $codigo;
+            $prestamo->numero_pagos = $request->numero_pagos;
             $prestamo->save();
 
             return response()->json([
