@@ -7,6 +7,7 @@ use App\Models\Persona;
 use App\Models\Prestamo;
 use App\Models\TipoPago;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -55,8 +56,8 @@ class PrestamoController extends Controller
     public function create()
     {
         try {
-            $personas = Persona::select('id','nombre')->where('activo', 1)->get();
-            $usuarios = User::select('id','username')->get();
+            $personas = Persona::select('id', 'nombre')->where('activo', 1)->get();
+            $usuarios = User::select('id', 'username')->get();
             $tipos_pago = TipoPago::get();
 
             $response = ["personas" => $personas, "usuarios" => $usuarios, "tipos_pago" => $tipos_pago];
@@ -82,26 +83,54 @@ class PrestamoController extends Controller
             'cantidad' => 'required|numeric|min:0',
             'interes' => 'required|integer|min:0',
             'tipo_pago_id' => 'required|integer',
-            'fecha' => 'required|date',
-            'estado' => 'sometimes|integer|in:0,1', // Asumiendo que los estados posibles son 0 y 1
+            'fecha' => 'required|date_format:d/m/Y',
             'amortizacion' => 'sometimes|in:0,1', // Asumiendo que los valores pueden ser '0' o '1'
             'comprobante' => 'nullable|string', // Dependiendo de cómo manejes los largos textos, podrías necesitar ajustar esto
             'administrador' => 'required|integer',
             'pago_especifico' => 'nullable|numeric|min:0',
-            'observacion' => 'nullable|string|max:255',
-            'codigo' => 'nullable|integer'
+            'observacion' => 'nullable|string|max:255'
         ]);
 
-        /*$prestamo = new Prestamo();
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
+        try {
+            $max = Prestamo::max('codigo');
+            $codigo = is_null($max) ? 1 : $max + 1;
 
+            $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha);
 
-        $prestamo->save();*/
-        return response()->json([
-            'success' => true,
-            'message' => 'Prestamos encontrados',
-            'data' => "hola"
-        ]);
+            $prestamo = new Prestamo();
+            $prestamo->persona_id = $request->persona_id;
+            $prestamo->cantidad = $request->cantidad;
+            $prestamo->interes = $request->interes;
+            $prestamo->tipo_pago_id = $request->tipo_pago_id;
+            $prestamo->fecha = $fechaCarbon->format('Y-m-d');
+            $prestamo->amortizacion = $request->amortizacion;
+            $prestamo->comprobante = $request->comprobante;
+            $prestamo->administrador = $request->administrador;
+            $prestamo->pago_especifico = $request->pago_especifico;
+            $prestamo->observacion = $request->observacion;
+            $prestamo->codigo = $codigo;
+            $prestamo->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Prestamo creado exitosamente',
+                'data' => $prestamo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al crear el prestamo',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)
