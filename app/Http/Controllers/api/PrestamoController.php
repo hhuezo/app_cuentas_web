@@ -9,6 +9,7 @@ use App\Models\TipoPago;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class PrestamoController extends Controller
 {
@@ -76,6 +77,26 @@ class PrestamoController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'persona_id' => 'required|integer',
+            'cantidad' => 'required|numeric|min:0',
+            'interes' => 'required|integer|min:0',
+            'tipo_pago_id' => 'required|integer',
+            'fecha' => 'required|date',
+            'estado' => 'sometimes|integer|in:0,1', // Asumiendo que los estados posibles son 0 y 1
+            'amortizacion' => 'sometimes|in:0,1', // Asumiendo que los valores pueden ser '0' o '1'
+            'comprobante' => 'nullable|string', // Dependiendo de cómo manejes los largos textos, podrías necesitar ajustar esto
+            'administrador' => 'required|integer',
+            'pago_especifico' => 'nullable|numeric|min:0',
+            'observacion' => 'nullable|string|max:255',
+            'codigo' => 'nullable|integer'
+        ]);
+
+        /*$prestamo = new Prestamo();
+
+
+
+        $prestamo->save();*/
         return response()->json([
             'success' => true,
             'message' => 'Prestamos encontrados',
