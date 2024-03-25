@@ -76,7 +76,11 @@ class PrestamoController extends Controller
 
     public function store(Request $request)
     {
-        //
+        return response()->json([
+            'success' => true,
+            'message' => 'Prestamos encontrados',
+            'data' => "hola"
+        ]);
     }
 
     public function show($id)
