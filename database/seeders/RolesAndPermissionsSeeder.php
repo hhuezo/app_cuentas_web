@@ -20,7 +20,7 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        Permission::create( ['name' => 'create roles'] );
+        /*Permission::create( ['name' => 'create roles'] );
         Permission::create( ['name' => 'read roles'] );
         Permission::create( ['name' => 'edit roles'] );
         Permission::create( ['name' => 'delete roles'] );
@@ -38,14 +38,15 @@ class RolesAndPermissionsSeeder extends Seeder
 
         $role = Role::create( ['name' => 'administrador'] );
         $role = Role::findOrFail(1);
-        $role->givePermissionTo( Permission::all() );
+        $role->givePermissionTo( Permission::all() );*/
 
+        $role = Role::create( ['name' => 'digitador'] );
         // Crear usuario administrador
         $adminUser = User::create([
-            'name' => 'Administrador',
-            'email' => 'admin@example.com',
-            'username' => 'admin', // Asegúrate de incluir el campo si lo usas
-            'password' => bcrypt('password'), // Cambia 'password' por una contraseña real
+            'name' => 'Isabel Medrano',
+            'email' => 'isabel@mail.com',
+            'username' => 'isabel', // Asegúrate de incluir el campo si lo usas
+            'password' => bcrypt('123'), // Cambia 'password' por una contraseña real
         ]);
 
         // Asignar el rol de administrador al usuario creado

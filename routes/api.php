@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\api\CargoController;
 use App\Http\Controllers\api\PersonaController;
 use App\Http\Controllers\api\PrestamoController;
 use App\Http\Controllers\api\ReciboController;
@@ -28,3 +29,4 @@ Route::resource('persona', PersonaController::class);
 Route::resource('prestamo', PrestamoController::class);
 Route::resource('recibo', ReciboController::class);
 Route::resource('reportes', ReportesController::class);
+Route::resource('cargo', CargoController::class);
