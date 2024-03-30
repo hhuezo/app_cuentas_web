@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\api\PersonaController;
 use App\Http\Controllers\api\PrestamoController;
+use App\Http\Controllers\api\ReciboController;
+use App\Http\Controllers\api\ReportesController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -24,3 +26,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('login', [AuthController::class,'login']);
 Route::resource('persona', PersonaController::class);
 Route::resource('prestamo', PrestamoController::class);
+Route::resource('recibo', ReciboController::class);
+Route::resource('reportes', ReportesController::class);

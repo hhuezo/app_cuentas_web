@@ -23,6 +23,7 @@ class Prestamo extends Model
         'comprobante',
         'administrador',
         'pago_especifico',
+        'primer_pago',
     ];
 
     // Relación con Persona
@@ -35,5 +36,11 @@ class Prestamo extends Model
     public function tipoPago()
     {
         return $this->belongsTo(TipoPago::class);
+    }
+
+    // Relación con TipoPago
+    public function recibos()
+    {
+        return $this->hasMany(Recibo::class);
     }
 }
