@@ -1,9 +1,12 @@
 <?php
 
 use App\Http\Controllers\api\CargoController;
+use App\Http\Controllers\api\CargoFijoController;
 use App\Http\Controllers\api\PersonaController;
 use App\Http\Controllers\api\PrestamoController;
+use App\Http\Controllers\api\PrestamoFijoController;
 use App\Http\Controllers\api\ReciboController;
+use App\Http\Controllers\api\ReciboFijoController;
 use App\Http\Controllers\api\ReportesController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
@@ -30,3 +33,6 @@ Route::resource('prestamo', PrestamoController::class);
 Route::resource('recibo', ReciboController::class);
 Route::resource('reportes', ReportesController::class);
 Route::resource('cargo', CargoController::class);
+Route::resource('prestamo_fijo', PrestamoFijoController::class);
+Route::resource('recibo_fijo', ReciboFijoController::class);
+Route::resource('cargo_fijo', CargoFijoController::class);
