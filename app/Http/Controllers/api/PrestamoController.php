@@ -233,6 +233,7 @@ class PrestamoController extends Controller
                     'comprobante',
                     'interes',
                     'remanente',
+                    DB::raw('"" as observacion'),
                     'estado',
                     DB::raw('1 as tipo')
                 );
@@ -243,6 +244,7 @@ class PrestamoController extends Controller
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
                     'cantidad',
                     'comprobante',
+                    'observacion',
                     DB::raw('0 as interes'),
                     DB::raw('0 as remanente'),
                     DB::raw('0 as estado'),
