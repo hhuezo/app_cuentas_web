@@ -25,11 +25,17 @@ class CargoController extends Controller
     public function store(Request $request)
     {
         try {
-            $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha);
+            //$fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha);
 
+            $validatedData = $request->validate([
+                'prestamo_id' => 'required',
+                'fecha' => 'required',
+                'cantidad' => 'required|numeric|min:0',
+                //'observacion' => 'required',
+            ]);
             $cargo = new Cargo();
             $cargo->prestamo_id = $request->prestamo_id;
-            $cargo->fecha = $fechaCarbon->format('Y-m-d');
+            $cargo->fecha = $request->fecha;
             $cargo->cantidad = $request->cantidad;
             $cargo->comprobante = $request->comprobante;
             $cargo->observacion = $request->observacion;

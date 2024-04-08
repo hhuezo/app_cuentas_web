@@ -22,6 +22,7 @@ class ReciboController extends Controller
 
     public function store(Request $request)
     {
+
         try {
             $recibo = Recibo::where('prestamo_id', $request->prestamo_id)->orderBy('id', 'desc')->first();
             if ($recibo) {
@@ -31,11 +32,13 @@ class ReciboController extends Controller
                 $remanente = $prestamo->cantidad - ($request->cantidad - $request->interes);
             }
 
+
+
             if ($remanente >= 0) {
-                $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha);
+               // $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha);
                 $recibo = new Recibo();
                 $recibo->prestamo_id = $request->prestamo_id;
-                $recibo->fecha = $fechaCarbon->format('Y-m-d');
+                $recibo->fecha = $request->fecha;
                 $recibo->cantidad = $request->cantidad;
                 $recibo->comprobante = $request->comprobante;
                 $recibo->interes = $request->interes;
