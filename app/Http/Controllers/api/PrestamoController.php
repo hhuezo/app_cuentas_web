@@ -231,12 +231,12 @@ class PrestamoController extends Controller
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
                     'cantidad',
                     DB::raw('"" as comprobante'),
-                    'comprobante',
                     'interes',
                     'remanente',
                     'estado',
                     DB::raw('1 as tipo'),
                     DB::raw('"" as observacion'),
+                    'fecha as fechaDate'
                 );
 
             $cargosQuery = Cargo::where('prestamo_id', $prestamo->id)
@@ -249,11 +249,12 @@ class PrestamoController extends Controller
                     DB::raw('0 as remanente'),
                     DB::raw('0 as estado'),
                     DB::raw('2 as tipo'),
-                    'observacion'
+                    'observacion',
+                    'fecha as fechaDate'
                 );
 
             $resultados = $recibosQuery->union($cargosQuery)
-                ->orderBy('fecha')
+                ->orderBy('fechaDate')
                 ->get();
 
 
