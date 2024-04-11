@@ -254,7 +254,7 @@ class PrestamoController extends Controller
                 );
 
             $resultados = $recibosQuery->union($cargosQuery)
-                ->orderBy('fechaDate')
+                ->orderBy('fechaDate','desc')
                 ->get();
 
 
