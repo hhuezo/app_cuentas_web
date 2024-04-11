@@ -38,7 +38,7 @@ class ReportesController extends Controller
                 $fecha_final = $now->endOfMonth()->format('Y-m-d');
             }
 
-            $prestamos = Prestamo::get();
+            $prestamos = Prestamo::where('amortizacion',false)->get();
             TempPago::where('id', '>', 0)->delete();
             foreach ($prestamos as $prestamo) {
                 $primer_pago = $prestamo->primer_pago;
