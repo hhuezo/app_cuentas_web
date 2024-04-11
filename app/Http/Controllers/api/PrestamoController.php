@@ -234,7 +234,8 @@ class PrestamoController extends Controller
                     'interes',
                     'remanente',
                     'estado',
-                    DB::raw('1 as tipo')
+                    DB::raw('1 as tipo'),
+                    DB::raw('"" as observacion'),
                 );
 
             $cargosQuery = Cargo::where('prestamo_id', $prestamo->id)
@@ -246,7 +247,8 @@ class PrestamoController extends Controller
                     DB::raw('0 as interes'),
                     DB::raw('0 as remanente'),
                     DB::raw('0 as estado'),
-                    DB::raw('2 as tipo')
+                    DB::raw('2 as tipo'),
+                    'observacion'
                 );
 
             $resultados = $recibosQuery->union($cargosQuery)
