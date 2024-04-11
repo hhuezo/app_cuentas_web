@@ -19,7 +19,7 @@ class ReportesController extends Controller
             $now = Carbon::now();
 
             if ($request->fecha_inicio) {
-                $fechaCarbon = Carbon::createFromFormat('Y-m-d', $request->fecha_inicio);
+                $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha_inicio);
                 $fecha_inicio = $fechaCarbon->format('Y-m-d');
             } else {
                 // Obtener el primer día del mes actual
@@ -28,7 +28,7 @@ class ReportesController extends Controller
 
             // Si la fecha final está presente en la solicitud
             if ($request->fecha_final) {
-                $fechaCarbon = Carbon::createFromFormat('Y-m-d', $request->fecha_final);
+                $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha_final);
                 $fecha_final = $fechaCarbon->format('Y-m-d');
             } else {
                 // Obtener la fecha actual
