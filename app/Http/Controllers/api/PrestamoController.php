@@ -57,6 +57,7 @@ class PrestamoController extends Controller
                 ->join('persona', 'prestamo.persona_id', '=', 'persona.id')
                 ->join('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
                 ->orderBy('prestamo.estado')
+                ->orderBy('prestamo.fecha','desc')
                 ->get();
             }
             else{
@@ -85,6 +86,7 @@ class PrestamoController extends Controller
                 ->join('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
                 ->where('administrador',$id_usuario)
                 ->orderBy('prestamo.estado')
+                ->orderBy('prestamo.fecha','desc')
                 ->get();
             }
 
