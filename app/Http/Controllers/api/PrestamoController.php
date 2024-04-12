@@ -67,7 +67,6 @@ class PrestamoController extends Controller
                 ->orderBy('prestamo.fecha', 'desc')
                 ->get();
 
-                dd($prestamos );
 
             foreach ($prestamos as $prestamo) {
 
