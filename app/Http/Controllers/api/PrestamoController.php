@@ -55,9 +55,9 @@ class PrestamoController extends Controller
                     DB::raw('IFNULL((SELECT remanente FROM recibo WHERE recibo.prestamo_id = prestamo.id ORDER BY recibo.id DESC LIMIT 1), prestamo.cantidad) AS deuda'),
                     DB::raw('ROUND((prestamo.cantidad / prestamo.numero_pagos) + (prestamo.cantidad * (prestamo.interes / 100) * IF(prestamo.tipo_pago_id = 2, 0.5, 1)), 2) AS cuota')
                 )
-                ->join('persona', 'prestamo.persona_id', '=', 'persona.id')
-                ->join('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
-                ->when($rol == 1, function ($query) use ($id_usuario) {
+                ->leftJoin('persona', 'prestamo.persona_id', '=', 'persona.id')
+                ->leftJoin('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
+                ->when($rol > 1, function ($query) use ($id_usuario) {
                     $query->where('administrador', $id_usuario);
                 })
                 ->when($search, function ($query, $search) {
@@ -67,7 +67,7 @@ class PrestamoController extends Controller
                 ->orderBy('prestamo.fecha', 'desc')
                 ->get();
 
-
+                dd($prestamos );
 
             foreach ($prestamos as $prestamo) {
 
