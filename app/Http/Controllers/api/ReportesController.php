@@ -38,7 +38,28 @@ class ReportesController extends Controller
                 $fecha_final = $now->endOfMonth()->format('Y-m-d');
             }
 
-            $prestamos = Prestamo::where('amortizacion',false)->get();
+            $rol=1;
+            $usuario_id=1;
+            if($request->rol)
+            {
+                $rol = $request->rol;
+            }
+
+            if($request->usuario_id)
+            {
+                $usuario_id = $request->usuario_id;
+            }
+
+
+
+            $prestamos = Prestamo::where('amortizacion', false);
+
+            if ($rol > 1) {
+                $prestamos->where('administrador', $usuario_id);
+            }
+
+            $prestamos = $prestamos->get();
+
             TempPago::where('id', '>', 0)->delete();
             foreach ($prestamos as $prestamo) {
                 $primer_pago = $prestamo->primer_pago;

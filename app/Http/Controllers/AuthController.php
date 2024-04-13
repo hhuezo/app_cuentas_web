@@ -14,11 +14,12 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
-            $usuario = User::findOrFail($user->id);
-            $rol = $usuario->roles->first();
-            $user->rol = $rol->id;
+            $usuario = User::select('id','username')->findOrFail($user->id);
+
+            $rol_id = $user->roles->first()->id;
+            $usuario->rol = $rol_id;
             //$token = $user->createToken('AuthToken')->accessToken;
-            return response()->json(['user' => $user], 200);
+            return response()->json(['user' => $usuario], 200);
         } else {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
