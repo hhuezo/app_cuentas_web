@@ -31,7 +31,7 @@ class PrestamoFijoController extends Controller
                     'persona.nombre as comprobante',
                     DB::raw('IFNULL(observacion, "") as observacion')
                 )
-                ->orderBy('estado','desc')
+                ->orderBy('estado')
                ->orderBy('fechaDate','desc')
                 ->get();
 
