@@ -25,11 +25,15 @@ class PrestamoFijoController extends Controller
                     'persona.nombre as persona',
                     'cantidad',
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") as fecha'),
+                    'fecha as fechaDate',
                     DB::raw('LPAD(codigo, 3, "0") as codigo'),
                     'estado',
                     'persona.nombre as comprobante',
                     DB::raw('IFNULL(observacion, "") as observacion')
-                )->get();
+                )
+                ->orderBy('estado','desc')
+                ->orderBy('fechaDate','desc')
+                ->get();
 
             foreach ($prestamos as $prestamo) {
                 $sum_recibo = ReciboFijo::where('prestamo_fijo_id', $prestamo->id)->sum('cantidad');
