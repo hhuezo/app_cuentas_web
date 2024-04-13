@@ -27,7 +27,7 @@ class PrestamoFijoController extends Controller
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") as fecha'),
                     DB::raw('LPAD(codigo, 3, "0") as codigo'),
                     'estado',
-                    'comprobante',
+                    'persona.nombre as comprobante',
                     DB::raw('IFNULL(observacion, "") as observacion')
                 )->get();
 
@@ -135,7 +135,7 @@ class PrestamoFijoController extends Controller
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") as fecha'),
                     DB::raw('LPAD(codigo, 3, "0") as codigo'),
                     'estado',
-                    'comprobante',
+                    DB::raw('"" as comprobante'),
                     DB::raw('IFNULL(observacion, "") as observacion')
                 )->findOrFail($id);
 
@@ -151,9 +151,10 @@ class PrestamoFijoController extends Controller
                     'id',
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
                     'cantidad',
-                    'comprobante',
+                    DB::raw('"" as comprobante'),
                     'estado',
-                    DB::raw('1 as tipo')
+                    DB::raw('1 as tipo'),
+                    'observacion'
                 );
 
             $cargosQuery = CargoFijo::where('prestamo_fijo_id', $id)
@@ -163,7 +164,8 @@ class PrestamoFijoController extends Controller
                     'cantidad',
                     'comprobante',
                     DB::raw('0 as estado'),
-                    DB::raw('2 as tipo')
+                    DB::raw('2 as tipo'),
+                    'observacion'
                 );
 
             $recibos = $recibosQuery->union($cargosQuery)
