@@ -32,7 +32,7 @@ class PrestamoFijoController extends Controller
                     DB::raw('IFNULL(observacion, "") as observacion')
                 )
                 ->orderBy('estado','desc')
-               // ->orderBy('fechaDate','desc')
+               ->orderBy('fechaDate','desc')
                 ->get();
 
             foreach ($prestamos as $prestamo) {
