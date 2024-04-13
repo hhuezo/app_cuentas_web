@@ -248,7 +248,7 @@ class PrestamoController extends Controller
 
             $prestamo = Prestamo::findOrFail($id);
             $personas = Persona::select('id', 'nombre')->where('activo', 1)->get();
-            $usuarios = User::select('id', 'username')->get();
+            $usuarios = User::select('id', 'username')->orderBy('id','desc')->get();
             $tipos_pago = TipoPago::get();
 
             $response = ["prestamo" => $prestamo, "personas" => $personas, "usuarios" => $usuarios, "tipos_pago" => $tipos_pago];
