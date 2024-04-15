@@ -175,7 +175,7 @@ class PrestamoFijoController extends Controller
                 );
 
             $recibos = $recibosQuery->union($cargosQuery)
-                ->orderBy('fechaDate')
+                ->orderBy('fechaDate','desc')
                 ->get();
 
 
