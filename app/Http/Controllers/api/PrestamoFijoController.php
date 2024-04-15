@@ -158,7 +158,8 @@ class PrestamoFijoController extends Controller
                     DB::raw('"" as comprobante'),
                     'estado',
                     DB::raw('1 as tipo'),
-                    'observacion'
+                    'observacion',
+                    'fecha as fechaDate'
                 );
 
             $cargosQuery = CargoFijo::where('prestamo_fijo_id', $id)
@@ -169,11 +170,12 @@ class PrestamoFijoController extends Controller
                     'comprobante',
                     DB::raw('0 as estado'),
                     DB::raw('2 as tipo'),
-                    'observacion'
+                    'observacion',
+                    'fecha as fechaDate'
                 );
 
             $recibos = $recibosQuery->union($cargosQuery)
-                ->orderBy('fecha')
+                ->orderBy('fechaDate')
                 ->get();
 
 
