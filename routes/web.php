@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\web\PrestamoWebController;
+use App\Http\Controllers\web\ReciboWebController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,3 +22,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+Route::resource('prestamo_web', PrestamoWebController::class);
+Route::resource('recibo_web', ReciboWebController::class);

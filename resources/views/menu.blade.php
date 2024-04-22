@@ -1265,7 +1265,6 @@
                         </li>
                     @endcan
 
-                    @can('dashboard')
                     <li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
                             <div class="menu-icon">
                                 <span class="material-icons">
@@ -1273,14 +1272,14 @@
                                 </span>
                             </div>
 
-                            <span class="nav-text">Dashboard</span>
+                            <span class="nav-text">Prestamos</span>
                         </a>
                         <ul aria-expanded="false">
-                            <li><a href="{{ url('dashboard') }}">Graficos</a></li>
+                            <li><a href="{{ url('prestamo_web') }}">Prestamo</a></li>
 
                         </ul>
                     </li>
-                @endcan
+
 
                     @can('catalogos')
                     <li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
