@@ -80,11 +80,11 @@
     </style>
 
 
-<style>
-    .card.blue-border {
-        border: 2px solid blue;
-    }
-</style>
+    <style>
+        .card.blue-border {
+            border: 2px solid blue;
+        }
+    </style>
 
     <div class="2xl:col-span-12 lg:col-span-12 col-span-12">
         <div class="card">
@@ -158,9 +158,7 @@
                                                             <br>
                                                             <strong>Interes: </strong>${{ $recibo->interes }}
                                                             <br>
-                                                            <strong>Total:
-                                                            </strong>${{ $recibo->cantidad + $recibo->interes }}
-                                                            <br>
+
                                                             <strong>Remanente: </strong>${{ $recibo->remanente }}
                                                             <br>
                                                             <strong>Estado:
@@ -264,6 +262,11 @@
                             </div>
 
 
+                            <div class="col-md-12" style="text-align: right;">
+                                <a href="{{ url('recibo_web') }}/{{ $prestamo->id }}"> <button
+                                        class="btn btn-primary float-right" type="submit" role="tab"
+                                        aria-selected="true">Crear recibos</button></a>
+                            </div>
                         </div>
 
                     </div>

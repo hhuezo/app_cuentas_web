@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Prestamo;
 use App\Models\Recibo;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class ReciboWebController extends Controller
@@ -18,14 +20,9 @@ class ReciboWebController extends Controller
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
-        //
     }
 
     /**
@@ -47,7 +44,129 @@ class ReciboWebController extends Controller
      */
     public function show($id)
     {
-        //
+        $prestamo = Prestamo::findOrFail($id);
+
+        $count_recibos = $prestamo->recibos->count();
+
+        $capital = 0;
+        $interes = 0;
+        $fecha_temp = Carbon::createFromFormat('Y-m-d', $prestamo->primer_pago);
+        //calculando cuota mensual
+        if ($prestamo->tipo_pago_id == 1 || $prestamo->tipo_pago_id == 4) {
+            $capital = $prestamo->cantidad / $prestamo->numero_pagos;
+            $interes = ($prestamo->cantidad * $prestamo->interes) / 100;
+
+
+            $remanente = $prestamo->cantidad;
+            for ($i = 0; $i < $prestamo->numero_pagos; $i++) {
+                $remanente = $remanente - $capital;
+
+                if ($i >= $count_recibos) {
+                    $recibo = new Recibo();
+                    $recibo->prestamo_id = $prestamo->id;
+                    $recibo->fecha = $fecha_temp->format('Y-m-d');
+                    $recibo->cantidad = $capital + $interes;
+                    $recibo->interes = $interes;
+                    $recibo->remanente = $remanente;
+                    $recibo->save();
+                }
+
+
+                // Añadir 1 día para pasar al primer día del siguiente mes
+                $fecha_temp->addDay();
+
+                // Ajustar la fecha al último día del mes
+                $fecha_temp->endOfMonth();
+            }
+        }
+        // Calculando cuota quincenal
+        else if ($prestamo->tipo_pago_id == 2) {
+            $capital = $prestamo->cantidad / ($prestamo->numero_pagos); // Dividir por 2 para pagos quincenales
+            $interes = ($prestamo->cantidad * $prestamo->interes) / 100 / 2; // Dividir interés por 2 para pagos quincenales
+
+            $remanente = $prestamo->cantidad;
+
+            for ($i = 0; $i < $prestamo->numero_pagos; $i++) {
+                $remanente = $remanente - $capital;
+
+                if ($i >= $count_recibos) {
+                    $recibo = new Recibo();
+                    $recibo->prestamo_id = $prestamo->id;
+                    $recibo->fecha = $fecha_temp->format('Y-m-d');
+                    $recibo->cantidad = $capital + $interes;
+                    $recibo->interes = $interes;
+                    $recibo->remanente = $remanente;
+                    $recibo->save();
+                }
+
+                // Establecer la fecha al siguiente día 15
+                if ($fecha_temp->day == 15) {
+                    // Si es el día 15, avanzar 15 días
+                    $fecha_temp->addDays(15);
+                } else {
+                    // Si no es el día 15, establecer la fecha al último día del mes y avanzar al siguiente día 15
+                    $fecha_temp->endOfMonth();
+                    $fecha_temp->addDay()->day(15);
+                }
+            }
+        }
+
+        //calculando cuota mensual
+        else if ($prestamo->tipo_pago_id == 3) {
+            $capital = $prestamo->cantidad / $prestamo->numero_pagos;
+            $interes = ($prestamo->cantidad * $prestamo->interes) / 100;
+            if($prestamo->pago_especifico > 0)
+            {
+                $interes = $prestamo->pago_especifico - $capital;
+            }
+
+            $remanente = $prestamo->cantidad;
+            for ($i = 0; $i < $prestamo->numero_pagos; $i++) {
+                $remanente = $remanente - $capital;
+
+                if ($i >= $count_recibos) {
+                    $recibo = new Recibo();
+                    $recibo->prestamo_id = $prestamo->id;
+                    $recibo->fecha = $fecha_temp->format('Y-m-d');
+                    $recibo->cantidad = $prestamo->pago_especifico;
+                    $recibo->interes = $interes;
+                    $recibo->remanente = $remanente;
+                    $recibo->save();
+                }
+
+                $fecha_temp->addMonth(); // Esto agrega un mes a la fecha
+
+            }
+        }
+
+        // Calculando cuota quincenal
+        else if ($prestamo->tipo_pago_id == 5) {
+            $capital = $prestamo->cantidad / ($prestamo->numero_pagos); // Dividir por 2 para pagos quincenales
+            $interes = ($prestamo->cantidad * $prestamo->interes) / 100 / 4; // Dividir interés por 4 para pagos semanales
+
+            $remanente = $prestamo->cantidad;
+
+            for ($i = 0; $i < $prestamo->numero_pagos; $i++) {
+                $remanente = $remanente - $capital;
+
+                if ($i >= $count_recibos) {
+                    $recibo = new Recibo();
+                    $recibo->prestamo_id = $prestamo->id;
+                    $recibo->fecha = $fecha_temp->format('Y-m-d');
+                    $recibo->cantidad = $capital + $interes;
+                    $recibo->interes = $interes;
+                    $recibo->remanente = $remanente;
+                    $recibo->save();
+                }
+
+                $fecha_temp->addWeek();
+            }
+        }
+
+
+        alert()->success('El registro ha sido guardado correctamente');
+        return back();
+
     }
 
     /**

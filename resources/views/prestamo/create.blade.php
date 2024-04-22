@@ -112,7 +112,7 @@
             @endif
 
             <div class="card-body flex flex-col p-6">
-                <form method="POST" action="{{ url('prestamo') }}">
+                <form method="POST" action="{{ url('prestamo_web') }}">
                     @csrf
                     <div class="row">
                         <div class="col-md-6 mb-3">

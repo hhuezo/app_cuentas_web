@@ -11,7 +11,7 @@
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{{ url('prestamo/create') }}">
+                        <a href="{{ url('prestamo_web/create') }}">
                             <button class="btn btn-primary btn-sm" type="button" role="tab"
                                 aria-selected="true">Nuevo</button>
                         </a>

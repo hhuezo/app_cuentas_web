@@ -101,7 +101,7 @@ class PrestamoWebController extends Controller
                 $recibo = new Recibo();
                 $recibo->prestamo_id = $prestamo->id;
                 $recibo->fecha = $fecha_temp->format('Y-m-d');
-                $recibo->cantidad = $capital;
+                $recibo->cantidad = $capital + $interes;
                 $recibo->interes = $interes;
                 $recibo->remanente = $remanente;
                 $recibo->save();
@@ -126,7 +126,7 @@ class PrestamoWebController extends Controller
                 $recibo = new Recibo();
                 $recibo->prestamo_id = $prestamo->id;
                 $recibo->fecha = $fecha_temp->format('Y-m-d');
-                $recibo->cantidad = $capital;
+                $recibo->cantidad = $capital + $interes;
                 $recibo->interes = $interes;
                 $recibo->remanente = $remanente;
                 $recibo->save();
@@ -156,7 +156,7 @@ class PrestamoWebController extends Controller
                 $recibo = new Recibo();
                 $recibo->prestamo_id = $prestamo->id;
                 $recibo->fecha = $fecha_temp->format('Y-m-d');
-                $recibo->cantidad = $capital;
+                $recibo->cantidad = $capital + $interes;
                 $recibo->interes = $interes;
                 $recibo->remanente = $remanente;
                 $recibo->save();
@@ -179,7 +179,7 @@ class PrestamoWebController extends Controller
                 $recibo = new Recibo();
                 $recibo->prestamo_id = $prestamo->id;
                 $recibo->fecha = $fecha_temp->format('Y-m-d');
-                $recibo->cantidad = $capital;
+                $recibo->cantidad = $capital + $interes;
                 $recibo->interes = $interes;
                 $recibo->remanente = $remanente;
                 $recibo->save();
