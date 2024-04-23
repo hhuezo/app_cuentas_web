@@ -1025,14 +1025,15 @@
                                                 <div class="col-md-12 mb-3">
                                                     <div class="input-area relative">
                                                         <input type="date" class="form-control" name="fechaInicio"
-                                                            value="{{ $fechaInicio }}">
+                                                        value="{{ isset($fechaInicio) ? $fechaInicio : '' }}">
 
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12 mb-3">
                                                     <div class="input-area relative">
                                                         <input type="date" class="form-control" name="fechaFinal"
-                                                            value="{{ $fechaFinal }}">
+                                                            value="{{ isset($fechaFinal) ? $fechaFinal : '' }}"
+>
 
                                                     </div>
                                                 </div>
