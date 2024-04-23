@@ -197,7 +197,9 @@ class PrestamoController extends Controller
                 ->where('prestamo.id', $id)
                 ->first();
 
-            $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'desc')->first();
+
+
+            $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'asc')->where('estado',2)->first();
             if ($recibo) {
                 $prestamo->remanente = $recibo->remanente;
             } else {

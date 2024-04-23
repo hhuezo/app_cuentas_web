@@ -16,7 +16,7 @@ class PrestamoWebController extends Controller
 {
     public function index()
     {
-        $prestamos = Prestamo::get();
+        $prestamos = Prestamo::orderBy('estado')->orderBy('primer_pago','desc')->get();
         return view('prestamo.index', compact('prestamos'));
     }
 

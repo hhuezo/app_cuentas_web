@@ -1336,6 +1336,7 @@
     <!-- Required vendors -->
     <script src="{{ asset('template/vendor/global/global.min.js') }}"></script>
 
+
     <!-- Datatable -->
     <script src="{{ asset('template/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
     <script src="{{ asset('template/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
