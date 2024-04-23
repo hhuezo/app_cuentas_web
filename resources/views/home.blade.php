@@ -1,5 +1,56 @@
 @extends('menu')
 @section('contenido')
+    <style>
+        .highcharts-figure,
+        .highcharts-data-table table {
+            min-width: 310px;
+            max-width: 800px;
+            margin: 1em auto;
+        }
+
+        #container {
+            height: 400px;
+        }
+
+        .highcharts-data-table table {
+            font-family: Verdana, sans-serif;
+            border-collapse: collapse;
+            border: 1px solid #ebebeb;
+            margin: 10px auto;
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .highcharts-data-table caption {
+            padding: 1em 0;
+            font-size: 1.2em;
+            color: #555;
+        }
+
+        .highcharts-data-table th {
+            font-weight: 600;
+            padding: 0.5em;
+        }
+
+        .highcharts-data-table td,
+        .highcharts-data-table th,
+        .highcharts-data-table caption {
+            padding: 0.5em;
+        }
+
+        .highcharts-data-table thead tr,
+        .highcharts-data-table tr:nth-child(even) {
+            background: #f8f8f8;
+        }
+
+        .highcharts-data-table tr:hover {
+            background: #f1f7ff;
+        }
+    </style>
+
+
+
     <div class="row">
         <div class="col-xl-3 col-sm-6">
             <div class="card">
@@ -17,7 +68,9 @@
                             </svg>
                         </div>
                         <div class="total-projects ms-3">
-                            <h3 class="text-success count">${{ number_format($data_general["total_prestado"]+$data_general["total_cargos"], 2, '.', ',') }}</h3>
+                            <h3 class="text-success count">
+                                ${{ number_format($data_general['total_prestado'] + $data_general['total_cargos'], 2, '.', ',') }}
+                            </h3>
                             <span>Total prestado</span>
                         </div>
                     </div>
@@ -43,7 +96,9 @@
 
                         </div>
                         <div class="total-projects ms-3">
-                            <h3 class="text-primary count">${{ number_format($data_general["total_reintegrado"]-$data_general["total_interes_reintegrado"] , 2, '.', ',') }}</h3>
+                            <h3 class="text-primary count">
+                                ${{ number_format($data_general['total_reintegrado'] - $data_general['total_interes_reintegrado'], 2, '.', ',') }}
+                            </h3>
                             <span>Total reintegrado</span>
                         </div>
                     </div>
@@ -67,7 +122,8 @@
                             </svg>
                         </div>
                         <div class="total-projects ms-3">
-                            <h3 class="text-purple count">${{ number_format($data_general["total_interes_reintegrado"], 2, '.', ',') }}</h3>
+                            <h3 class="text-purple count">
+                                ${{ number_format($data_general['total_interes_reintegrado'], 2, '.', ',') }}</h3>
                             <span>Intereses</span>
                         </div>
                     </div>
@@ -105,7 +161,8 @@
                             </svg>
                         </div>
                         <div class="total-projects ms-3">
-                            <h3 class="text-danger count" style="text-align: right;">{{$data_general["count_prestamos"]}}</h3>
+                            <h3 class="text-danger count" style="text-align: right;">
+                                {{ $data_general['count_prestamos'] }}</h3>
                             <span>Número prestamos</span>
                         </div>
                     </div>
@@ -198,29 +255,30 @@
                                     </thead>
                                     <tbody>
                                         @php($total_interes = 0)
-                                        @php($total= 0)
+                                        @php($total = 0)
                                         @foreach ($pagos->where('estado', 1) as $pago)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <div class="ms-2 cat-name">
-                                                           {{$pago->prestamo->persona->nombre}}
+                                                            {{ $pago->prestamo->persona->nombre }}
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td style="text-align: right;">
-                                                    ${{$pago->interes}}
+                                                    ${{ $pago->interes }}
                                                 </td>
-                                                <td>${{$pago->cantidad}}</td>
+                                                <td>${{ $pago->cantidad }}</td>
                                             </tr>
-                                            @php($total_interes +=$pago->interes)
+                                            @php($total_interes += $pago->interes)
                                             @php($total += $pago->cantidad)
                                         @endforeach
                                         <tr>
                                             <th colspan="2" style="text-align: right;">TOTAL</th>
-                                            <th style="text-align: right;">${{number_format($total_interes, 2, '.', ',')}}</th>
-                                            <th style="text-align: right;">${{number_format($total, 2, '.', ',')}}</th>
+                                            <th style="text-align: right;">
+                                                ${{ number_format($total_interes, 2, '.', ',') }}</th>
+                                            <th style="text-align: right;">${{ number_format($total, 2, '.', ',') }}</th>
                                         </tr>
 
                                     </tbody>
@@ -242,7 +300,7 @@
                                     </thead>
                                     <tbody>
                                         @php($total_interes = 0)
-                                        @php($total= 0)
+                                        @php($total = 0)
                                         @foreach ($pagos->where('estado', 2) as $pago)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}
@@ -250,22 +308,23 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <div class="ms-2 cat-name">
-                                                           {{$pago->prestamo->persona->nombre}}
+                                                            {{ $pago->prestamo->persona->nombre }}
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td style="text-align: right;">
-                                                    ${{$pago->interes}}
+                                                    ${{ $pago->interes }}
                                                 </td>
-                                                <td style="text-align: right;">${{$pago->cantidad}}</td>
+                                                <td style="text-align: right;">${{ $pago->cantidad }}</td>
                                             </tr>
-                                            @php($total_interes +=$pago->interes)
+                                            @php($total_interes += $pago->interes)
                                             @php($total += $pago->cantidad)
                                         @endforeach
                                         <tr>
                                             <th colspan="2" style="text-align: right;">TOTAL</th>
-                                            <th style="text-align: right;">${{number_format($total_interes, 2, '.', ',')}}</th>
-                                            <th style="text-align: right;">${{number_format($total, 2, '.', ',')}}</th>
+                                            <th style="text-align: right;">
+                                                ${{ number_format($total_interes, 2, '.', ',') }}</th>
+                                            <th style="text-align: right;">${{ number_format($total, 2, '.', ',') }}</th>
                                         </tr>
 
                                     </tbody>
@@ -289,7 +348,7 @@
                                     </thead>
                                     <tbody>
                                         @php($total_interes = 0)
-                                        @php($total= 0)
+                                        @php($total = 0)
                                         @foreach ($pagos as $pago)
                                             <tr>
                                                 <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}
@@ -297,24 +356,27 @@
                                                 <td>
                                                     <div class="d-flex align-items-center">
                                                         <div class="ms-2 cat-name">
-                                                           {{$pago->prestamo->persona->nombre}}
+                                                            {{ $pago->prestamo->persona->nombre }}
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td style="text-align: right;">
-                                                    ${{$pago->interes}}
+                                                    ${{ $pago->interes }}
                                                 </td>
-                                                <td style="text-align: right;">${{$pago->cantidad}}</td>
-                                                <td><span class="badge badge-{{$pago->estado == 1 ? 'danger':'success'}} light border-0">{{$pago->estado == 1 ? 'Pendiente':'Pagado'}}</span></td>
+                                                <td style="text-align: right;">${{ $pago->cantidad }}</td>
+                                                <td><span
+                                                        class="badge badge-{{ $pago->estado == 1 ? 'danger' : 'success' }} light border-0">{{ $pago->estado == 1 ? 'Pendiente' : 'Pagado' }}</span>
+                                                </td>
 
                                             </tr>
-                                            @php($total_interes +=$pago->interes)
+                                            @php($total_interes += $pago->interes)
                                             @php($total += $pago->cantidad)
                                         @endforeach
                                         <tr>
                                             <th colspan="2" style="text-align: right;">TOTAL</th>
-                                            <th style="text-align: right;">${{number_format($total_interes, 2, '.', ',')}}</th>
-                                            <th style="text-align: right;">${{number_format($total, 2, '.', ',')}}</th>
+                                            <th style="text-align: right;">
+                                                ${{ number_format($total_interes, 2, '.', ',') }}</th>
+                                            <th style="text-align: right;">${{ number_format($total, 2, '.', ',') }}</th>
                                             <th colspan="3" style="text-align: right;"></th>
                                         </tr>
 
@@ -329,9 +391,79 @@
         </div>
 
 
+        <div class="col-xl-6 col-xxl-12">
+            <div class="card">
+                <div class="card-body px-0 pb-0">
+                        <div id="container"></div>
+
+
+                </div>
+            </div>
+        </div>
 
 
 
 
     </div>
+
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/data.js"></script>
+    <script src="https://code.highcharts.com/modules/drilldown.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <script>
+        Highcharts.chart('container', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                align: 'left',
+                text: 'Ganancias mensuales'
+            },
+            subtitle: {
+                align: 'left',
+                text: ''
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                title: {
+                    text: ''
+                }
+
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '${point.y:.2f}'
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.0f}</b> of total<br/>'
+            },
+
+            series: [{
+                name: 'Browsers',
+                colorByPoint: true,
+                data:@json($interesesPorMesArray)
+            }]
+        });
+    </script>
 @endsection

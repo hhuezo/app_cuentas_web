@@ -28,16 +28,14 @@ class HomeController extends Controller
     public function index(Request $request)
     {
         $fechaInicio = Carbon::now()->firstOfMonth()->format('Y-m-d');
-        if($request->fechaInicio)
-        {
+        if ($request->fechaInicio) {
             $fechaInicio = $request->fechaInicio;
         }
 
 
         // Obtener el último día del mes actual
         $fechaFinal = Carbon::now()->endOfMonth()->format('Y-m-d');
-        if($request->fechaFinal)
-        {
+        if ($request->fechaFinal) {
             $fechaFinal = $request->fechaFinal;
         }
 
@@ -48,8 +46,31 @@ class HomeController extends Controller
         $total_cargos = Cargo::sum('cantidad');
         $total_reintegrado = Recibo::where('estado', 2)->sum('cantidad');
         $total_interes_reintegrado = Recibo::where('estado', 2)->sum('interes');
-        $data_general = ["count_prestamos" => $count_prestamos, "total_prestado" => $total_prestado,"total_cargos" => $total_cargos, "total_reintegrado" => $total_reintegrado, "total_interes_reintegrado" => $total_interes_reintegrado];
+        $data_general = ["count_prestamos" => $count_prestamos, "total_prestado" => $total_prestado, "total_cargos" => $total_cargos, "total_reintegrado" => $total_reintegrado, "total_interes_reintegrado" => $total_interes_reintegrado];
 
-        return view('home', compact('pagos', 'data_general','fechaInicio','fechaFinal'));
+        $meses = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+        $interesesPorMesArray = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $interesesPorMes = Recibo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
+                ->where('estado', 2)
+                ->whereYear('fecha', 2024)
+                ->whereMonth('fecha', $i)
+                ->groupByRaw('YEAR(fecha), MONTH(fecha)')
+                ->first();
+            if ($interesesPorMes) {
+                $total = $interesesPorMes->total_interes + 0;
+                $array = ["name" => $meses[$i], "y" => $total, "drilldown" => $meses[$i]];
+                array_push($interesesPorMesArray,$array);
+            } else {
+                $total = 0;
+            }
+
+
+        }
+
+
+
+        return view('home', compact('pagos', 'data_general', 'fechaInicio', 'fechaFinal', 'interesesPorMesArray'));
     }
 }
