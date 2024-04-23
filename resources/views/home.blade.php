@@ -162,8 +162,8 @@
                         </div>
                         <div class="total-projects ms-3">
                             <h3 class="text-danger count" style="text-align: right;">
-                                {{ $data_general['count_prestamos'] }}</h3>
-                            <span>Número prestamos</span>
+                                ${{ number_format($data_general['total_fijo_reintegrado'] , 2, '.', ',') }}</h3>
+                            <span>Total préstamo fijo</span>
                         </div>
                     </div>
                 </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cargo;
 use App\Models\Prestamo;
 use App\Models\Recibo;
+use App\Models\ReciboFijo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -46,11 +47,14 @@ class HomeController extends Controller
         $total_cargos = Cargo::sum('cantidad');
         $total_reintegrado = Recibo::where('estado', 2)->sum('cantidad');
         $total_interes_reintegrado = Recibo::where('estado', 2)->sum('interes');
-        $data_general = ["count_prestamos" => $count_prestamos, "total_prestado" => $total_prestado, "total_cargos" => $total_cargos, "total_reintegrado" => $total_reintegrado, "total_interes_reintegrado" => $total_interes_reintegrado];
+        $total_fijo_reintegrado = ReciboFijo::sum('cantidad');
+        $data_general = ["count_prestamos" => $count_prestamos, "total_prestado" => $total_prestado, "total_cargos" => $total_cargos,
+         "total_reintegrado" => $total_reintegrado, "total_interes_reintegrado" => $total_interes_reintegrado,"total_fijo_reintegrado"=>$total_fijo_reintegrado];
 
         $meses = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
         $interesesPorMesArray = [];
+        $gananciaPorMesArray = [];
         for ($i = 1; $i <= 12; $i++) {
             $interesesPorMes = Recibo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
                 ->where('estado', 2)
@@ -66,11 +70,24 @@ class HomeController extends Controller
                 $total = 0;
             }
 
+            $interesesPorMes = ReciboFijo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
+            ->where('estado', 2)
+            ->whereYear('fecha', 2024)
+            ->whereMonth('fecha', $i)
+            ->groupByRaw('YEAR(fecha), MONTH(fecha)')
+            ->first();
 
+            if ($interesesPorMes) {
+                $total = $interesesPorMes->total_interes + 0;
+                $array = ["name" => $meses[$i], "y" => $total, "drilldown" => $meses[$i]];
+                array_push($gananciaPorMesArray,$array);
+            } else {
+                $total = 0;
+            }
         }
 
 
-
-        return view('home', compact('pagos', 'data_general', 'fechaInicio', 'fechaFinal', 'interesesPorMesArray'));
+        return view('home', compact('pagos', 'data_general', 'fechaInicio', 'fechaFinal',
+        'interesesPorMesArray','gananciaPorMesArray'));
     }
 }
