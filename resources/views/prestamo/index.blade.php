@@ -57,11 +57,11 @@
                                             <td>{{ date('d/m/Y', strtotime($obj->fecha)) }}</td>
                                             <td>${{ $obj->cantidad }}</td>
                                             <td>{{ $obj->interes }}%</td>
-                                            <td><input type="checkbox" {{$obj->estado == 2 ? 'checked':''}}></td>
+                                            <td><input type="checkbox" {{ $obj->estado == 2 ? 'checked' : '' }}></td>
                                             <td>
                                                 <div class="d-flex">
 
-                                                    <a href="{{url('prestamo_web')}}/{{$obj->id}}"
+                                                    <a href="{{ url('prestamo_web') }}/{{ $obj->id }}"
                                                         class="btn btn-primary shadow btn sharp me-1"><i
                                                             class="fas fa-eye"></i></a> &nbsp;
 
@@ -85,4 +85,41 @@
         </div>
         <!-- /tab-content -->
     </div>
+
+    <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            if ($.fn.DataTable.isDataTable('#responsiveTable')) {
+                $('#responsiveTable').DataTable().destroy();
+            }
+            $('#responsiveTable').DataTable({
+                "language": {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "<<",
+                        "sLast": ">>",
+                        "sNext": ">",
+                        "sPrevious": "<"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    }
+                },"ordering": false
+            });
+        });
+    </script>
+
+
 @endsection
