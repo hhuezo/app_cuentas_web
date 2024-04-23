@@ -143,9 +143,9 @@ class ReportesController extends Controller
 
             $pagos = Recibo::join('prestamo', 'prestamo.id', '=', 'recibo.prestamo_id')
                 ->join('persona', 'persona.id', '=', 'prestamo.persona_id')
-                ->whereBetween('fecha', [$fecha_inicio, $fecha_final])
-                ->selectRaw('recibo.id, recibo.prestamo_id,recibo.fecha, DATE_FORMAT(recibo.fecha, "%d/%m/%Y") AS fecha_formato, recibo.cantidad, estado as pagado,persona.nombre')
-                ->orderBy('fecha')
+                ->whereBetween('recibo.fecha', [$fecha_inicio, $fecha_final])
+                ->selectRaw('recibo.id, recibo.prestamo_id,recibo.fecha, DATE_FORMAT(recibo.fecha, "%d/%m/%Y") AS fecha_formato, recibo.cantidad, recibo.estado as pagado,persona.nombre')
+                ->orderBy('recibo.fecha')
                 ->get();
 
                 foreach($pagos as $pago)
