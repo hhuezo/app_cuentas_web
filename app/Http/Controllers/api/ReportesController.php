@@ -25,8 +25,6 @@ class ReportesController extends Controller
                 // Obtener el primer día del mes actual
                 $fecha_inicio = $now->firstOfMonth()->format('Y-m-d');
             }
-
-            // Si la fecha final está presente en la solicitud
             if ($request->fecha_final) {
                 $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha_final);
                 $fecha_final = $fechaCarbon->format('Y-m-d');
@@ -38,17 +36,23 @@ class ReportesController extends Controller
                 $fecha_final = $now->endOfMonth()->format('Y-m-d');
             }
 
-            $rol=1;
-            $usuario_id=1;
-            if($request->rol)
-            {
+
+            $rol = 1;
+            $usuario_id = 1;
+            if ($request->rol) {
                 $rol = $request->rol;
             }
 
-            if($request->usuario_id)
-            {
+            if ($request->usuario_id) {
                 $usuario_id = $request->usuario_id;
             }
+
+            /*
+
+            // Si la fecha final está presente en la solicitud
+
+
+
 
 
 
@@ -134,32 +138,20 @@ class ReportesController extends Controller
             $pagos = TempPago::selectRaw('id, prestamo_id,fecha, DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha_formato, cantidad, pagado,nombre')
                 ->whereBetween('fecha', [$fecha_inicio, $fecha_final])
                 ->orderBy('fecha')
+                ->get();*/
+
+
+            $pagos = Recibo::join('prestamo', 'prestamo.id', '=', 'recibo.prestamo_id')
+                ->join('persona', 'persona.id', '=', 'prestamo.persona_id')
+                ->whereBetween('fecha', [$fecha_inicio, $fecha_final])
+                ->selectRaw('recibo.id, recibo.prestamo_id,recibo.fecha, DATE_FORMAT(recibo.fecha, "%d/%m/%Y") AS fecha_formato, recibo.cantidad, estado as pagado,persona.nombre')
+                ->orderBy('fecha')
                 ->get();
 
-            /*$fecha_temp = $prestamo->primer_pago;
-            foreach ($pagos as $pago) {
-                //print($fecha_temp . ' ' . $prestamo->primer_pago . '<br>');
-                $recibo = Recibo::where('prestamo_id', $pago->prestamo_id)->where('fecha', $pago->fecha)->first();
-
-                if ($pago->fecha == $prestamo->primer_pago) {
-                    if ($recibo) {
-                        $pago->pagado = 1;
-                    }
-                } else {
-                    $recibo = Recibo::where('prestamo_id', $pago->prestamo_id)->whereBetween('fecha', [$fecha_temp, $pago->fecha])->first();
-                    if ($recibo) {
-                        $pago->pagado = 1;
-                    }
+                foreach($pagos as $pago)
+                {
+                    $pago->pagado = $pago->pagado-1;
                 }
-
-                $ultima_fecha = $pago->fecha;
-                $nuevaFecha = strtotime('+1 day', strtotime($ultima_fecha));
-
-
-                $fecha_temp = date('Y-m-d', $nuevaFecha);
-            }*/
-
-
 
 
             $data = ["pagos" => $pagos];
