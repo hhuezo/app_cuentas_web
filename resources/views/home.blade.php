@@ -400,7 +400,15 @@
                 </div>
             </div>
         </div>
+        <div class="col-xl-6 col-xxl-12">
+            <div class="card">
+                <div class="card-body px-0 pb-0">
+                        <div id="container2"></div>
 
+
+                </div>
+            </div>
+        </div>
 
 
 
@@ -463,6 +471,57 @@
                 name: 'Browsers',
                 colorByPoint: true,
                 data:@json($interesesPorMesArray)
+            }]
+        });
+
+        Highcharts.chart('container2', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                align: 'left',
+                text: 'Ganancias mensuales(Fijos)'
+            },
+            subtitle: {
+                align: 'left',
+                text: ''
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                type: 'category'
+            },
+            yAxis: {
+                title: {
+                    text: ''
+                }
+
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '${point.y:.2f}'
+                    }
+                }
+            },
+
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.0f}</b> of total<br/>'
+            },
+
+            series: [{
+                name: 'Browsers',
+                colorByPoint: true,
+                data:@json($gananciaPorMesArray)
             }]
         });
     </script>
