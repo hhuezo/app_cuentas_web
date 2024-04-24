@@ -70,7 +70,7 @@ class HomeController extends Controller
                 $total = 0;
             }
 
-            $interesesPorMes = ReciboFijo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
+            $interesesPorMes = ReciboFijo::selectRaw('SUM(cantidad) as total, YEAR(fecha) as anio, MONTH(fecha) as mes')
             ->where('estado', 2)
             ->whereYear('fecha', 2024)
             ->whereMonth('fecha', $i)
@@ -78,7 +78,7 @@ class HomeController extends Controller
             ->first();
 
             if ($interesesPorMes) {
-                $total = $interesesPorMes->total_interes + 0;
+                $total = $interesesPorMes->total + 0;
                 $array = ["name" => $meses[$i], "y" => $total, "drilldown" => $meses[$i]];
                 array_push($gananciaPorMesArray,$array);
             } else {
