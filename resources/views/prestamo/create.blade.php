@@ -84,13 +84,11 @@
             <div class="card-header flex-wrap d-flex justify-content-between">
                 <div>
                     <h4 class="card-title">Nuevo préstamo</h4>
-                    </p>
-
 
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{{ url('prestamo') }}">
+                        <a href="{{ url('prestamo_web') }}">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
                                 type="button" role="tab" aria-selected="true">Salir</button></a>
                     </li>

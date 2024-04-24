@@ -3,7 +3,7 @@
 
 <head>
     <!--Title-->
-    <title>ISSS</title>
+    <title>Cuentas</title>
 
     <!-- Meta -->
     <meta charset="utf-8">
@@ -92,10 +92,7 @@
                         fill="white" />
                 </svg> --}}
 
-                <img src="{{ asset('template/images/escudo.png') }}" lass="logo-abbr" width="42" height="50"
-                    viewBox="0 0 32 30" fill="none">
-
-                {{-- ISSS<svg class="brand-title" width="111" height="24" viewBox="0 0 111 24" fill="none"
+               <svg class="brand-title" width="111" height="24" viewBox="0 0 111 24" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
                     <rect class="yesh" width="49" height="22" transform="translate(0 1)" fill="white" />
                      <path class="admin1"
@@ -104,7 +101,7 @@
                     <path class="admin2"
                         d="M63.484 16.016H59.292L58.62 18H55.756L59.82 6.768H62.988L67.052 18H64.156L63.484 16.016ZM62.78 13.904L61.388 9.792L60.012 13.904H62.78ZM72.4969 6.768C73.6809 6.768 74.7155 7.00267 75.6009 7.472C76.4862 7.94133 77.1689 8.60267 77.6489 9.456C78.1395 10.2987 78.3849 11.2747 78.3849 12.384C78.3849 13.4827 78.1395 14.4587 77.6489 15.312C77.1689 16.1653 76.4809 16.8267 75.5849 17.296C74.6995 17.7653 73.6702 18 72.4969 18H68.2889V6.768H72.4969ZM72.3209 15.632C73.3555 15.632 74.1609 15.3493 74.7369 14.784C75.3129 14.2187 75.6009 13.4187 75.6009 12.384C75.6009 11.3493 75.3129 10.544 74.7369 9.968C74.1609 9.392 73.3555 9.104 72.3209 9.104H71.0249V15.632H72.3209ZM92.6339 6.768V18H89.8979V11.264L87.3859 18H85.1779L82.6499 11.248V18H79.9139V6.768H83.1459L86.2979 14.544L89.4179 6.768H92.6339ZM97.3374 6.768V18H94.6014V6.768H97.3374ZM109.368 18H106.632L102.056 11.072V18H99.3201V6.768H102.056L106.632 13.728V6.768H109.368V18Z"
                         fill="white" />
-                </svg> --}}
+                </svg>
             </a>
             <div class="nav-control">
                 <div class="hamburger">
@@ -1181,7 +1178,7 @@
         <div class="deznav">
             <div class="deznav-scroll">
                 <ul class="metismenu" id="menu">
-                    <li class="menu-title">ISSS</li>
+                    <li class="menu-title">Cuentas</li>
 
                     @can('seguridad')
                         <li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
