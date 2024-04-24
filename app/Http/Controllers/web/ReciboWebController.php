@@ -21,9 +21,10 @@ class ReciboWebController extends Controller
     }
 
 
-    public function create()
-    {
-    }
+
+
+
+
 
     /**
      * Store a newly created resource in storage.
@@ -33,7 +34,38 @@ class ReciboWebController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $recibo = Recibo::where('prestamo_id', $request->prestamo_id)->orderBy('id', 'desc')->first();
+        if ($recibo) {
+            $remanente = $recibo->remanente - ($request->cantidad - $request->interes);
+        } else {
+            $prestamo = Prestamo::findOrFail($request->prestamo_id);
+            $remanente = $prestamo->cantidad - ($request->cantidad - $request->interes);
+        }
+
+        if ($remanente >= 0) {
+
+            $recibo = new Recibo();
+            $recibo->prestamo_id = $request->prestamo_id;
+            $recibo->fecha = $request->fecha;
+            $recibo->cantidad = $request->cantidad;
+            $recibo->interes = $request->interes;
+            $recibo->comprobante = $request->comprobante;
+            $recibo->remanente = $remanente;
+            $recibo->estado = 2;
+            $recibo->save();
+
+            if ($recibo->remanente == 0) {
+                $prestamo = Prestamo::findOrFail($request->prestamo_id);
+                $prestamo->estado = 2;
+                $prestamo->save();
+            }
+
+            alert()->success('El registro ha sido guardado correctamente');
+            return back();
+        } else {
+            alert()->error('El registro no ha sido guardado correctamente');
+            return back();
+        }
     }
 
     /**
@@ -115,8 +147,7 @@ class ReciboWebController extends Controller
         else if ($prestamo->tipo_pago_id == 3) {
             $capital = $prestamo->cantidad / $prestamo->numero_pagos;
             $interes = ($prestamo->cantidad * $prestamo->interes) / 100;
-            if($prestamo->pago_especifico > 0)
-            {
+            if ($prestamo->pago_especifico > 0) {
                 $interes = $prestamo->pago_especifico - $capital;
             }
 
@@ -166,7 +197,6 @@ class ReciboWebController extends Controller
 
         alert()->success('El registro ha sido guardado correctamente');
         return back();
-
     }
 
     /**
