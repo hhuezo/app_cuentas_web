@@ -71,7 +71,6 @@ class HomeController extends Controller
             }
 
             $interesesPorMes = ReciboFijo::selectRaw('SUM(cantidad) as total, YEAR(fecha) as anio, MONTH(fecha) as mes')
-            ->where('estado', 2)
             ->whereYear('fecha', 2024)
             ->whereMonth('fecha', $i)
             ->groupByRaw('YEAR(fecha), MONTH(fecha)')
