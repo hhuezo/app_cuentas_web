@@ -39,7 +39,6 @@ class ReciboFijoWebController extends Controller
     public function store(Request $request)
     {
 
-
         $recibo = new ReciboFijo();
         $recibo->prestamo_fijo_id = $request->prestamo_fijo_id;
         $recibo->fecha = $request->fecha;
@@ -49,7 +48,7 @@ class ReciboFijoWebController extends Controller
         $recibo->estado = 2;
         $recibo->save();
 
-        if ($recibo->remanente == $request->cantidad) {
+        if ($request->remanente == $request->cantidad) {
             $prestamo = PrestamoFijo::findOrFail($request->prestamo_fijo_id);
             $prestamo->estado = 2;
             $prestamo->save();
