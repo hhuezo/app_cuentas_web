@@ -126,7 +126,13 @@
                             </div>
 
 
-
+                            <div class="col-md-6 mb-3">
+                                <div class="input-area relative">
+                                    <label for="largeInput" class="form-label">Deuda</label>
+                                    <input type="number" name="cantidad" readonly class="form-control"
+                                        value="{{ $deuda }}">
+                                </div>
+                            </div>
 
                             <div class="col-md-6 mb-3">
                                 <div class="input-area relative">
