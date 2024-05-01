@@ -1,0 +1,130 @@
+@extends('menu')
+@section('contenido')
+
+
+
+    <div class="2xl:col-span-12 lg:col-span-12 col-span-12">
+        <div class="card">
+            <div class="card-header flex-wrap d-flex justify-content-between">
+                <div>
+                    <h4 class="card-title">Nuevo préstamo</h4>
+
+                </div>
+                <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a href="{{ url('prestamo_fijo_web') }}">
+                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
+                                type="button" role="tab" aria-selected="true">Salir</button></a>
+                    </li>
+
+                </ul>
+            </div>
+
+            @if (count($errors) > 0)
+                <br>
+                <div class="mb-3 col-md-6 col-sm-12" style="margin-left: 20px">
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
+            <div class="card-body flex flex-col p-6">
+                <form method="POST" action="{{ url('prestamo_fijo_web') }}">
+                    @csrf
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="input-area relative">
+                                <label for="largeInput" class="form-label">Fecha</label>
+                                <div class="input-hasicon mb-xl-0 mb-3">
+                                    <input type="date" name="fecha" required class="form-control"
+                                        value="{{ date('Y-m-d') }}">
+                                    <div class="icon"><i class="far fa-calendar"></i></div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="largeInput" class="form-label">Persona</label>
+                            <select name="persona_id" class="default-select form-control select2">
+                                @foreach ($personas as $obj)
+                                    <option value="{{ $obj->id }}">{{ $obj->nombre }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+
+                        <div class="col-md-6 mb-3">
+                            <div class="input-area relative">
+                                <label for="largeInput" class="form-label">Cantidad</label>
+                                <input type="number" step="0.01" name="cantidad" required class="form-control"
+                                    value="{{ old('cantidad') }}">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="input-area relative">
+                                <label for="largeInput" class="form-label">Observación</label>
+                                <input type="text"  name="observacion" class="form-control"
+                                    value="{{ old('observacion') }}">
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-6 mb-3">
+                            <div class="input-area relative">
+                                <label for="largeInput" class="form-label">Comprobante</label>
+                                <input type="file" name="img_comprobante" id="img_comprobante" accept="image/*"
+                                    class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <center>
+                                <img id="preview" src="#" alt="Vista previa"
+                                    style="max-width: 200px; height: auto;">
+                            </center>
+                        </div>
+                        <input type="hidden" id="comprobante_base64" name="comprobante">
+
+                        <div class="col-md-12" style="text-align: right;">
+                            <button class="btn btn-primary float-right" type="submit" role="tab"
+                                aria-selected="true">Aceptar</button>
+                        </div>
+
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
+
+    <script>
+        document.getElementById('img_comprobante').addEventListener('change', function() {
+            const file = this.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const preview = document.getElementById('preview');
+                preview.src = e.target.result;
+                var base64WithoutPrefix = e.target.result.replace(/^data:image\/(png|jpeg);base64,/, '');
+
+                // Asignar el valor sin el prefijo al elemento deseado
+                document.getElementById('comprobante_base64').value = base64WithoutPrefix;
+            };
+
+            reader.readAsDataURL(file);
+        });
+    </script>
+
+@endsection

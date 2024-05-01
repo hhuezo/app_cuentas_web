@@ -100,7 +100,7 @@
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a href="{{ url('prestamo_web') }}">
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
+                            <button class="btn btn-primary btn-sm"
                                 type="button" role="tab" aria-selected="true">Salir</button></a>
                     </li>
 
@@ -263,9 +263,16 @@
 
 
                             <div class="col-md-12" style="text-align: right;">
-                                <a href="{{ url('recibo_web') }}/{{ $prestamo->id }}"> <button
-                                        class="btn btn-primary float-right" type="submit" role="tab"
-                                        aria-selected="true">Crear recibos</button></a>
+                                @if ($prestamo->amortizacion == 1)
+                                    <button data-bs-toggle="modal" data-bs-target="#modal-create"
+                                        onclick="getDataRecibo({{ $prestamo->id }})" class="btn btn-primary float-right"
+                                        type="submit" role="tab" aria-selected="true">Crear recibo</button></a>
+                                @else
+                                    <a href="{{ url('recibo_web') }}/{{ $prestamo->id }}"> <button
+                                            class="btn btn-primary float-right" type="submit" role="tab"
+                                            aria-selected="true">Crear recibos</button></a>
+                                @endif
+
                             </div>
                         </div>
 
@@ -275,34 +282,9 @@
             </div>
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         </div>
 
-
+        @include('prestamo.modal_create_recibo')
 
         <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
 
@@ -319,6 +301,27 @@
 
                 reader.readAsDataURL(file);
             });
+
+            function getDataRecibo(id) {
+                var apiUrl = "{{ url('api/recibo') }}/" + id;
+
+                $.ajax({
+                    url: apiUrl,
+                    type: "GET",
+                    success: function(response) {
+                        // Manejar la respuesta de la API aquí
+                        console.log(response);
+                        document.getElementById('nombre').value = response.data['nombre'];
+                        document.getElementById('remanente').value = response.data['remanente'];
+                        document.getElementById('interes').value = response.data['interes'];
+                        document.getElementById('cantidad').value = response.data['total'];
+                    },
+                    error: function(xhr, status, error) {
+                        // Manejar errores aquí
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
         </script>
 
     @endsection

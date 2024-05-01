@@ -83,14 +83,14 @@
         <div class="card">
             <div class="card-header flex-wrap d-flex justify-content-between">
                 <div>
-                    <h4 class="card-title">Nuevo préstamo</h4>
-
+                    <h4 class="card-title">Recibo</h4>
+                    </p>
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{{ url('prestamo_web') }}">
+                        <a href="{{ url('prestamo_web') }}/{{ $recibo->prestamo_id }}">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
-                                type="button" role="tab" aria-selected="true">Salir</button></a>
+                                type="button" role="tab" aria-selected="true">Atras</button></a>
                     </li>
 
                 </ul>
@@ -110,15 +110,16 @@
             @endif
 
             <div class="card-body flex flex-col p-6">
-                <form method="POST" action="{{ url('prestamo_web') }}">
+                <form method="POST" action="{{ url('recibo_web') }}/{{ $recibo->id }}">
+                    @method('PUT')
                     @csrf
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Fecha primer pago</label>
+                                <label for="largeInput" class="form-label">Fecha</label>
                                 <div class="input-hasicon mb-xl-0 mb-3">
                                     <input type="date" name="fecha" required class="form-control"
-                                        value="{{ $fechaInicial }}">
+                                        value="{{ $recibo->fecha }}">
                                     <div class="icon"><i class="far fa-calendar"></i></div>
                                 </div>
                             </div>
@@ -127,79 +128,28 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="largeInput" class="form-label">Persona</label>
-                            <select name="persona_id" class="default-select form-control select2">
-                                @foreach ($personas as $obj)
-                                    <option value="{{ $obj->id }}">{{ $obj->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-
-                        <div class="col-md-6 mb-3">
-                            <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Cantidad</label>
-                                <input type="number" step="0.01" name="cantidad" required class="form-control"
-                                    value="{{ old('cantidad') }}">
-                            </div>
+                            <input type="text" readonly class="form-control"
+                                value="{{ $recibo->prestamo->persona->nombre }}">
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Interes</label>
-                                <input type="number" name="interes" required class="form-control"
-                                    value="{{ old('interes') }}">
-                            </div>
+                            <label for="largeInput" class="form-label">Cantidad</label>
+                            <input type="number" name="cantidad" step="0.01" class="form-control" required
+                                value="{{ $recibo->cantidad }}">
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="largeInput" class="form-label">Tipo pago</label>
-                            <select name="tipo_pago_id" class="default-select form-control">
-                                @foreach ($tipos_pago as $obj)
-                                    <option value="{{ $obj->id }}">{{ $obj->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-
-                        <div class="col-md-6 mb-3">
-                            <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Número de pagos</label>
-                                <input type="number" name="numero_pagos" required class="form-control"
-                                    value="{{ old('numero_pagos') }}">
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6 mb-3">
-                            <div class="input-area relative">
-                                <label class="switch">
-                                    <input type="checkbox" name="amortizacion">
-                                    <span class="slider round"></span>
-                                </label>
-                                <label for="largeInput" class="form-label">&nbsp;Amortizacion</label>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6 mb-3">
-                            <label for="largeInput" class="form-label">Administrador</label>
-                            <select name="administrador" class="default-select form-control">
-                                @foreach ($usuarios as $obj)
-                                    <option value="{{ $obj->id }}">{{ $obj->username }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <label for="largeInput" class="form-label">Interes</label>
+                            <input type="number" name="interes" step="0.01" class="form-control" required
+                                value="{{ $recibo->interes }}">
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Pago especifico</label>
-                                <input type="number" name="pago_especifico" class="form-control"
-                                    value="{{ old('pago_especifico') }}">
-                            </div>
+                            <label for="largeInput" class="form-label">Total</label>
+                            <input type="number" name="total" step="0.01" class="form-control" required
+                                value="{{ $recibo->cantidad + $recibo->interes }}">
                         </div>
+
 
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
@@ -210,11 +160,21 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <center>
-                                <img id="preview" src="#" alt="Vista previa"
-                                    style="max-width: 200px; height: auto;">
+                                <img id="preview" src="data:image/png;base64,{{ $recibo->comprobante }}"
+                                    alt="Vista previa" style="max-width: 200px; height: auto;">
                             </center>
                         </div>
                         <input type="hidden" id="comprobante_base64" name="comprobante">
+
+                        <div class="col-md-6 mb-3">
+                            <div class="input-area relative">
+                                <label class="switch">
+                                    <input type="checkbox" name="estado" {{ $recibo->estado == 2 ? 'checked' : '' }}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <label for="largeInput" class="form-label">&nbsp;Finalizado</label>
+                            </div>
+                        </div>
 
                         <div class="col-md-12" style="text-align: right;">
                             <button class="btn btn-primary float-right" type="submit" role="tab"
@@ -227,27 +187,26 @@
                 </form>
             </div>
 
-        </div>
-    </div>
 
-    <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
 
-    <script>
-        document.getElementById('img_comprobante').addEventListener('change', function() {
-            const file = this.files[0];
-            const reader = new FileReader();
+            <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
 
-            reader.onload = function(e) {
-                const preview = document.getElementById('preview');
-                preview.src = e.target.result;
-                var base64WithoutPrefix = e.target.result.replace(/^data:image\/(png|jpeg);base64,/, '');
+            <script>
+                document.getElementById('img_comprobante').addEventListener('change', function() {
+                    const file = this.files[0];
+                    const reader = new FileReader();
 
-                // Asignar el valor sin el prefijo al elemento deseado
-                document.getElementById('comprobante_base64').value = base64WithoutPrefix;
-            };
+                    reader.onload = function(e) {
+                        const preview = document.getElementById('preview');
+                        preview.src = e.target.result;
+                        var base64WithoutPrefix = e.target.result.replace(/^data:image\/(png|jpeg);base64,/, '');
 
-            reader.readAsDataURL(file);
-        });
-    </script>
+                        // Asignar el valor sin el prefijo al elemento deseado
+                        document.getElementById('comprobante_base64').value = base64WithoutPrefix;
+                    };
 
-@endsection
+                    reader.readAsDataURL(file);
+                });
+            </script>
+
+        @endsection
