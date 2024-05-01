@@ -52,7 +52,7 @@ class PrestamoController extends Controller
                     'prestamo.pago_especifico',
                     DB::raw('IFNULL(prestamo.observacion, "") as observacion'),
                     DB::raw('DATE_FORMAT(prestamo.fecha, "%d/%m/%Y") as fecha'),
-                    DB::raw('IFNULL((SELECT remanente FROM recibo WHERE recibo.prestamo_id = prestamo.id ORDER BY recibo.id DESC LIMIT 1), prestamo.cantidad) AS deuda'),
+                    DB::raw('IFNULL((SELECT remanente FROM recibo WHERE recibo.prestamo_id = prestamo.id and recibo.estado = 2  ORDER BY recibo.id DESC LIMIT 1), prestamo.cantidad) AS deuda'),
                     DB::raw('ROUND((prestamo.cantidad / prestamo.numero_pagos) + (prestamo.cantidad * (prestamo.interes / 100) * IF(prestamo.tipo_pago_id = 2, 0.5, 1)), 2) AS cuota')
                 )
                 ->leftJoin('persona', 'prestamo.persona_id', '=', 'persona.id')
@@ -199,7 +199,7 @@ class PrestamoController extends Controller
 
 
 
-            $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'asc')->where('estado',2)->first();
+            $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'desc')->where('estado',2)->first();
             if ($recibo) {
                 $prestamo->remanente = $recibo->remanente;
             } else {
