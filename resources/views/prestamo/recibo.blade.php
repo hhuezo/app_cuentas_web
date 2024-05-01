@@ -147,7 +147,7 @@
                         <div class="col-md-6 mb-3">
                             <label for="largeInput" class="form-label">Total</label>
                             <input type="number" name="total" step="0.01" class="form-control" required
-                                value="{{ $recibo->cantidad + $recibo->interes }}">
+                                value="{{ $recibo->cantidad }}">
                         </div>
 
 
@@ -169,7 +169,7 @@
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
                                 <label class="switch">
-                                    <input type="checkbox" name="estado" {{ $recibo->estado == 2 ? 'checked' : '' }}>
+                                    <input type="checkbox" name="estado" {{ $recibo->estado == 1 ? '' : 'checked' }}>
                                     <span class="slider round"></span>
                                 </label>
                                 <label for="largeInput" class="form-label">&nbsp;Finalizado</label>
