@@ -35,48 +35,43 @@ class PrestamoController extends Controller
             }
 
             $prestamos = DB::table('prestamo')
-            ->select(
-                'prestamo.id',
-                DB::raw('LPAD(prestamo.codigo, 3, "0") as codigo'),
-                DB::raw('FORMAT(prestamo.cantidad, 2) as cantidad'),
-                DB::raw('FORMAT(prestamo.interes, 2) as interes'),
-                'prestamo.estado',
-                'prestamo.amortizacion',
-                'prestamo.id as comprobante',
-                'prestamo.administrador',
-                'prestamo.pago_especifico as pagoEspecifico',
-                'persona.nombre as persona',
-                'tipo_pago.nombre as tipoPago',
-                'prestamo.tipo_pago_id',
-                'prestamo.numero_pagos',
-                'prestamo.pago_especifico',
-                DB::raw('IFNULL(prestamo.observacion, "") as observacion'),
-                DB::raw('DATE_FORMAT(prestamo.fecha, "%d/%m/%Y") as fecha'),
-                DB::raw('IFNULL((SELECT remanente FROM recibo WHERE recibo.prestamo_id = prestamo.id and recibo.estado = 2  ORDER BY recibo.id DESC LIMIT 1), prestamo.cantidad) AS deuda'),
-                DB::raw('ROUND((prestamo.cantidad / prestamo.numero_pagos) + (prestamo.cantidad * (prestamo.interes / 100) *
-                IF(prestamo.tipo_pago_id = 2, 0.5, IF(prestamo.tipo_pago_id = 5, 0.25, 1))), 2) AS cuota')
-            )
-            ->leftJoin('persona', 'prestamo.persona_id', '=', 'persona.id')
-            ->leftJoin('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
-            ->when($rol > 1, function ($query) use ($id_usuario) {
-                $query->where('administrador', $id_usuario);
-            })
-            ->when($search, function ($query, $search) {
-                $query->where('persona.nombre', 'like', '%' . $search . '%');
-            })
-            ->orderBy('prestamo.estado')
-            ->orderBy('prestamo.fecha', 'desc')
-            ->get();
-
-
+                ->select(
+                    'prestamo.id',
+                    DB::raw('LPAD(prestamo.codigo, 3, "0") as codigo'),
+                    DB::raw('FORMAT(prestamo.cantidad, 2) as cantidad'),
+                    DB::raw('FORMAT(prestamo.interes, 2) as interes'),
+                    'prestamo.estado',
+                    'prestamo.amortizacion',
+                    'prestamo.id as comprobante',
+                    'prestamo.administrador',
+                    'persona.nombre as persona',
+                    'tipo_pago.nombre as tipoPago',
+                    'prestamo.tipo_pago_id',
+                    'prestamo.numero_pagos',
+                    DB::raw('IFNULL(prestamo.pago_especifico, 0) as pago_especifico'),
+                    DB::raw('IFNULL(prestamo.observacion, "") as observacion'),
+                    DB::raw('DATE_FORMAT(prestamo.fecha, "%d/%m/%Y") as fecha'),
+                    DB::raw('IFNULL((SELECT remanente FROM recibo WHERE recibo.prestamo_id = prestamo.id and recibo.estado = 2  ORDER BY recibo.id DESC LIMIT 1), prestamo.cantidad) AS deuda'),
+                    DB::raw('ROUND((prestamo.cantidad / prestamo.numero_pagos) + (prestamo.cantidad * (prestamo.interes / 100) *
+                    IF(prestamo.tipo_pago_id = 2, 0.5, IF(prestamo.tipo_pago_id = 5, 0.25, 1))), 2) AS cuota')
+                )
+                ->leftJoin('persona', 'prestamo.persona_id', '=', 'persona.id')
+                ->leftJoin('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
+                ->when($rol > 1, function ($query) use ($id_usuario) {
+                    $query->where('administrador', $id_usuario);
+                })
+                ->when($search, function ($query, $search) {
+                    $query->where('persona.nombre', 'like', '%' . $search . '%');
+                })
+                ->orderBy('prestamo.estado')
+                ->orderBy('prestamo.fecha', 'desc')
+                ->get();
 
             foreach ($prestamos as $prestamo) {
-
                 if ($prestamo->pago_especifico) {
                     $prestamo->cuota = $prestamo->pago_especifico;
                 }
             }
-
 
 
 
@@ -99,7 +94,7 @@ class PrestamoController extends Controller
     public function create()
     {
         try {
-            $personas = Persona::select('id', 'nombre')->where('activo', 1)->get();
+            $personas = Persona::select('id', 'nombre')->where('activo', 1)->orderBy("nombre")->get();
             $usuarios = User::select('id', 'username')->orderBy('id', 'desc')->get();
             $tipos_pago = TipoPago::get();
 
@@ -201,7 +196,7 @@ class PrestamoController extends Controller
 
 
 
-            $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'desc')->where('estado',2)->first();
+            $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'desc')->where('estado', 2)->first();
             if ($recibo) {
                 $prestamo->remanente = $recibo->remanente;
             } else {
@@ -241,6 +236,16 @@ class PrestamoController extends Controller
                 ->orderBy('fechaDate', 'desc')
                 ->get();
 
+            $saldo = 0;
+            foreach ($resultados as $resultado) {
+                if ($resultado->tipo == 1) {
+                    $saldo = $resultado->remanente;
+                } else {
+                    $saldo =  $saldo + $resultado->cantidad;
+                    $resultado->remanente = $saldo;
+                }
+            }
+
 
             $response = ["prestamo" => $prestamo, "recibos" => $resultados];
 
@@ -253,7 +258,7 @@ class PrestamoController extends Controller
 
             $prestamo = Prestamo::findOrFail($id);
             $personas = Persona::select('id', 'nombre')->where('activo', 1)->get();
-            $usuarios = User::select('id', 'username')->orderBy('id','desc')->get();
+            $usuarios = User::select('id', 'username')->orderBy('id', 'desc')->get();
             $tipos_pago = TipoPago::get();
 
             $response = ["prestamo" => $prestamo, "personas" => $personas, "usuarios" => $usuarios, "tipos_pago" => $tipos_pago];
