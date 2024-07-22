@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\web\PersonaWebController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\web\PrestamoFijoWebController;
 use App\Http\Controllers\web\PrestamoWebController;
@@ -32,3 +33,4 @@ Route::resource('prestamo_web', PrestamoWebController::class);
 Route::resource('prestamo_fijo_web', PrestamoFijoWebController::class);
 Route::resource('recibo_web', ReciboWebController::class);
 Route::resource('recibo_fijo_web', ReciboFijoWebController::class);
+Route::resource('persona', PersonaWebController::class);
