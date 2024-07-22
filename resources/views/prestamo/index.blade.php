@@ -37,16 +37,17 @@
                 <div class="tab-pane fade active show" id="responsive" role="tabpanel" aria-labelledby="home-tab-six">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="example" class="display responsive nowrap w-100">
+                            <table id="example" class="display table" style="min-width: 845px">
                                 <thead>
                                     <tr>
                                         <th>Opciones</th>
                                         <th>Nombre</th>
+                                        <th>Finalizado</th>
                                         <th>Código</th>
                                         <th>Fecha</th>
                                         <th>Cantidad</th>
                                         <th>Interes</th>
-                                        <th>Finalizado</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -67,11 +68,12 @@
                                                 </div>
                                             </td>
                                             <td>{{ $obj->persona->nombre }}</td>
+                                            <td><input type="checkbox" {{ $obj->estado == 2 ? 'checked' : '' }}></td>
                                             <td>{{ str_pad($obj->codigo, 4, '0', STR_PAD_LEFT) }}</td>
                                             <td>{{ date('d/m/Y', strtotime($obj->fecha)) }}</td>
                                             <td>${{ $obj->cantidad }}</td>
                                             <td>{{ $obj->interes }}%</td>
-                                            <td><input type="checkbox" {{ $obj->estado == 2 ? 'checked' : '' }}></td>
+
 
                                         </tr>
                                     @endforeach
@@ -90,10 +92,10 @@
     <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
     <script>
         $(document).ready(function() {
-            if ($.fn.DataTable.isDataTable('#responsiveTable')) {
-                $('#responsiveTable').DataTable().destroy();
+            if ($.fn.DataTable.isDataTable('#example')) {
+                $('#example').DataTable().destroy();
             }
-            $('#responsiveTable').DataTable({
+            $('#example').DataTable({
                 "language": {
                     "sProcessing": "Procesando...",
                     "sLengthMenu": "Mostrar _MENU_ registros",

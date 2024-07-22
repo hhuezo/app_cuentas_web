@@ -37,32 +37,28 @@
                 <div class="tab-pane fade active show" id="responsive" role="tabpanel" aria-labelledby="home-tab-six">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table id="responsiveTable" class="display responsive nowrap w-100">
+                            <table id="example" class="display table" style="min-width: 845px">
                                 <thead>
                                     <tr>
+                                        <th>Opciones</th>
                                         <th>Nombre</th>
+                                        <th>Finalizado</th>
                                         <th>Código</th>
                                         <th>Fecha</th>
                                         <th>Cantidad</th>
                                         <th>Descripción</th>
-                                        <th>Finalizado</th>
-                                        <th>Opciones</th>
+
+
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($prestamos as $obj)
                                         <tr>
-                                            <td>{{ $obj->persona->nombre }}</td>
-                                            <td>{{ str_pad($obj->codigo, 4, '0', STR_PAD_LEFT) }}</td>
-                                            <td>{{ date('d/m/Y', strtotime($obj->fecha)) }}</td>
-                                            <td>${{ $obj->cantidad }}</td>
-                                            <td>{{ $obj->observacion }}</td>
-                                            <td><input type="checkbox" {{ $obj->estado == 2 ? 'checked' : '' }}></td>
                                             <td>
                                                 <div class="d-flex">
 
                                                     <a href="{{ url('prestamo_fijo_web') }}/{{ $obj->id }}"
-                                                        class="btn btn-primary shadow btn sharp me-1"><i
+                                                        class="btn btn-info shadow btn sharp me-1"><i
                                                             class="fas fa-eye"></i></a> &nbsp;
 
                                                     <a href="#" data-bs-toggle="modal"
@@ -72,6 +68,14 @@
 
                                                 </div>
                                             </td>
+                                            <td>{{ $obj->persona->nombre }}</td>
+                                            <td><input type="checkbox" {{ $obj->estado == 2 ? 'checked' : '' }}></td>
+                                            <td>{{ str_pad($obj->codigo, 4, '0', STR_PAD_LEFT) }}</td>
+                                            <td>{{ date('d/m/Y', strtotime($obj->fecha)) }}</td>
+                                            <td>${{ $obj->cantidad }}</td>
+                                            <td>{{ $obj->observacion }}</td>
+
+
                                         </tr>
                                     @endforeach
 
@@ -89,10 +93,10 @@
     <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
     <script>
         $(document).ready(function() {
-            if ($.fn.DataTable.isDataTable('#responsiveTable')) {
-                $('#responsiveTable').DataTable().destroy();
+            if ($.fn.DataTable.isDataTable('#example')) {
+                $('#example').DataTable().destroy();
             }
-            $('#responsiveTable').DataTable({
+            $('#example').DataTable({
                 "language": {
                     "sProcessing": "Procesando...",
                     "sLengthMenu": "Mostrar _MENU_ registros",
@@ -116,7 +120,7 @@
                         "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
                         "sSortDescending": ": Activar para ordenar la columna de manera descendente"
                     }
-                },"ordering": false
+                },//"ordering": false
             });
         });
     </script>
