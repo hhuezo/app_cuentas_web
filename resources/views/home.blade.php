@@ -314,7 +314,7 @@
                                             @php($total += $pago->cantidad)
                                         @endforeach
                                         <tr>
-                                            <th colspan="2" style="text-align: right;">TOTAL</th>
+                                            <th colspan="3" style="text-align: right;">TOTAL</th>
                                             <th style="text-align: right;">
                                                 ${{ number_format($total_interes, 2, '.', ',') }}</th>
                                             <th style="text-align: right;">${{ number_format($total, 2, '.', ',') }}</th>
