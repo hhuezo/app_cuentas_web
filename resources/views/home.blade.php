@@ -52,7 +52,7 @@
 
 
     <div class="row">
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-2 col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -77,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-2 col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -105,7 +105,34 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-2 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="icon-box icon-box-lg bg-purple-light rounded-circle">
+                            <svg width="46" height="46" viewBox="0 0 46 46" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M22.9717 41.0539C22.9717 41.0539 37.3567 36.6983 37.3567 24.6908C37.3567 12.6814 37.878 11.7439 36.723 10.5889C35.5699 9.43391 24.858 5.69891 22.9717 5.69891C21.0855 5.69891 10.3736 9.43391 9.21863 10.5889C8.0655 11.7439 8.58675 12.6814 8.58675 24.6908C8.58675 36.6983 22.9717 41.0539 22.9717 41.0539Z"
+                                    stroke="#BB6BD9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M26.4945 26.4642L19.4482 19.4179" stroke="#BB6BD9" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                                <path d="M19.4487 26.4642L26.495 19.4179" stroke="#BB6BD9" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                        </div>
+                        <div class="total-projects ms-3">
+                            <h3 class="text-purple count">
+                                ${{ number_format($data_general['total_prestado'] + $data_general['total_cargos'] - ($data_general['total_reintegrado'] - $data_general['total_interes_reintegrado']), 2, '.', ',') }}
+                            </h3>
+                            <span>Dinero invertido</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-2 col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -130,7 +157,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-sm-6">
+        <div class="col-xl-2 col-sm-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex align-items-center justify-content-between">
@@ -139,13 +166,16 @@
                                 xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     d="M34.0396 20.974C36.6552 20.6065 38.6689 18.364 38.6746 15.6471C38.6746 12.9696 36.7227 10.7496 34.1633 10.3296"
-                                    stroke="#FF5E5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    stroke="#FF5E5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                </path>
                                 <path
                                     d="M37.4912 27.262C40.0243 27.6407 41.7925 28.5276 41.7925 30.3557C41.7925 31.6139 40.96 32.4314 39.6137 32.9451"
-                                    stroke="#FF5E5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    stroke="#FF5E5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                </path>
                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                     d="M22.7879 28.0373C16.7616 28.0373 11.6147 28.9504 11.6147 32.5973C11.6147 36.2423 16.7297 37.1817 22.7879 37.1817C28.8141 37.1817 33.9591 36.2779 33.9591 32.6292C33.9591 28.9804 28.846 28.0373 22.7879 28.0373Z"
-                                    stroke="#FF5E5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    stroke="#FF5E5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                </path>
                                 <path fill-rule="evenodd" clip-rule="evenodd"
                                     d="M22.7876 22.8325C26.742 22.8325 29.9483 19.6281 29.9483 15.6719C29.9483 11.7175 26.742 8.51123 22.7876 8.51123C18.8333 8.51123 15.627 11.7175 15.627 15.6719C15.612 19.6131 18.7939 22.8194 22.7351 22.8325H22.7876Z"
                                     stroke="#FF5E5E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -162,7 +192,7 @@
                         </div>
                         <div class="total-projects ms-3">
                             <h3 class="text-danger count" style="text-align: right;">
-                                ${{ number_format($data_general['total_fijo_reintegrado'] , 2, '.', ',') }}</h3>
+                                ${{ number_format($data_general['total_fijo_reintegrado'], 2, '.', ',') }}</h3>
                             <span>Total préstamo fijo</span>
                         </div>
                     </div>
@@ -247,6 +277,7 @@
                                 <table class="table  card-table border-no success-tbl">
                                     <thead>
                                         <tr>
+                                            <th></th>
                                             <th>Fecha</th>
                                             <th>Nombre</th>
                                             <th style="text-align: right;">Interes</th>
@@ -258,6 +289,12 @@
                                         @php($total = 0)
                                         @foreach ($pagos->where('estado', 1) as $pago)
                                             <tr>
+
+                                                <td>
+                                                    <a href="{{ url('prestamo_web') }}/{{ $pago->prestamo_id }}">
+                                                        <i class="fa fa-eye fa-lg"></i>
+                                                    </a>
+                                                </td>
                                                 <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
@@ -270,7 +307,9 @@
                                                     ${{ $pago->interes }}
                                                 </td>
                                                 <td>${{ $pago->cantidad }}</td>
+
                                             </tr>
+
                                             @php($total_interes += $pago->interes)
                                             @php($total += $pago->cantidad)
                                         @endforeach
@@ -394,7 +433,7 @@
         <div class="col-xl-6 col-xxl-12">
             <div class="card">
                 <div class="card-body px-0 pb-0">
-                        <div id="container"></div>
+                    <div id="container"></div>
 
 
                 </div>
@@ -403,7 +442,7 @@
         <div class="col-xl-6 col-xxl-12">
             <div class="card">
                 <div class="card-body px-0 pb-0">
-                        <div id="container2"></div>
+                    <div id="container2"></div>
 
 
                 </div>
@@ -470,7 +509,7 @@
             series: [{
                 name: 'Browsers',
                 colorByPoint: true,
-                data:@json($interesesPorMesArray)
+                data: @json($interesesPorMesArray)
             }]
         });
 
@@ -521,7 +560,7 @@
             series: [{
                 name: 'Browsers',
                 colorByPoint: true,
-                data:@json($gananciaPorMesArray)
+                data: @json($gananciaPorMesArray)
             }]
         });
     </script>
