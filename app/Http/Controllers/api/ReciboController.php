@@ -40,9 +40,7 @@ class ReciboController extends Controller
                 $recibo->comprobante = $request->comprobante;
                 $recibo->interes = $request->interes;
                 $recibo->remanente = $remanente;
-                if ($recibo->remanente == 0) {
-                    $recibo->estado = 1;
-                }
+                $recibo->estado = 2;
                 $recibo->save();
 
                 if ($recibo->remanente == 0) {
