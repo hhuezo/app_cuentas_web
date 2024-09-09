@@ -38,11 +38,17 @@ class Prestamo extends Model
         return $this->belongsTo(TipoPago::class);
     }
 
-    // Relación con TipoPago
-    public function recibos()
+    // Relación con cargos
+    public function cargos()
     {
-        return $this->hasMany(Recibo::class);
+        return $this->hasMany(Cargo::class);
     }
+
+     // Relación con TipoPago
+     public function recibos()
+     {
+         return $this->hasMany(Recibo::class);
+     }
 
      // Relación con TipoPago
      public function administradorUser()

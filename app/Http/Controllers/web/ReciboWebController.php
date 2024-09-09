@@ -229,8 +229,10 @@ class ReciboWebController extends Controller
         $recibo->estado = $request->estado != null ? 2 : 1;
         $recibo->save();
 
-        if ($recibo->remanente == 0 && $recibo->estado == 2) {
-            $prestamo = Prestamo::findOrFail($request->prestamo_id);
+
+
+        if ($recibo->remanente == 0.00 && $recibo->estado == 2) {
+            $prestamo = Prestamo::findOrFail($recibo->prestamo_id);
             $prestamo->estado = 2;
             $prestamo->save();
         }

@@ -84,6 +84,10 @@
         .card.blue-border {
             border: 2px solid blue;
         }
+
+        .card.red-border {
+            border: 2px solid red;
+        }
     </style>
 
     <div class="2xl:col-span-12 lg:col-span-12 col-span-12">
@@ -100,8 +104,8 @@
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a href="{{ url('prestamo_web') }}">
-                            <button class="btn btn-primary btn-sm"
-                                type="button" role="tab" aria-selected="true">Salir</button></a>
+                            <button class="btn btn-primary btn-sm" type="button" role="tab"
+                                aria-selected="true">Salir</button></a>
                     </li>
 
                 </ul>
@@ -143,10 +147,10 @@
                         <div class="tab-pane fade show active" id="home" role="tabpanel">
                             <br>
                             <div class="row">
-                                @foreach ($prestamo->recibos as $recibo)
+                                @foreach ($recibos as $recibo)
                                     <div class="mb-3 col-md-4 col-sm-12">
                                         <a href="{{ url('recibo_web') }}/{{ $recibo->id }}/edit">
-                                            <div class="card <?php echo $recibo->estado == 2 ? 'blue-border' : ''; ?>" id="card-title-1">
+                                            <div class="card <?php echo $recibo->tipo == 1 ? 'red-border' : 'blue-border'; ?>" id="card-title-1">
                                                 <div class="card-header border-0 pb-0 ">
                                                     <h5 class="card-title">{{ date('d/m/Y', strtotime($recibo->fecha)) }}
                                                     </h5>
@@ -263,7 +267,13 @@
 
 
                             <div class="col-md-12" style="text-align: right;">
+
+
                                 @if ($prestamo->amortizacion == 1)
+                                    <button data-bs-toggle="modal" data-bs-target="#modal-create-cargo"
+                                        onclick="getDataRecibo({{ $prestamo->id }})" class="btn btn-warning float-right"
+                                        type="submit" role="tab" aria-selected="true">Crear cargo</button>
+
                                     <button data-bs-toggle="modal" data-bs-target="#modal-create"
                                         onclick="getDataRecibo({{ $prestamo->id }})" class="btn btn-primary float-right"
                                         type="submit" role="tab" aria-selected="true">Crear recibo</button></a>

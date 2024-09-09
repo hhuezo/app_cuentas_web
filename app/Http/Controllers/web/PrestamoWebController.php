@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cargo;
 use App\Models\Persona;
 use App\Models\Prestamo;
 use App\Models\Recibo;
@@ -10,13 +11,14 @@ use App\Models\TipoPago;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PrestamoWebController extends Controller
 {
     public function index()
     {
-        $prestamos = Prestamo::orderBy('estado')->orderBy('primer_pago','desc')->get();
+        $prestamos = Prestamo::orderBy('estado')->orderBy('primer_pago', 'desc')->get();
         return view('prestamo.index', compact('prestamos'));
     }
 
@@ -166,8 +168,8 @@ class PrestamoWebController extends Controller
             }
         }
 
-         // Calculando cuota quincenal
-         else if ($request->tipo_pago_id == 5) {
+        // Calculando cuota quincenal
+        else if ($request->tipo_pago_id == 5) {
             $capital = $request->cantidad / ($request->numero_pagos); // Dividir por 2 para pagos quincenales
             $interes = ($request->cantidad * $request->interes) / 100 / 4; // Dividir interés por 4 para pagos semanales
 
@@ -201,7 +203,62 @@ class PrestamoWebController extends Controller
     public function show($id)
     {
         $prestamo = Prestamo::findOrFail($id);
-        return view('prestamo.show', compact('prestamo'));
+
+
+        $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'desc')->where('estado', 2)->first();
+        if ($recibo) {
+            $prestamo->remanente = $recibo->remanente;
+        } else {
+            $prestamo->remanente = $prestamo->cantidad;
+        }
+
+        $recibosQuery = Recibo::where('prestamo_id', $prestamo->id)
+            ->where('estado', 2)
+            ->select(
+                'id',
+                //DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
+                'cantidad',
+                DB::raw('"" as comprobante'),
+                'interes',
+                'remanente',
+                'estado',
+                DB::raw('1 as tipo'),
+                DB::raw('"" as observacion'),
+                 'fecha'
+            );
+
+        $cargosQuery = Cargo::where('prestamo_id', $prestamo->id)
+            ->select(
+                'id',
+                //DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
+                'cantidad',
+                DB::raw('"" as comprobante'),
+                DB::raw('0 as interes'),
+                DB::raw('0 as remanente'),
+                DB::raw('0 as estado'),
+                DB::raw('2 as tipo'),
+                'observacion',
+                 'fecha'
+            );
+
+        $resultados = $recibosQuery->union($cargosQuery)
+            ->orderBy('fecha', 'desc')
+            ->get();
+
+        $saldo = 0;
+        foreach ($resultados as $resultado) {
+            if ($resultado->tipo == 1) {
+                $saldo = $resultado->remanente;
+            } else {
+                $saldo =  $saldo + $resultado->cantidad;
+                $resultado->remanente = $saldo;
+            }
+        }
+
+       // dd($resultados);
+
+        $recibos = $resultados;
+        return view('prestamo.show', compact('prestamo','recibos'));
     }
 
     public function edit($id)

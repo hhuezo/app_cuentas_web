@@ -9,8 +9,8 @@ class Cargo extends Model
 {
     use HasFactory;
 
-    protected $table = 'cargo'; // Opcional si el nombre del modelo es el singular de la tabla
-    public $timestamps = false; // Cambiar a false si no deseas usar los timestamps por defecto de Laravel
+    protected $table = 'cargo';
+    public $timestamps = false;
 
     protected $fillable = [
         'prestamo_id',
@@ -18,6 +18,7 @@ class Cargo extends Model
         'cantidad',
         'comprobante',
         'observacion',
+        'saldo',
     ];
 
     // Relación con el modelo Prestamo (asumiendo que ya tienes este modelo)

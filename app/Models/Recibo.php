@@ -9,7 +9,7 @@ class Recibo extends Model
 {
     use HasFactory;
     protected $table = 'recibo';
-    public $timestamps = false; // Asumiendo que no deseas usar los campos created_at y updated_at
+    public $timestamps = false;
 
     protected $fillable = [
         'prestamo_id',
@@ -19,6 +19,7 @@ class Recibo extends Model
         'interes',
         'remanente',
         'estado',
+        'saldo',
     ];
 
     /**
