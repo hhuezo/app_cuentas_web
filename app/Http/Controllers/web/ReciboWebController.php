@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\web;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cargo;
 use App\Models\Prestamo;
 use App\Models\Recibo;
 use Carbon\Carbon;
@@ -241,12 +242,43 @@ class ReciboWebController extends Controller
         return redirect('prestamo_web/' . $recibo->prestamo_id);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    public function cargo_web(Request $request)
+    {
+        $prestamo = Prestamo::findOrFail($request->prestamo_id);
+
+        $recibo = Recibo::where('prestamo_id', $prestamo->id)->orderBy('id', 'desc')->where('estado', 2)->first();
+        if ($recibo) {
+            $prestamo->remanente = $recibo->remanente;
+            $cargo_prestamo = Cargo::where('prestamo_id', $prestamo->id)->orderBy('id', 'desc')->first();
+            if($cargo_prestamo)
+            {
+                if($cargo_prestamo->fecha > $recibo->fecha)
+                {
+                    $prestamo->remanente = $cargo_prestamo->saldo;
+                }
+            }
+        } else {
+            $prestamo->remanente = $prestamo->cantidad;
+        }
+
+
+        $cargo = new Cargo();
+        $cargo->prestamo_id = $prestamo->id;
+        $cargo->fecha = $request->fecha;
+        $cargo->cantidad = $request->cantidad;
+        $cargo->comprobante = $request->img_comprobante;
+        $cargo->observacion = $request->observacion;
+        $cargo->saldo = $prestamo->remanente + $request->cantidad;
+        $cargo->save();
+
+
+        alert()->success('El registro ha sido guardado correctamente');
+        return back();
+
+    }
+
+
+
     public function destroy($id)
     {
         //

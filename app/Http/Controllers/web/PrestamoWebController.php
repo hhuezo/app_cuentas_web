@@ -204,7 +204,6 @@ class PrestamoWebController extends Controller
     {
         $prestamo = Prestamo::findOrFail($id);
 
-
         $recibo = Recibo::where('prestamo_id', $id)->orderBy('id', 'desc')->where('estado', 2)->first();
         if ($recibo) {
             $prestamo->remanente = $recibo->remanente;

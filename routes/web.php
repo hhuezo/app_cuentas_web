@@ -31,6 +31,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 Route::resource('prestamo_web', PrestamoWebController::class);
 Route::resource('prestamo_fijo_web', PrestamoFijoWebController::class);
+Route::post('cargo_web', [ReciboWebController::class,'cargo_web']);
 Route::resource('recibo_web', ReciboWebController::class);
 Route::resource('recibo_fijo_web', ReciboFijoWebController::class);
 Route::resource('persona', PersonaWebController::class);

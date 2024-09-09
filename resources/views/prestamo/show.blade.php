@@ -295,6 +295,7 @@
         </div>
 
         @include('prestamo.modal_create_recibo')
+        @include('prestamo.modal_create_cargo')
 
         <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
 
@@ -307,6 +308,20 @@
                     const preview = document.getElementById('preview');
                     preview.src = e.target.result;
                     document.getElementById('comprobante_base64').value = e.target.result;
+                };
+
+                reader.readAsDataURL(file);
+            });
+
+
+            document.getElementById('img_comprobante_cargo').addEventListener('change', function() {
+                const file = this.files[0];
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview_cargo');
+                    preview.src = e.target.result;
+                    document.getElementById('comprobante_base64_cargo').value = e.target.result;
                 };
 
                 reader.readAsDataURL(file);
