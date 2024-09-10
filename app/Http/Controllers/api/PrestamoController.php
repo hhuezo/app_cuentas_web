@@ -71,6 +71,11 @@ class PrestamoController extends Controller
                 if ($prestamo->pago_especifico > 0) {
                     $prestamo->cuota = $prestamo->pago_especifico;
                 }
+
+                if($prestamo->cuota == null)
+                {
+                    $prestamo->cuota = 0;
+                }
             }
 
 
