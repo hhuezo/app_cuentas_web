@@ -68,7 +68,7 @@ class PrestamoController extends Controller
                 ->get();
 
             foreach ($prestamos as $prestamo) {
-                if ($prestamo->pago_especifico) {
+                if ($prestamo->pago_especifico > 0) {
                     $prestamo->cuota = $prestamo->pago_especifico;
                 }
             }
