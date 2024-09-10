@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cargo;
 use App\Models\Prestamo;
 use App\Models\Recibo;
 use Carbon\Carbon;
@@ -76,6 +77,17 @@ class ReciboController extends Controller
 
             if ($recibo) {
                 $remanente = $recibo->remanente;
+                $cargo_prestamo = Cargo::where('prestamo_id', $prestamo->id)->orderBy('id', 'desc')->first();
+
+                if($cargo_prestamo)
+                {
+                    if($cargo_prestamo->fecha > $recibo->fecha)
+                    {
+
+                        $prestamo->remanente = $cargo_prestamo->saldo;
+                        $remanente = $cargo_prestamo->saldo;
+                    }
+                }
             } else {
                 $remanente = $prestamo->cantidad;
             }
