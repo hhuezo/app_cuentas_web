@@ -88,6 +88,10 @@
         .card.red-border {
             border: 2px solid red;
         }
+
+        .card.green-border {
+            border: 2px solid green;
+        }
     </style>
 
     <div class="2xl:col-span-12 lg:col-span-12 col-span-12">
@@ -148,9 +152,16 @@
                             <br>
                             <div class="row">
                                 @foreach ($recibos as $recibo)
+                                    @if ($recibo->tipo == 1 && $recibo->estado == 1)
+                                        @php($color = 'blue-border')
+                                    @elseif($recibo->tipo == 1 && $recibo->estado == 2)
+                                        @php($color = 'green-border')
+                                    @else
+                                        @php($color = 'red-border')
+                                    @endif
                                     <div class="mb-3 col-md-4 col-sm-12">
                                         <a href="{{ url('recibo_web') }}/{{ $recibo->id }}/edit">
-                                            <div class="card <?php echo $recibo->tipo == 1 ? 'red-border' : 'blue-border'; ?>" id="card-title-1">
+                                            <div class="card {{$color}}" id="card-title-1">
                                                 <div class="card-header border-0 pb-0 ">
                                                     <h5 class="card-title">{{ date('d/m/Y', strtotime($recibo->fecha)) }}
                                                     </h5>
