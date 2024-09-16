@@ -212,7 +212,6 @@ class PrestamoWebController extends Controller
         }
 
         $recibosQuery = Recibo::where('prestamo_id', $prestamo->id)
-            ->where('estado', 2)
             ->select(
                 'id',
                 //DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
