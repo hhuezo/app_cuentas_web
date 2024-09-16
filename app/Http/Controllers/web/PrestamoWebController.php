@@ -229,7 +229,7 @@ class PrestamoWebController extends Controller
             ->select(
                 'id',
                 //DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
-                'cantidad',
+                'saldo as cantidad',
                 DB::raw('"" as comprobante'),
                 DB::raw('0 as interes'),
                 DB::raw('0 as remanente'),
