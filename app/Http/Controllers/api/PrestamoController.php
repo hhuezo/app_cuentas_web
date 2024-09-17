@@ -230,7 +230,7 @@ class PrestamoController extends Controller
                     'cantidad',
                     DB::raw('"" as comprobante'),
                     DB::raw('0 as interes'),
-                    DB::raw('0 as remanente'),
+                    DB::raw('saldo as remanente'),
                     DB::raw('0 as estado'),
                     DB::raw('2 as tipo'),
                     'observacion',
@@ -246,8 +246,11 @@ class PrestamoController extends Controller
                 if ($resultado->tipo == 1) {
                     $saldo = $resultado->remanente;
                 } else {
-                    $saldo =  $saldo + $resultado->cantidad;
-                    $resultado->remanente = $saldo;
+                    if($resultado->remanente == 0)
+                    {
+                        $saldo =  $saldo + $resultado->cantidad;
+                        $resultado->remanente = $saldo;
+                    }
                 }
             }
 
