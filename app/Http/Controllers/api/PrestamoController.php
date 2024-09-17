@@ -251,6 +251,10 @@ class PrestamoController extends Controller
                         $saldo =  $saldo + $resultado->cantidad;
                         $resultado->remanente = $saldo;
                     }
+                    else{
+                        $saldo = $resultado->remanente;
+                    }
+
                 }
             }
 
