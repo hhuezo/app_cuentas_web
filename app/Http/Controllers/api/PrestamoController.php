@@ -208,6 +208,11 @@ class PrestamoController extends Controller
                 $prestamo->remanente = $prestamo->cantidad;
             }
 
+            $cargo = Cargo::where('prestamo_id', $id)->orderBy('id', 'desc')->first();
+            if ($recibo && $cargo->fecha > $recibo->fecha) {
+                $prestamo->remanente = $cargo->saldo;
+            }
+
             $recibosQuery = Recibo::where('prestamo_id', $prestamo->id)
                 ->where('estado', 2)
                 ->select(
