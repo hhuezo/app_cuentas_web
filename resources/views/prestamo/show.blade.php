@@ -178,6 +178,8 @@
                                                             <br>
                                                             <strong>Estado:
                                                             </strong>{{ $recibo->estado == 1 ? 'Ingresado' : 'Registrado' }}
+                                                            <br>
+                                                            <strong> {{ $recibo->observacion }}</strong>
                                                         </p>
                                                     </div>
                                                 </div>
@@ -215,7 +217,7 @@
                                 <div class="input-area relative">
                                     <label for="largeInput" class="form-label">Cantidad</label>
                                     <input type="number" name="cantidad" readonly class="form-control"
-                                        value="{{ $prestamo->cantidad }}">
+                                        value="{{ $prestamo->remanente }}">
                                 </div>
                             </div>
 

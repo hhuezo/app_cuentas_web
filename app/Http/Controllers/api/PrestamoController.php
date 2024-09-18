@@ -209,7 +209,7 @@ class PrestamoController extends Controller
             }
 
             $cargo = Cargo::where('prestamo_id', $id)->orderBy('id', 'desc')->first();
-            if ($recibo && $cargo->fecha > $recibo->fecha) {
+            if ($cargo && $recibo && $cargo->fecha > $recibo->fecha) {
                 $prestamo->remanente = $cargo->saldo;
             }
 

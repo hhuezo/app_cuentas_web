@@ -211,6 +211,13 @@ class PrestamoWebController extends Controller
             $prestamo->remanente = $prestamo->cantidad;
         }
 
+
+
+        $cargo = Cargo::where('prestamo_id', $id)->orderBy('id', 'desc')->first();
+        if ($cargo && $recibo && $cargo->fecha > $recibo->fecha) {
+            $prestamo->remanente = $cargo->saldo;
+        }
+
         $recibosQuery = Recibo::where('prestamo_id', $prestamo->id)
             ->select(
                 'id',
@@ -222,21 +229,21 @@ class PrestamoWebController extends Controller
                 'estado',
                 DB::raw('1 as tipo'),
                 DB::raw('"" as observacion'),
-                 'fecha'
+                'fecha'
             );
 
         $cargosQuery = Cargo::where('prestamo_id', $prestamo->id)
             ->select(
                 'id',
                 //DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
-                'saldo as cantidad',
+                'cantidad',
                 DB::raw('"" as comprobante'),
                 DB::raw('0 as interes'),
-                DB::raw('0 as remanente'),
+                DB::raw('saldo as remanente'),
                 DB::raw('0 as estado'),
                 DB::raw('2 as tipo'),
                 'observacion',
-                 'fecha'
+                'fecha'
             );
 
         $resultados = $recibosQuery->union($cargosQuery)
@@ -248,15 +255,19 @@ class PrestamoWebController extends Controller
             if ($resultado->tipo == 1) {
                 $saldo = $resultado->remanente;
             } else {
-                $saldo =  $saldo + $resultado->cantidad;
-                $resultado->remanente = $saldo;
+                if ($resultado->remanente == 0) {
+                    $saldo =  $saldo + $resultado->cantidad;
+                    $resultado->remanente = $saldo;
+                } else {
+                    $saldo = $resultado->remanente;
+                }
             }
         }
 
-       // dd($resultados);
+        // dd($resultados);
 
         $recibos = $resultados;
-        return view('prestamo.show', compact('prestamo','recibos'));
+        return view('prestamo.show', compact('prestamo', 'recibos'));
     }
 
     public function edit($id)
