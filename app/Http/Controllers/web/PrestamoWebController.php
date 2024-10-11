@@ -51,8 +51,8 @@ class PrestamoWebController extends Controller
         $validator = Validator::make($request->all(), [
             'persona_id' => 'required|integer',
             'cantidad' => 'required|numeric|min:0',
-            'interes' => 'required|integer|min:0',
-            'numero_pagos' => 'required|integer|min:1',
+            'interes' => 'required|integer|min:1',
+            'numero_pagos' => 'required|integer|min:0',
             'tipo_pago_id' => 'required|integer',
             'fecha' => 'required',
             //'amortizacion' => 'nullable|boolean',
