@@ -55,10 +55,10 @@ class PrestamoWebController extends Controller
             'numero_pagos' => 'required|integer|min:1',
             'tipo_pago_id' => 'required|integer',
             'fecha' => 'required',
-            'amortizacion' => 'nullable|boolean',
+            //'amortizacion' => 'nullable|boolean',
             'comprobante' => 'nullable|string', // Dependiendo de cómo manejes los largos textos, podrías necesitar ajustar esto
             'administrador' => 'required|integer',
-            'pago_especifico' => 'nullable|numeric|min:0',
+            'pago_especifico' => 'nullable|numeric',
             'observacion' => 'nullable|string|max:255'
         ]);
 
@@ -78,7 +78,12 @@ class PrestamoWebController extends Controller
         $prestamo->interes = $request->interes;
         $prestamo->tipo_pago_id = $request->tipo_pago_id;
         $prestamo->primer_pago = $request->fecha;
-        $prestamo->amortizacion = $request->amortizacion;
+        if($request->amortizacion == null){
+            $prestamo->amortizacion = 0;
+        }
+        else{
+            $prestamo->amortizacion = 1;
+        }
         $prestamo->comprobante = $request->comprobante;
         $prestamo->administrador = $request->administrador;
         $prestamo->pago_especifico = $request->pago_especifico;
