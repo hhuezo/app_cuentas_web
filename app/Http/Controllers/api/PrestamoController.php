@@ -41,9 +41,9 @@ class PrestamoController extends Controller
                     DB::raw('FORMAT(prestamo.cantidad, 2) as cantidad'),
                     DB::raw('FORMAT(prestamo.interes, 2) as interes'),
                     'prestamo.estado',
-                    'prestamo.amortizacion',
-                    'prestamo.id as comprobante',
-                    'prestamo.administrador',
+                    DB::raw('IFNULL(prestamo.amortizacion,0.00) as amortizacion'),
+                    DB::raw('"" as comprobante'),
+                    DB::raw('"" as administrador'),
                     'persona.nombre as persona',
                     'tipo_pago.nombre as tipoPago',
                     'prestamo.tipo_pago_id',
@@ -65,6 +65,7 @@ class PrestamoController extends Controller
                 })
                 ->orderBy('prestamo.estado')
                 ->orderBy('prestamo.fecha', 'desc')
+                //->take(5)
                 ->get();
 
             foreach ($prestamos as $prestamo) {
@@ -74,7 +75,7 @@ class PrestamoController extends Controller
 
                 if($prestamo->cuota == null)
                 {
-                    $prestamo->cuota = 0;
+                    $prestamo->cuota = "0.00";
                 }
             }
 
@@ -188,12 +189,12 @@ class PrestamoController extends Controller
                 DB::raw("LPAD(prestamo.codigo, 4, '0') AS codigo"),
                 'persona.nombre AS persona',
                 'prestamo.cantidad',
-                'prestamo.interes',
+                DB::raw("CAST(prestamo.interes AS CHAR) AS interes"),
                 'prestamo.estado',
-                'prestamo.pago_especifico',
+                DB::raw("ifnull(prestamo.amortizacion,'') AS amortizacion"),
+                 DB::raw("ifnull(prestamo.pago_especifico,0.00) AS pago_especifico"),
                 DB::raw("DATE_FORMAT(prestamo.fecha, '%d/%m/%Y') AS fecha"),
-                'tipo_pago.nombre AS tipo'
-            )
+                'tipo_pago.nombre AS tipo'            )
                 ->join('persona', 'prestamo.persona_id', '=', 'persona.id')
                 ->join('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
                 ->where('prestamo.id', $id)
@@ -238,7 +239,7 @@ class PrestamoController extends Controller
                     DB::raw('saldo as remanente'),
                     DB::raw('0 as estado'),
                     DB::raw('2 as tipo'),
-                    'observacion',
+                    DB::raw('ifnull(observacion,"") as observacion'),
                     'fecha as fechaDate'
                 );
 
@@ -249,21 +250,21 @@ class PrestamoController extends Controller
             $saldo = 0;
             foreach ($resultados as $resultado) {
                 if ($resultado->tipo == 1) {
-                    $saldo = $resultado->remanente;
+                    $saldo = $resultado->remanente."";
                 } else {
                     if($resultado->remanente == 0)
                     {
                         $saldo =  $saldo + $resultado->cantidad;
-                        $resultado->remanente = $saldo;
+                        $resultado->remanente = $saldo."";
                     }
                     else{
-                        $saldo = $resultado->remanente;
+                        $saldo = $resultado->remanente."";
                     }
 
                 }
             }
 
-
+            //
             $response = ["prestamo" => $prestamo, "recibos" => $resultados];
 
             return response()->json([
