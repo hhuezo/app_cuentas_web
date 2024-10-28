@@ -11,7 +11,7 @@
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{{ url('persona') }}">
+                        <a href="{{ url('persona_web') }}">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
                                 type="button" role="tab" aria-selected="true">Salir</button></a>
                     </li>
@@ -33,7 +33,7 @@
             @endif
 
             <div class="card-body flex flex-col p-6">
-                <form method="POST" action="{{ url('persona') }}">
+                <form method="POST" action="{{ url('persona_web') }}">
                     @csrf
                     <div class="row">
                         <div class="col-md-6 mb-3">

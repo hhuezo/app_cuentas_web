@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\web\PersonaWebController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\web\CredencialesController;
 use App\Http\Controllers\web\PrestamoFijoWebController;
 use App\Http\Controllers\web\PrestamoWebController;
 use App\Http\Controllers\web\ReciboFijoWebController;
@@ -34,4 +35,6 @@ Route::resource('prestamo_fijo_web', PrestamoFijoWebController::class);
 Route::post('cargo_web', [ReciboWebController::class,'cargo_web']);
 Route::resource('recibo_web', ReciboWebController::class);
 Route::resource('recibo_fijo_web', ReciboFijoWebController::class);
-Route::resource('persona', PersonaWebController::class);
+Route::resource('persona_web', PersonaWebController::class);
+
+Route::resource('credenciales_web', CredencialesController::class);

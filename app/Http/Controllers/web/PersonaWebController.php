@@ -32,7 +32,7 @@ class PersonaWebController extends Controller
         $persona->activo = 1;
         $persona->save();
         alert()->success('El registro ha sido creado correctamente');
-        return Redirect::to('persona/');
+        return Redirect::to('persona_web/');
     }
 
     public function show($id)
@@ -57,7 +57,7 @@ class PersonaWebController extends Controller
         $persona->activo = 1;
         $persona->update();
         alert()->success('El registro ha sido modificado correctamente');
-        return Redirect::to('persona/');
+        return Redirect::to('persona_web/');
     }
 
     public function destroy($id)
@@ -66,7 +66,7 @@ class PersonaWebController extends Controller
         $persona->activo = 0;
         $persona->update();
         alert()->success('El registro ha sido deshabilitado correctamente');
-        return Redirect::to('persona/');
+        return Redirect::to('persona_web/');
 
     }
 }

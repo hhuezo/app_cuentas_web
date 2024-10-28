@@ -6,15 +6,15 @@
         <div class="card dz-card" id="accordion-six">
             <div class="card-header flex-wrap d-flex justify-content-between">
                 <div>
-                    <h4 class="card-title">Personas</h4>
+                    <h4 class="card-title">Credenciales</h4>
                     </p>
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{{ url('persona_web/create') }}">
-                            <button class="btn btn-primary btn-sm" type="button" role="tab"
+                            <button class="btn btn-primary btn-sm" type="button" role="tab" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-create"
                                 aria-selected="true">Nuevo</button>
-                        </a>
+                       
                     </li>
 
                 </ul>
@@ -41,50 +41,37 @@
                                 <thead>
                                     <tr>
                                         <th>Opciones</th>
-                                        <th>Nombre</th>
-                                        <th>Documento</th>
-                                        <th>Teléfono</th>
-                                        <th>Banco</th>
-                                        <th>Cuenta</th>
+                                        <th>Sitio</th>
+                                        <th>Usuario</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($personas as $persona)
+                                    @foreach ($credenciales as $credencial)
                                         <tr>
                                             <td>
                                                 <div class="d-flex">
 
-                                                    <a href="{{ url('persona_web') }}/{{ $persona->id }}/edit"
+                                                    <a href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-edit-{{ $credencial->id }}"
                                                         class="btn btn-info shadow btn sharp me-1"><i
                                                             class="fas fa-edit"></i></a> &nbsp;
 
                                                     <a href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-delete-{{ $persona->id }}"
+                                                        data-bs-target="#modal-delete-{{ $credencial->id }}"
                                                         class="btn btn-danger shadow btn sharp"><i
                                                             class="fa fa-trash"></i></a>
 
                                                 </div>
                                             </td>
-                                            <td>{{ $persona->nombre }}</td>
-                                            <td>{{ $persona->documento }}</td>
-                                            <td>{{ $persona->telefono }}</td>
-                                            <td>{{ $persona->banco }}</td>
-                                            <td>{{ $persona->cuenta }}</td>
+                                            <td>{{ $credencial->sitio_web }}</td>
+                                            <td>{{ $credencial->usuario }}</td>
                                         </tr>
-                                        @include('persona.modal')
+                                        @include('credenciales.modal')
+                                        @include('credenciales.edit')
                                     @endforeach
 
                                 </tbody>
-                                {{-- <tfoot>
-			<tr>
-				<th>Name</th>
-				<th>Position</th>
-				<th>Office</th>
-				<th>Age</th>
-				<th>Start date</th>
-				<th>Salary</th>
-			</tr>
-		</tfoot> --}}
+    
                             </table>
                         </div>
                     </div>
@@ -93,6 +80,9 @@
         </div>
         <!-- /tab-content -->
     </div>
+
+
+    @include('credenciales.create')
 
     <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
     <script>
