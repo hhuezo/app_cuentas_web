@@ -11,9 +11,10 @@
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="btn btn-primary btn-sm" type="button" role="tab" data-bs-toggle="modal"
-                            data-bs-target="#modal-create" aria-selected="true">Nuevo</button>
-
+                        <a href="{{ url('credenciales_web/create') }}">
+                            <button class="btn btn-primary btn-sm" type="button" role="tab"
+                                aria-selected="true">Nuevo</button>
+                        </a>
                     </li>
 
                 </ul>
@@ -50,8 +51,7 @@
                                             <td>
                                                 <div class="d-flex">
 
-                                                    <a href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-edit-{{ $credencial->id }}"
+                                                    <a href="{{ url('credenciales_web') }}/{{ $credencial->id }}/edit"
                                                         class="btn btn-info shadow btn sharp me-1"><i
                                                             class="fas fa-edit"></i></a> &nbsp;
 
@@ -65,14 +65,20 @@
                                             <td>{{ $credencial->sitio_web }}</td>
                                             <td>{{ $credencial->usuario }}</td>
                                         </tr>
-
-                                        @include('credenciales.edit')
-
                                         @include('credenciales.modal')
                                     @endforeach
 
                                 </tbody>
-
+                                {{-- <tfoot>
+			<tr>
+				<th>Name</th>
+				<th>Position</th>
+				<th>Office</th>
+				<th>Age</th>
+				<th>Start date</th>
+				<th>Salary</th>
+			</tr>
+		</tfoot> --}}
                             </table>
                         </div>
                     </div>
@@ -81,9 +87,6 @@
         </div>
         <!-- /tab-content -->
     </div>
-
-
-    @include('credenciales.create')
 
     <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
     <script>
@@ -118,61 +121,6 @@
                 },
                 //"ordering": false
             });
-        });
-    </script>
-
-
-    <script>
-        document.getElementById('copyButtonUsuario').addEventListener('click', function() {
-            const input = document.getElementById('usuarioInput');
-            input.select(); // Selecciona el contenido del input
-            input.setSelectionRange(0, 99999); // Para dispositivos móviles
-
-            try {
-            document.execCommand('copy'); // Copiar al portapapeles
-
-            // Mostrar un toast con SweetAlert2
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: '¡Usuario copiado al portapapeles!',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        } catch (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'No se pudo copiar el usuario.',
-            });
-        }
-        });
-
-        document.getElementById('copyButtonPass').addEventListener('click', function() {
-            const input = document.getElementById('passInput');
-            input.select(); // Selecciona el contenido del input
-            input.setSelectionRange(0, 99999); // Para dispositivos móviles
-
-            try {
-            document.execCommand('copy'); // Copiar al portapapeles
-
-            // Mostrar un toast con SweetAlert2
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: '¡Password copiado al portapapeles!',
-                showConfirmButton: false,
-                timer: 1500
-            });
-        } catch (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'No se pudo copiar el Password.',
-            });
-        }
         });
     </script>
 

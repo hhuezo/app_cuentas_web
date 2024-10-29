@@ -22,7 +22,7 @@ class CredencialesController extends Controller
      */
     public function create()
     {
-        //
+        return view('credenciales.create');
     }
 
     /**
@@ -57,7 +57,8 @@ class CredencialesController extends Controller
 
     public function edit($id)
     {
-        //
+        $credencial = Creadenciales::find($id);
+        return view('credenciales.edit',compact('credencial'));
     }
 
     public function update(Request $request, $id)
