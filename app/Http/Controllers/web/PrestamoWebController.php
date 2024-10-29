@@ -96,7 +96,7 @@ class PrestamoWebController extends Controller
         $interes = 0;
         $fecha_temp = Carbon::createFromFormat('Y-m-d', $request->fecha);
         //calculando cuota mensual
-        if ($request->tipo_pago_id == 1 || $request->tipo_pago_id == 4) {
+        if (($request->tipo_pago_id == 1 || $request->tipo_pago_id == 4) && $request->numero_pagos > 0 ) {
             $capital = $request->cantidad / $request->numero_pagos;
             $interes = ($request->cantidad * $request->interes) / 100;
 

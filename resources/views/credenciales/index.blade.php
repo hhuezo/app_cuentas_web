@@ -11,10 +11,9 @@
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                            <button class="btn btn-primary btn-sm" type="button" role="tab" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-create"
-                                aria-selected="true">Nuevo</button>
-                       
+                        <button class="btn btn-primary btn-sm" type="button" role="tab" data-bs-toggle="modal"
+                            data-bs-target="#modal-create" aria-selected="true">Nuevo</button>
+
                     </li>
 
                 </ul>
@@ -71,7 +70,7 @@
                                     @endforeach
 
                                 </tbody>
-    
+
                             </table>
                         </div>
                     </div>
@@ -117,6 +116,61 @@
                 },
                 //"ordering": false
             });
+        });
+    </script>
+
+
+    <script>
+        document.getElementById('copyButtonUsuario').addEventListener('click', function() {
+            const input = document.getElementById('usuarioInput');
+            input.select(); // Selecciona el contenido del input
+            input.setSelectionRange(0, 99999); // Para dispositivos móviles
+
+            try {
+            document.execCommand('copy'); // Copiar al portapapeles
+
+            // Mostrar un toast con SweetAlert2
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '¡Usuario copiado al portapapeles!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se pudo copiar el usuario.',
+            });
+        }
+        });
+
+        document.getElementById('copyButtonPass').addEventListener('click', function() {
+            const input = document.getElementById('passInput');
+            input.select(); // Selecciona el contenido del input
+            input.setSelectionRange(0, 99999); // Para dispositivos móviles
+
+            try {
+            document.execCommand('copy'); // Copiar al portapapeles
+
+            // Mostrar un toast con SweetAlert2
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '¡Password copiado al portapapeles!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        } catch (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'No se pudo copiar el Password.',
+            });
+        }
         });
     </script>
 

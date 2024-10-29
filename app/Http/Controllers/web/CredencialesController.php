@@ -11,17 +11,6 @@ class CredencialesController extends Controller
 {
     public function index()
     {
-        /*
-        CREATE TABLE `credenciales` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `usuario` varchar(155) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password` varchar(145) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sitio_web` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `notas` varchar(500) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `logo` longtext COLLATE utf8mb4_unicode_ci,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB
- */
         $credenciales = Creadenciales::get();
         return view('credenciales.index', compact('credenciales'));
     }
