@@ -65,8 +65,10 @@
                                             <td>{{ $credencial->sitio_web }}</td>
                                             <td>{{ $credencial->usuario }}</td>
                                         </tr>
-                                        @include('credenciales.modal')
+
                                         @include('credenciales.edit')
+
+                                        @include('credenciales.modal')
                                     @endforeach
 
                                 </tbody>
