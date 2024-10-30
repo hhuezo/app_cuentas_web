@@ -141,7 +141,7 @@ class PrestamoWebController extends Controller
                 // Establecer la fecha al siguiente día 15
                 if ($fecha_temp->day == 15) {
                     // Si es el día 15, avanzar 15 días
-                    $fecha_temp->addDays(15);
+                    $fecha_temp->endOfMonth();
                 } else {
                     // Si no es el día 15, establecer la fecha al último día del mes y avanzar al siguiente día 15
                     $fecha_temp->endOfMonth();
