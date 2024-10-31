@@ -76,7 +76,8 @@ class ReciboCatalogoController extends Controller
      */
     public function edit($id)
     {
-        //
+        $recibo = Recibo::find($id);
+        return view('catalogo.recibo.edit', compact('recibo'));
     }
 
     /**
@@ -88,7 +89,23 @@ class ReciboCatalogoController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $recibo = Recibo::find($id);
+        $recibo->prestamo_id = $request->prestamo_id;
+        $recibo->fecha = $request->fecha;
+        $recibo->cantidad = $request->cantidad;
+        $recibo->comprobante = $request->comprobante;
+        $recibo->interes = $request->interes;
+        $recibo->remanente = $request->remanente;
+        if ($request->estado == null) {
+            $recibo->estado = 1;
+        } else {
+            $recibo->estado = 2;
+        }
+        $recibo->saldo = $request->saldo;
+        $recibo->save();
+
+        alert()->info('El registro ha sido modificado correctamente');
+        return back();
     }
 
     /**
@@ -99,6 +116,10 @@ class ReciboCatalogoController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $recibo = Recibo::find($id);
+        $recibo->delete();
+
+        alert()->info('El registro ha sido eliminado correctamente');
+        return back();
     }
 }

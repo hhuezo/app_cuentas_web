@@ -83,7 +83,7 @@
         <div class="card">
             <div class="card-header flex-wrap d-flex justify-content-between">
                 <div>
-                    <h4 class="card-title">Editar persona</h4>
+                    <h4 class="card-title">Editar prestamo</h4>
 
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
@@ -255,68 +255,150 @@
 
         </div>
 
-        <div class="card">
-            <div class="card-header flex-wrap d-flex justify-content-between">
-                <div>
-                    <h4 class="card-title">Recibos</h4>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header flex-wrap d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Recibos</h4>
 
+                        </div>
+                        <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a href="{{ url('recibo_catalogo/create') }}/{{ $prestamo->id }}">
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modal-create" type="button" role="tab"
+                                        aria-selected="true">Nuevo</button></a>
+                            </li>
+
+                        </ul>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Opciones</th>
+                                        <th>Id</th>
+                                        <th>Fecha</th>
+                                        <th>Cantidad</th>
+                                        <th>Interes</th>
+                                        <th>Remanente</th>
+                                        <th>Estado</th>
+                                        <th>Saldo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($prestamo->recibos as $recibo)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex">
+
+                                                    <a href="{{ url('recibo_catalogo') }}/{{ $recibo->id }}/edit"
+                                                        class="btn btn-info shadow btn sharp me-1"><i
+                                                            class="fas fa-edit"></i></a>
+                                                    &nbsp;
+
+                                                    <a href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-delete-{{ $recibo->id }}"
+                                                        class="btn btn-danger shadow btn sharp"><i
+                                                            class="fa fa-trash"></i></a>
+
+                                                </div>
+                                            </td>
+                                            <td>{{ $recibo->id }}</td>
+                                            <td>{{ $recibo->fecha ? date('d/m/Y', strtotime($recibo->fecha)) : '' }}</td>
+                                            <td>${{ $recibo->cantidad }}</td>
+                                            <td>${{ $recibo->interes }}</td>
+                                            <td>${{ $recibo->remanente }}</td>
+                                            <td><input type="checkbox" {{ $recibo->estado == 2 ? 'checked' : '' }}></td>
+                                            <td>${{ $recibo->saldo }}</td>
+                                        </tr>
+                                        @include('catalogo.recibo.modal')
+                                    @endforeach
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
                 </div>
-                <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <a href="{{ url('recibo_catalogo/create') }}/{{$prestamo->id}}">
-                            <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
-                                type="button" role="tab" aria-selected="true">Nuevo</button></a>
-                    </li>
-
-                </ul>
             </div>
 
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-responsive-sm">
-                        <thead>
-                            <tr>
-                                <th>Opciones</th>
-                                <th>Id</th>
-                                <th>Fecha</th>
-                                <th>Cantidad</th>
-                                <th>Interes</th>
-                                <th>Remanente</th>
-                                <th>Estado</th>
-                                <th>Saldo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($prestamo->recibos as $recibo)
-                                <tr>
-                                    <td>
-                                        <div class="d-flex">
 
-                                            <a href="{{ url('prestamo_catalogo') }}/{{ $recibo->id }}/edit"
-                                                class="btn btn-info shadow btn sharp me-1"><i class="fas fa-edit"></i></a>
-                                            &nbsp;
+            <div class="col-md-6 mb-3">
+                <div class="card">
+                    <div class="card-header flex-wrap d-flex justify-content-between">
+                        <div>
+                            <h4 class="card-title">Cargos</h4>
 
-                                            <a href="#" data-bs-toggle="modal"
-                                                data-bs-target="#modal-delete-{{ $recibo->id }}"
-                                                class="btn btn-danger shadow btn sharp"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <a href="{{ url('recibo_catalogo/create') }}/{{ $prestamo->id }}">
+                                    <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
+                                        data-bs-target="#modal-create" type="button" role="tab"
+                                        aria-selected="true">Nuevo</button></a>
+                            </li>
 
-                                        </div>
-                                    </td>
-                                    <td>{{ $recibo->id }}</td>
-                                    <td>{{ $recibo->fecha ? date('d/m/Y', strtotime($recibo->fecha)) : '' }}</td>
-                                    <td>${{ $recibo->cantidad }}</td>
-                                    <td>${{ $recibo->interes }}</td>
-                                    <td>${{ $recibo->remanente }}</td>
-                                    <td><input type="checkbox" {{ $recibo->estado == 2 ? 'checked' : '' }}></td>
-                                    <td>${{ $recibo->saldo }}</td>
-                                </tr>
-                            @endforeach
+                        </ul>
+                    </div>
 
-                        </tbody>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-responsive-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Opciones</th>
+                                        <th>Id</th>
+                                        <th>Fecha</th>
+                                        <th>Cantidad</th>
+                                        <th>Interes</th>
+                                        <th>Remanente</th>
+                                        <th>Estado</th>
+                                        <th>Saldo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($prestamo->recibos as $recibo)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex">
 
-                    </table>
+                                                    <a href="{{ url('recibo_catalogo') }}/{{ $recibo->id }}/edit"
+                                                        class="btn btn-info shadow btn sharp me-1"><i
+                                                            class="fas fa-edit"></i></a>
+                                                    &nbsp;
+
+                                                    <a href="#" data-bs-toggle="modal"
+                                                        data-bs-target="#modal-delete-{{ $recibo->id }}"
+                                                        class="btn btn-danger shadow btn sharp"><i
+                                                            class="fa fa-trash"></i></a>
+
+                                                </div>
+                                            </td>
+                                            <td>{{ $recibo->id }}</td>
+                                            <td>{{ $recibo->fecha ? date('d/m/Y', strtotime($recibo->fecha)) : '' }}</td>
+                                            <td>${{ $recibo->cantidad }}</td>
+                                            <td>${{ $recibo->interes }}</td>
+                                            <td>${{ $recibo->remanente }}</td>
+                                            <td><input type="checkbox" {{ $recibo->estado == 2 ? 'checked' : '' }}></td>
+                                            <td>${{ $recibo->saldo }}</td>
+                                        </tr>
+                                        @include('catalogo.recibo.modal')
+                                    @endforeach
+
+                                </tbody>
+
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
+
+
+
         </div>
     </div>
 
