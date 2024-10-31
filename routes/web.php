@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\catalogo\CargoCatalogoController;
 use App\Http\Controllers\catalogo\PrestamoCatalogoController;
 use App\Http\Controllers\catalogo\ReciboCatalogoController;
 use App\Http\Controllers\web\PersonaWebController;
@@ -45,3 +46,4 @@ Route::resource('credenciales_web', CredencialesController::class);
 Route::resource('prestamo_catalogo', PrestamoCatalogoController::class);
 Route::get('recibo_catalogo/create/{prestamo}', [ReciboCatalogoController::class,'create']);
 Route::resource('recibo_catalogo', ReciboCatalogoController::class);
+Route::resource('cargo_catalogo', CargoCatalogoController::class);

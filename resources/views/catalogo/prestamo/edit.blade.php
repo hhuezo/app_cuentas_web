@@ -334,7 +334,7 @@
                             <h4 class="card-title">Cargos</h4>
 
                         </div>
-                        <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
+                        {{-- <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <a href="{{ url('recibo_catalogo/create') }}/{{ $prestamo->id }}">
                                     <button class="btn btn-primary btn-sm" data-bs-toggle="modal"
@@ -342,7 +342,7 @@
                                         aria-selected="true">Nuevo</button></a>
                             </li>
 
-                        </ul>
+                        </ul> --}}
                     </div>
 
                     <div class="card-body">
@@ -354,39 +354,35 @@
                                         <th>Id</th>
                                         <th>Fecha</th>
                                         <th>Cantidad</th>
-                                        <th>Interes</th>
-                                        <th>Remanente</th>
-                                        <th>Estado</th>
+                                        <th>Observación</th>
                                         <th>Saldo</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($prestamo->recibos as $recibo)
+                                    @foreach ($prestamo->cargos as $cargo)
                                         <tr>
                                             <td>
                                                 <div class="d-flex">
 
-                                                    <a href="{{ url('recibo_catalogo') }}/{{ $recibo->id }}/edit"
+                                                    <a href="{{ url('cargo_catalogo') }}/{{ $cargo->id }}/edit"
                                                         class="btn btn-info shadow btn sharp me-1"><i
                                                             class="fas fa-edit"></i></a>
                                                     &nbsp;
 
                                                     <a href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-delete-{{ $recibo->id }}"
+                                                        data-bs-target="#modal-delete-{{ $cargo->id }}"
                                                         class="btn btn-danger shadow btn sharp"><i
                                                             class="fa fa-trash"></i></a>
 
                                                 </div>
                                             </td>
-                                            <td>{{ $recibo->id }}</td>
-                                            <td>{{ $recibo->fecha ? date('d/m/Y', strtotime($recibo->fecha)) : '' }}</td>
-                                            <td>${{ $recibo->cantidad }}</td>
-                                            <td>${{ $recibo->interes }}</td>
-                                            <td>${{ $recibo->remanente }}</td>
-                                            <td><input type="checkbox" {{ $recibo->estado == 2 ? 'checked' : '' }}></td>
-                                            <td>${{ $recibo->saldo }}</td>
+                                            <td>{{ $cargo->id }}</td>
+                                            <td>{{ $cargo->fecha ? date('d/m/Y', strtotime($cargo->fecha)) : '' }}</td>
+                                            <td>${{ $cargo->cantidad }}</td>
+                                            <td>{{ $cargo->observacion }}</td>
+                                            <td>${{ $cargo->saldo }}</td>
                                         </tr>
-                                        @include('catalogo.recibo.modal')
+                                        @include('catalogo.cargo.modal')
                                     @endforeach
 
                                 </tbody>
