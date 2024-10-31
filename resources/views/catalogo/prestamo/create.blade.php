@@ -78,17 +78,17 @@
             border-radius: 50%;
         }
     </style>
-
+    
     <div class="2xl:col-span-12 lg:col-span-12 col-span-12">
         <div class="card">
             <div class="card-header flex-wrap d-flex justify-content-between">
                 <div>
-                    <h4 class="card-title">Nuevo préstamo</h4>
+                    <h4 class="card-title">Nuevo prestamo</h4>
 
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{{ url('prestamo_web') }}">
+                        <a href="{{ url('persona_web') }}">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
                                 type="button" role="tab" aria-selected="true">Salir</button></a>
                     </li>
@@ -110,8 +110,10 @@
             @endif
 
             <div class="card-body flex flex-col p-6">
-                <form method="POST" action="{{ url('prestamo_web') }}">
+                <form method="POST" action="{{ url('prestamo_catalogo') }}">
                     @csrf
+
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
@@ -230,7 +232,7 @@
         </div>
     </div>
 
-    <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
+
 
     <script>
         document.getElementById('img_comprobante').addEventListener('change', function() {

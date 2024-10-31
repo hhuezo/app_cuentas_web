@@ -78,17 +78,17 @@
             border-radius: 50%;
         }
     </style>
-
+    
     <div class="2xl:col-span-12 lg:col-span-12 col-span-12">
         <div class="card">
             <div class="card-header flex-wrap d-flex justify-content-between">
                 <div>
-                    <h4 class="card-title">Nuevo préstamo</h4>
+                    <h4 class="card-title">Nuevo recibo</h4>
 
                 </div>
                 <ul class="nav nav-tabs dzm-tabs" id="myTab-six" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <a href="{{ url('prestamo_web') }}">
+                        <a href="{{ url('prestamo_catalogo') }}/{{$prestamo->id}}/edit">
                             <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modal-create"
                                 type="button" role="tab" aria-selected="true">Salir</button></a>
                     </li>
@@ -110,64 +110,65 @@
             @endif
 
             <div class="card-body flex flex-col p-6">
-                <form method="POST" action="{{ url('prestamo_web') }}">
+                <form method="POST" action="{{ url('recibo_catalogo') }}">
                     @csrf
+
+
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Fecha primer pago</label>
+                                <label for="largeInput" class="form-label">Prestamo</label>
                                 <div class="input-hasicon mb-xl-0 mb-3">
-                                    <input type="date" name="fecha" required class="form-control"
-                                        value="{{ $fechaInicial }}">
-                                    <div class="icon"><i class="far fa-calendar"></i></div>
+                                    <input type="text" name="prestamo_id" class="form-control" readonly value="{{$prestamo->id}}">
                                 </div>
                             </div>
 
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label for="largeInput" class="form-label">Persona</label>
-                            <select name="persona_id" class="form-control select2">
-                                @foreach ($personas as $obj)
-                                    <option value="{{ $obj->id }}">{{ $obj->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+          
 
 
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Cantidad</label>
-                                <input type="number" step="0.01" name="cantidad" required class="form-control"
-                                    value="{{ old('cantidad') }}">
+                                <label for="largeInput" class="form-label">Fecha</label>
+                                <input type="date"  name="fecha" required class="form-control" required
+                                    value="{{ date('Y-m-d') }}">
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Interes</label>
-                                <input type="number" name="interes" required class="form-control"
+                                <label for="largeInput" class="form-label">Cantidad</label>
+                                <input type="number" name="cantidad" step="0.01" required class="form-control"
+                                    value="{{ old('cantidad') }}">
+                            </div>
+                        </div>
+
+                
+
+
+                        <div class="col-md-6 mb-3">
+                            <div class="input-area relative">
+                                <label for="largeInput" class="form-label">Interés</label>
+                                <input type="number" name="interes" step="0.01" required class="form-control"
                                     value="{{ old('interes') }}">
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="largeInput" class="form-label">Tipo pago</label>
-                            <select name="tipo_pago_id" class="default-select form-control">
-                                @foreach ($tipos_pago as $obj)
-                                    <option value="{{ $obj->id }}">{{ $obj->nombre }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            <div class="input-area relative">
+                                <label for="largeInput" class="form-label">Remanente</label>
+                                <input type="number" name="remanente" step="0.01" class="form-control"
+                                    value="{{ old('remanente') }}">
+                            </div>
                         </div>
 
 
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Número de pagos</label>
-                                <input type="number" name="numero_pagos" required class="form-control"
-                                    value="{{ old('numero_pagos') }}">
+                                <label for="largeInput" class="form-label">Saldo</label>
+                                <input type="number" name="saldo" step="0.01" class="form-control"
+                                    value="{{ old('saldo') }}">
                             </div>
                         </div>
 
@@ -175,31 +176,17 @@
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
                                 <label class="switch">
-                                    <input type="checkbox" name="amortizacion">
+                                    <input type="checkbox" name="estado">
                                     <span class="slider round"></span>
                                 </label>
-                                <label for="largeInput" class="form-label">&nbsp;Amortizacion</label>
+                                <label for="largeInput" class="form-label">&nbsp;Estado</label>
                             </div>
                         </div>
 
 
-                        <div class="col-md-6 mb-3">
-                            <label for="largeInput" class="form-label">Administrador</label>
-                            <select name="administrador" class="default-select form-control">
-                                @foreach ($usuarios as $obj)
-                                    <option value="{{ $obj->id }}">{{ $obj->username }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
 
-                        <div class="col-md-6 mb-3">
-                            <div class="input-area relative">
-                                <label for="largeInput" class="form-label">Pago especifico</label>
-                                <input type="number" name="pago_especifico" class="form-control"
-                                    value="{{ old('pago_especifico') }}">
-                            </div>
-                        </div>
+                
+                      
 
                         <div class="col-md-6 mb-3">
                             <div class="input-area relative">
@@ -230,7 +217,7 @@
         </div>
     </div>
 
-    <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
+
 
     <script>
         document.getElementById('img_comprobante').addEventListener('change', function() {

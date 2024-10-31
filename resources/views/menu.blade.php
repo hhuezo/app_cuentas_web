@@ -36,22 +36,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- FAVICONS ICON -->
-    <link rel="shortcut icon" type="image/png" href="{{ asset('template/images/favicon.png') }}">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/favicon.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
 
-    <link href="{{ asset('template/vendor/datatables/css/jquery.dataTables.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/vendor/datatables/responsive/responsive.css') }}" rel="stylesheet">
-    <link class="main-css" href="{{ asset('template/css/style.css') }}" rel="stylesheet">
-    <link href="{{ asset('template/vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/css/jquery.dataTables.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('vendor/select2/css/select2.min.css') }}">
+    <link href="{{ asset('vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/datatables/responsive/responsive.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    <link href="{{ asset('vendor/sweetalert2/sweetalert2.min.css') }}" rel="stylesheet">
 
-    <script>
-        // Esperar a que el documento esté completamente cargado
-        document.addEventListener('DOMContentLoaded', function() {
-            // Sobrescribir la URL del archivo CSS
-            document.querySelector('.main-css').setAttribute('href', "{{ url('template/css/style.css') }}");
-        });
-    </script>
 
     <style>
         .card-title {
@@ -68,7 +62,7 @@
     ********************-->
     {{-- <div id="preloader">
         <div>
-            <img src="{{ asset('template/images/pre.gif') }}" alt="">
+            <img src="{{ asset('images/pre.gif') }}" alt="">
         </div>
     </div> --}}
     <!--*******************
@@ -123,637 +117,7 @@
             Nav header end
         ***********************************-->
 
-        <!--**********************************
-            Chat box start
-        ***********************************-->
-        <div class="chatbox">
-            <div class="chatbox-close"></div>
-            <div class="custom-tab-1">
-                <ul class="nav nav-tabs">
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#notes">Notes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="tab" href="#alerts">Alerts</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" data-bs-toggle="tab" href="#chat">Chat</a>
-                    </li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane fade active show" id="chat" role="tabpanel">
-                        <div class="card mb-sm-3 mb-md-0 contacts_card dz-chat-user-box">
-                            <div class="card-header chat-list-header text-center">
-                                <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px"
-                                        viewBox="0 0 24 24" version="1.1">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect fill="#000000" x="4" y="11" width="16" height="2"
-                                                rx="1" />
-                                            <rect fill="#000000" opacity="1.0"
-                                                transform="translate(12.000000, 12.000000) rotate(-270.000000) translate(-12.000000, -12.000000) "
-                                                x="4" y="11" width="16" height="2" rx="1" />
-                                        </g>
-                                    </svg></a>
-                                <div>
-                                    <h6 class="mb-1">Chat List</h6>
-                                    <p class="mb-0">Show All</p>
-                                </div>
-                                <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px"
-                                        viewBox="0 0 24 24" version="1.1">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="0" y="0" width="24" height="24" />
-                                            <circle fill="#000000" cx="5" cy="12" r="2" />
-                                            <circle fill="#000000" cx="12" cy="12" r="2" />
-                                            <circle fill="#000000" cx="19" cy="12" r="2" />
-                                        </g>
-                                    </svg></a>
-                            </div>
-                            <div class="card-body contacts_body p-0 dz-scroll  " id="DZ_W_Contacts_Body">
-                                <ul class="contacts">
-                                    <li class="name-first-letter">A</li>
-                                    <li class="active dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Archie Parker</span>
-                                                <p>Kalid is online</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Alfie Mason</span>
-                                                <p>Taherah left 7 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/3.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>AharlieKane</span>
-                                                <p>Sami is online</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/4.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Athan Jacoby</span>
-                                                <p>Nargis left 30 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="name-first-letter">B</li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/5.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Bashid Samim</span>
-                                                <p>Rashid left 50 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Breddie Ronan</span>
-                                                <p>Kalid is online</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Ceorge Carson</span>
-                                                <p>Taherah left 7 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="name-first-letter">D</li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/3.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Darry Parker</span>
-                                                <p>Sami is online</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/4.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Denry Hunter</span>
-                                                <p>Nargis left 30 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="name-first-letter">J</li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/5.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Jack Ronan</span>
-                                                <p>Rashid left 50 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Jacob Tucker</span>
-                                                <p>Kalid is online</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>James Logan</span>
-                                                <p>Taherah left 7 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/3.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Joshua Weston</span>
-                                                <p>Sami is online</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="name-first-letter">O</li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/4.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Oliver Acker</span>
-                                                <p>Nargis left 30 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="dz-chat-user">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont">
-                                                <img src="{{ asset('template/images/avatar/5.jpg') }}"
-                                                    class="rounded-circle user_img" alt="">
-                                                <span class="online_icon offline"></span>
-                                            </div>
-                                            <div class="user_info">
-                                                <span>Oscar Weston</span>
-                                                <p>Rashid left 50 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="card chat dz-chat-history-box d-none">
-                            <div class="card-header chat-list-header text-center">
-                                <a href="javascript:void(0);" class="dz-chat-history-back">
-                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                                        width="18px" height="18px" viewBox="0 0 24 24" version="1.1">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <polygon points="0 0 24 0 24 24 0 24" />
-                                            <rect fill="#000000" opacity="0.3"
-                                                transform="translate(15.000000, 12.000000) scale(-1, 1) rotate(-90.000000) translate(-15.000000, -12.000000) "
-                                                x="14" y="7" width="2" height="10" rx="1" />
-                                            <path
-                                                d="M3.7071045,15.7071045 C3.3165802,16.0976288 2.68341522,16.0976288 2.29289093,15.7071045 C1.90236664,15.3165802 1.90236664,14.6834152 2.29289093,14.2928909 L8.29289093,8.29289093 C8.67146987,7.914312 9.28105631,7.90106637 9.67572234,8.26284357 L15.6757223,13.7628436 C16.0828413,14.136036 16.1103443,14.7686034 15.7371519,15.1757223 C15.3639594,15.5828413 14.7313921,15.6103443 14.3242731,15.2371519 L9.03007346,10.3841355 L3.7071045,15.7071045 Z"
-                                                fill="#000000" fill-rule="nonzero"
-                                                transform="translate(9.000001, 11.999997) scale(-1, -1) rotate(90.000000) translate(-9.000001, -11.999997) " />
-                                        </g>
-                                    </svg>
-                                </a>
-                                <div>
-                                    <h6 class="mb-1">Chat with Khelesh</h6>
-                                    <p class="mb-0 text-success">Online</p>
-                                </div>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0);" data-bs-toggle="dropdown"
-                                        aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg"
-                                            xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px"
-                                            viewBox="0 0 24 24" version="1.1">
-                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <rect x="0" y="0" width="24" height="24" />
-                                                <circle fill="#000000" cx="5" cy="12" r="2" />
-                                                <circle fill="#000000" cx="12" cy="12" r="2" />
-                                                <circle fill="#000000" cx="19" cy="12" r="2" />
-                                            </g>
-                                        </svg></a>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li class="dropdown-item"><i class="fa fa-user-circle text-primary me-2"></i>
-                                            View profile</li>
-                                        <li class="dropdown-item"><i class="fa fa-users text-primary me-2"></i> Add to
-                                            btn-close friends</li>
-                                        <li class="dropdown-item"><i class="fa fa-plus text-primary me-2"></i> Add to
-                                            group</li>
-                                        <li class="dropdown-item"><i class="fa fa-ban text-primary me-2"></i> Block
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="card-body msg_card_body dz-scroll" id="DZ_W_Contacts_Body3">
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        Hi, how are you samim?
-                                        <span class="msg_time">8:40 AM, Today</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mb-4">
-                                    <div class="msg_cotainer_send">
-                                        Hi Khalid i am good tnx how about you?
-                                        <span class="msg_time_send">8:55 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        I am good too, thank you for your chat template
-                                        <span class="msg_time">9:00 AM, Today</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mb-4">
-                                    <div class="msg_cotainer_send">
-                                        You are welcome
-                                        <span class="msg_time_send">9:05 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        I am looking for your next templates
-                                        <span class="msg_time">9:07 AM, Today</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mb-4">
-                                    <div class="msg_cotainer_send">
-                                        Ok, thank you have a good day
-                                        <span class="msg_time_send">9:10 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        Bye, see you
-                                        <span class="msg_time">9:12 AM, Today</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        Hi, how are you samim?
-                                        <span class="msg_time">8:40 AM, Today</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mb-4">
-                                    <div class="msg_cotainer_send">
-                                        Hi Khalid i am good tnx how about you?
-                                        <span class="msg_time_send">8:55 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        I am good too, thank you for your chat template
-                                        <span class="msg_time">9:00 AM, Today</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mb-4">
-                                    <div class="msg_cotainer_send">
-                                        You are welcome
-                                        <span class="msg_time_send">9:05 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        I am looking for your next templates
-                                        <span class="msg_time">9:07 AM, Today</span>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-end mb-4">
-                                    <div class="msg_cotainer_send">
-                                        Ok, thank you have a good day
-                                        <span class="msg_time_send">9:10 AM, Today</span>
-                                    </div>
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/2.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-start mb-4">
-                                    <div class="img_cont_msg">
-                                        <img src="{{ asset('template/images/avatar/1.jpg') }}"
-                                            class="rounded-circle user_img_msg" alt="">
-                                    </div>
-                                    <div class="msg_cotainer">
-                                        Bye, see you
-                                        <span class="msg_time">9:12 AM, Today</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-footer type_msg">
-                                <div class="input-group">
-                                    <textarea class="form-control" placeholder="Type your message..."></textarea>
-                                    <div class="input-group-append">
-                                        <button type="button" class="btn btn-primary"><i
-                                                class="fa fa-location-arrow"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="alerts" role="tabpanel">
-                        <div class="card mb-sm-3 mb-md-0 contacts_card">
-                            <div class="card-header chat-list-header text-center">
-                                <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px"
-                                        viewBox="0 0 24 24" version="1.1">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="0" y="0" width="24" height="24" />
-                                            <circle fill="#000000" cx="5" cy="12" r="2" />
-                                            <circle fill="#000000" cx="12" cy="12" r="2" />
-                                            <circle fill="#000000" cx="19" cy="12" r="2" />
-                                        </g>
-                                    </svg></a>
-                                <div>
-                                    <h6 class="mb-1">Notications</h6>
-                                    <p class="mb-0">Show All</p>
-                                </div>
-                                <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px"
-                                        viewBox="0 0 24 24" version="1.1">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="0" y="0" width="24" height="24" />
-                                            <path
-                                                d="M14.2928932,16.7071068 C13.9023689,16.3165825 13.9023689,15.6834175 14.2928932,15.2928932 C14.6834175,14.9023689 15.3165825,14.9023689 15.7071068,15.2928932 L19.7071068,19.2928932 C20.0976311,19.6834175 20.0976311,20.3165825 19.7071068,20.7071068 C19.3165825,21.0976311 18.6834175,21.0976311 18.2928932,20.7071068 L14.2928932,16.7071068 Z"
-                                                fill="#000000" fill-rule="nonzero" opacity="1" />
-                                            <path
-                                                d="M11,16 C13.7614237,16 16,13.7614237 16,11 C16,8.23857625 13.7614237,6 11,6 C8.23857625,6 6,8.23857625 6,11 C6,13.7614237 8.23857625,16 11,16 Z M11,18 C7.13400675,18 4,14.8659932 4,11 C4,7.13400675 7.13400675,4 11,4 C14.8659932,4 18,7.13400675 18,11 C18,14.8659932 14.8659932,18 11,18 Z"
-                                                fill="#000000" fill-rule="nonzero" />
-                                        </g>
-                                    </svg></a>
-                            </div>
-                            <div class="card-body contacts_body p-0 dz-scroll" id="DZ_W_Contacts_Body1">
-                                <ul class="contacts">
-                                    <li class="name-first-letter">SEVER STATUS</li>
-                                    <li class="active">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont primary">KK</div>
-                                            <div class="user_info">
-                                                <span>David Nester Birthday</span>
-                                                <p class="text-primary">Today</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="name-first-letter">SOCIAL</li>
-                                    <li>
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont success">RU</div>
-                                            <div class="user_info">
-                                                <span>Perfection Simplified</span>
-                                                <p>Jame Smith commented on your status</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="name-first-letter">SEVER STATUS</li>
-                                    <li>
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont primary">AU</div>
-                                            <div class="user_info">
-                                                <span>AharlieKane</span>
-                                                <p>Sami is online</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex bd-highlight">
-                                            <div class="img_cont info">MO</div>
-                                            <div class="user_info">
-                                                <span>Athan Jacoby</span>
-                                                <p>Nargis left 30 mins ago</p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="card-footer"></div>
-                        </div>
-                    </div>
-                    <div class="tab-pane fade" id="notes">
-                        <div class="card mb-sm-3 mb-md-0 note_card">
-                            <div class="card-header chat-list-header text-center">
-                                <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px"
-                                        viewBox="0 0 24 24" version="1.1">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect fill="#000000" x="4" y="11" width="16" height="2"
-                                                rx="1" />
-                                            <rect fill="#000000" opacity="1.0"
-                                                transform="translate(12.000000, 12.000000) rotate(-270.000000) translate(-12.000000, -12.000000) "
-                                                x="4" y="11" width="16" height="2" rx="1" />
-                                        </g>
-                                    </svg></a>
-                                <div>
-                                    <h6 class="mb-1">Notes</h6>
-                                    <p class="mb-0">Add New Nots</p>
-                                </div>
-                                <a href="javascript:void(0);"><svg xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" width="18px" height="18px"
-                                        viewBox="0 0 24 24" version="1.1">
-                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                            <rect x="0" y="0" width="24" height="24" />
-                                            <path
-                                                d="M14.2928932,16.7071068 C13.9023689,16.3165825 13.9023689,15.6834175 14.2928932,15.2928932 C14.6834175,14.9023689 15.3165825,14.9023689 15.7071068,15.2928932 L19.7071068,19.2928932 C20.0976311,19.6834175 20.0976311,20.3165825 19.7071068,20.7071068 C19.3165825,21.0976311 18.6834175,21.0976311 18.2928932,20.7071068 L14.2928932,16.7071068 Z"
-                                                fill="#000000" fill-rule="nonzero" opacity="1" />
-                                            <path
-                                                d="M11,16 C13.7614237,16 16,13.7614237 16,11 C16,8.23857625 13.7614237,6 11,6 C8.23857625,6 6,8.23857625 6,11 C6,13.7614237 8.23857625,16 11,16 Z M11,18 C7.13400675,18 4,14.8659932 4,11 C4,7.13400675 7.13400675,4 11,4 C14.8659932,4 18,7.13400675 18,11 C18,14.8659932 14.8659932,18 11,18 Z"
-                                                fill="#000000" fill-rule="nonzero" />
-                                        </g>
-                                    </svg></a>
-                            </div>
-                            <div class="card-body contacts_body p-0 dz-scroll" id="DZ_W_Contacts_Body2">
-                                <ul class="contacts">
-                                    <li class="active">
-                                        <div class="d-flex bd-highlight">
-                                            <div class="user_info">
-                                                <span>New order placed..</span>
-                                                <p>10 Aug 2020</p>
-                                            </div>
-                                            <div class="ms-auto">
-                                                <a href="javascript:void(0);"
-                                                    class="btn btn-primary btn-xs sharp me-1"><i
-                                                        class="fas fa-pencil-alt"></i></a>
-                                                <a href="javascript:void(0);" class="btn btn-danger btn-xs sharp"><i
-                                                        class="fa fa-trash"></i></a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex bd-highlight">
-                                            <div class="user_info">
-                                                <span>Youtube, a video-sharing website..</span>
-                                                <p>10 Aug 2020</p>
-                                            </div>
-                                            <div class="ms-auto">
-                                                <a href="javascript:void(0);"
-                                                    class="btn btn-primary btn-xs sharp me-1"><i
-                                                        class="fas fa-pencil-alt"></i></a>
-                                                <a href="javascript:void(0);" class="btn btn-danger btn-xs sharp"><i
-                                                        class="fa fa-trash"></i></a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex bd-highlight">
-                                            <div class="user_info">
-                                                <span>john just buy your product..</span>
-                                                <p>10 Aug 2020</p>
-                                            </div>
-                                            <div class="ms-auto">
-                                                <a href="javascript:void(0);"
-                                                    class="btn btn-primary btn-xs sharp me-1"><i
-                                                        class="fas fa-pencil-alt"></i></a>
-                                                <a href="javascript:void(0);" class="btn btn-danger btn-xs sharp"><i
-                                                        class="fa fa-trash"></i></a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <div class="d-flex bd-highlight">
-                                            <div class="user_info">
-                                                <span>Athan Jacoby</span>
-                                                <p>10 Aug 2020</p>
-                                            </div>
-                                            <div class="ms-auto">
-                                                <a href="javascript:void(0);"
-                                                    class="btn btn-primary btn-xs sharp me-1"><i
-                                                        class="fas fa-pencil-alt"></i></a>
-                                                <a href="javascript:void(0);" class="btn btn-danger btn-xs sharp"><i
-                                                        class="fa fa-trash"></i></a>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!--**********************************
-            Chat box End
-        ***********************************-->
+
 
         <!--**********************************
             Header start
@@ -790,213 +154,7 @@
                                     </a></span> --}}
                             </div>
                             <ul class="navbar-nav">
-                                <li class="nav-item dropdown notification_dropdown">
-                                    <a class="nav-link bell dz-theme-mode" href="javascript:void(0);">
-                                        <svg id="icon-light" xmlns="http://www.w3.org/2000/svg"
-                                            xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-                                            viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
-                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <rect x="0" y="0" width="24" height="24" />
-                                                <path
-                                                    d="M12,15 C10.3431458,15 9,13.6568542 9,12 C9,10.3431458 10.3431458,9 12,9 C13.6568542,9 15,10.3431458 15,12 C15,13.6568542 13.6568542,15 12,15 Z"
-                                                    fill="#000000" fill-rule="nonzero" />
-                                                <path
-                                                    d="M19.5,10.5 L21,10.5 C21.8284271,10.5 22.5,11.1715729 22.5,12 C22.5,12.8284271 21.8284271,13.5 21,13.5 L19.5,13.5 C18.6715729,13.5 18,12.8284271 18,12 C18,11.1715729 18.6715729,10.5 19.5,10.5 Z M16.0606602,5.87132034 L17.1213203,4.81066017 C17.7071068,4.22487373 18.6568542,4.22487373 19.2426407,4.81066017 C19.8284271,5.39644661 19.8284271,6.34619408 19.2426407,6.93198052 L18.1819805,7.99264069 C17.5961941,8.57842712 16.6464466,8.57842712 16.0606602,7.99264069 C15.4748737,7.40685425 15.4748737,6.45710678 16.0606602,5.87132034 Z M16.0606602,18.1819805 C15.4748737,17.5961941 15.4748737,16.6464466 16.0606602,16.0606602 C16.6464466,15.4748737 17.5961941,15.4748737 18.1819805,16.0606602 L19.2426407,17.1213203 C19.8284271,17.7071068 19.8284271,18.6568542 19.2426407,19.2426407 C18.6568542,19.8284271 17.7071068,19.8284271 17.1213203,19.2426407 L16.0606602,18.1819805 Z M3,10.5 L4.5,10.5 C5.32842712,10.5 6,11.1715729 6,12 C6,12.8284271 5.32842712,13.5 4.5,13.5 L3,13.5 C2.17157288,13.5 1.5,12.8284271 1.5,12 C1.5,11.1715729 2.17157288,10.5 3,10.5 Z M12,1.5 C12.8284271,1.5 13.5,2.17157288 13.5,3 L13.5,4.5 C13.5,5.32842712 12.8284271,6 12,6 C11.1715729,6 10.5,5.32842712 10.5,4.5 L10.5,3 C10.5,2.17157288 11.1715729,1.5 12,1.5 Z M12,18 C12.8284271,18 13.5,18.6715729 13.5,19.5 L13.5,21 C13.5,21.8284271 12.8284271,22.5 12,22.5 C11.1715729,22.5 10.5,21.8284271 10.5,21 L10.5,19.5 C10.5,18.6715729 11.1715729,18 12,18 Z M4.81066017,4.81066017 C5.39644661,4.22487373 6.34619408,4.22487373 6.93198052,4.81066017 L7.99264069,5.87132034 C8.57842712,6.45710678 8.57842712,7.40685425 7.99264069,7.99264069 C7.40685425,8.57842712 6.45710678,8.57842712 5.87132034,7.99264069 L4.81066017,6.93198052 C4.22487373,6.34619408 4.22487373,5.39644661 4.81066017,4.81066017 Z M4.81066017,19.2426407 C4.22487373,18.6568542 4.22487373,17.7071068 4.81066017,17.1213203 L5.87132034,16.0606602 C6.45710678,15.4748737 7.40685425,15.4748737 7.99264069,16.0606602 C8.57842712,16.6464466 8.57842712,17.5961941 7.99264069,18.1819805 L6.93198052,19.2426407 C6.34619408,19.8284271 5.39644661,19.8284271 4.81066017,19.2426407 Z"
-                                                    fill="#000000" fill-rule="nonzero" opacity="0.3" />
-                                            </g>
-                                        </svg>
-                                        <svg id="icon-dark" xmlns="http://www.w3.org/2000/svg"
-                                            xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px"
-                                            viewBox="0 0 24 24" version="1.1" class="svg-main-icon">
-                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                <rect x="0" y="0" width="24" height="24" />
-                                                <path
-                                                    d="M12.0700837,4.0003006 C11.3895108,5.17692613 11,6.54297551 11,8 C11,12.3948932 14.5439081,15.9620623 18.9299163,15.9996994 C17.5467214,18.3910707 14.9612535,20 12,20 C7.581722,20 4,16.418278 4,12 C4,7.581722 7.581722,4 12,4 C12.0233848,4 12.0467462,4.00010034 12.0700837,4.0003006 Z"
-                                                    fill="#000000" />
-                                            </g>
-                                        </svg>
-                                    </a>
-                                </li>
-                                <li class="nav-item dropdown notification_dropdown">
-                                    <a class="nav-link" href="javascript:void(0);" role="button"
-                                        data-bs-toggle="dropdown">
-                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                d="M17.5 12H19C19.8284 12 20.5 12.6716 20.5 13.5C20.5 14.3284 19.8284 15 19 15H6C5.17157 15 4.5 14.3284 4.5 13.5C4.5 12.6716 5.17157 12 6 12H7.5L8.05827 6.97553C8.30975 4.71226 10.2228 3 12.5 3C14.7772 3 16.6903 4.71226 16.9417 6.97553L17.5 12Z"
-                                                fill="#222B40" />
-                                            <path opacity="0.3"
-                                                d="M14.5 18C14.5 16.8954 13.6046 16 12.5 16C11.3954 16 10.5 16.8954 10.5 18C10.5 19.1046 11.3954 20 12.5 20C13.6046 20 14.5 19.1046 14.5 18Z"
-                                                fill="#222B40" />
-                                        </svg>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-end">
-                                        <div id="DZ_W_Notification1" class="widget-media dz-scroll p-2"
-                                            style="height:380px;">
-                                            <ul class="timeline">
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2">
-                                                            <img alt="image" width="50"
-                                                                src="{{ asset('template/images/avatar/1.jpg') }}">
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Dr sultads Send you Photo</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-info">
-                                                            KG
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Resport created successfully</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-success">
-                                                            <i class="fa fa-home"></i>
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Reminder : Treatment Time!</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2">
-                                                            <img alt="image" width="50"
-                                                                src="{{ asset('template/images/avatar/1.jpg') }}">
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Dr sultads Send you Photo</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-danger">
-                                                            KG
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Resport created successfully</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-primary">
-                                                            <i class="fa fa-home"></i>
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Reminder : Treatment Time!</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2">
-                                                            <img alt="image" width="50"
-                                                                src="{{ asset('template/images/avatar/1.jpg') }}">
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Dr sultads Send you Photo</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-info">
-                                                            KG
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Resport created successfully</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-success">
-                                                            <i class="fa fa-home"></i>
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Reminder : Treatment Time!</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2">
-                                                            <img alt="image" width="50"
-                                                                src="{{ asset('template/images/avatar/1.jpg') }}">
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Dr sultads Send you Photo</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-danger">
-                                                            KG
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Resport created successfully</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                                <li>
-                                                    <div class="timeline-panel">
-                                                        <div class="media me-2 media-primary">
-                                                            <i class="fa fa-home"></i>
-                                                        </div>
-                                                        <div class="media-body">
-                                                            <h6 class="mb-1">Reminder : Treatment Time!</h6>
-                                                            <small class="d-block">29 July 2020 - 02:26 PM</small>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <a class="all-notification" href="javascript:void(0);">See all notifications
-                                            <i class="ti-arrow-end"></i></a>
-                                    </div>
-                                </li>
-                                <li class="nav-item dropdown notification_dropdown">
-                                    <a class="nav-link bell-link" href="javascript:void(0);">
-                                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
-                                            xmlns="http://www.w3.org/2000/svg">
-                                            <g clip-path="url(#clip0_1_463)">
-                                                <path opacity="0.3" fill-rule="evenodd" clip-rule="evenodd"
-                                                    d="M6.5 2H18.5C19.0523 2 19.5 2.44772 19.5 3V13C19.5 13.5523 19.0523 14 18.5 14H6.5C5.94772 14 5.5 13.5523 5.5 13V3C5.5 2.44772 5.94772 2 6.5 2ZM14.3 4C13.6562 4 12.9033 4.72985 12.5 5.2C12.0967 4.72985 11.3438 4 10.7 4C9.5604 4 8.9 4.88887 8.9 6.02016C8.9 7.27339 10.1 8.6 12.5 10C14.9 8.6 16.1 7.3 16.1 6.1C16.1 4.96871 15.4396 4 14.3 4Z"
-                                                    fill="#222B40" />
-                                                <path fill-rule="evenodd" clip-rule="evenodd"
-                                                    d="M4.29275 6.57254L12.5 12.5L20.7073 6.57254C20.9311 6.41086 21.2437 6.46127 21.4053 6.68514C21.4669 6.77034 21.5 6.87278 21.5 6.97788V17C21.5 18.1046 20.6046 19 19.5 19H5.5C4.39543 19 3.5 18.1046 3.5 17V6.97788C3.5 6.70174 3.72386 6.47788 4 6.47788C4.10511 6.47788 4.20754 6.511 4.29275 6.57254Z"
-                                                    fill="#222B40" />
-                                            </g>
-                                            <defs>
-                                                <clipPath id="clip0_1_463">
-                                                    <rect width="24" height="24" fill="white"
-                                                        transform="translate(0.5)" />
-                                                </clipPath>
-                                            </defs>
-                                        </svg>
-                                    </a>
-                                </li>
+                          
                                 <li class="nav-item dropdown notification_dropdown">
                                     <a class="nav-link " href="javascript:void(0);" data-bs-toggle="dropdown">
                                         <svg width="25" height="24" viewBox="0 0 25 24" fill="none"
@@ -1050,8 +208,7 @@
                                             data-bs-toggle="dropdown" aria-expanded="false">
                                             <div class="header-info2 d-flex align-items-center">
                                                 <div class="header-media">
-                                                    <img src="{{ asset('template/images/user.jpg') }}"
-                                                        alt="">
+                                                    <img src="{{ asset('images/user.jpg') }}" alt="">
                                                 </div>
                                             </div>
                                         </a>
@@ -1059,73 +216,13 @@
                                             <div class="card border-0 mb-0">
                                                 <div class="card-header py-2">
                                                     <div class="products">
-                                                        <img src="{{ asset('template/images/user.jpg') }}"
+                                                        <img src="{{ asset('images/user.jpg') }}"
                                                             class="avatar avatar-md" alt="">
                                                         <div>
                                                             <h6>{{ Auth::check() ? auth()->user()->name : '' }}</h6>
                                                             <span>{{ Auth::check() ? auth()->user()->email : '' }}</span>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="card-body px-0 py-2">
-                                                    <a href="app-profile-1.html" class="dropdown-item ai-icon ">
-                                                        <svg width="20" height="20" viewBox="0 0 24 24"
-                                                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                d="M11.9848 15.3462C8.11714 15.3462 4.81429 15.931 4.81429 18.2729C4.81429 20.6148 8.09619 21.2205 11.9848 21.2205C15.8524 21.2205 19.1543 20.6348 19.1543 18.2938C19.1543 15.9529 15.8733 15.3462 11.9848 15.3462Z"
-                                                                stroke="var(--primary)" stroke-width="1.5"
-                                                                stroke-linecap="round" stroke-linejoin="round" />
-                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                d="M11.9848 12.0059C14.5229 12.0059 16.58 9.94779 16.58 7.40969C16.58 4.8716 14.5229 2.81445 11.9848 2.81445C9.44667 2.81445 7.38857 4.8716 7.38857 7.40969C7.38 9.93922 9.42381 11.9973 11.9524 12.0059H11.9848Z"
-                                                                stroke="var(--primary)" stroke-width="1.42857"
-                                                                stroke-linecap="round" stroke-linejoin="round" />
-                                                        </svg>
-
-                                                        <span class="ms-2">Profile </span>
-                                                    </a>
-                                                    <a href="my-project.html" class="dropdown-item ai-icon ">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="19"
-                                                            height="19" viewBox="0 0 24 24" fill="none"
-                                                            stroke="currentColor" stroke-width="2"
-                                                            stroke-linecap="round" stroke-linejoin="round"
-                                                            class="feather feather-pie-chart">
-                                                            <path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path>
-                                                            <path d="M22 12A10 10 0 0 0 12 2v10z"></path>
-                                                        </svg>
-
-                                                        <span class="ms-2">My Project</span><span
-                                                            class="badge badge-sm badge-primary rounded-circle text-white ms-2">4</span>
-                                                    </a>
-                                                    <a href="chat.html" class="dropdown-item ai-icon ">
-                                                        <svg width="20" height="20" viewBox="0 0 24 24"
-                                                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path
-                                                                d="M17.9026 8.85114L13.4593 12.4642C12.6198 13.1302 11.4387 13.1302 10.5992 12.4642L6.11844 8.85114"
-                                                                stroke="var(--primary)" stroke-width="1.5"
-                                                                stroke-linecap="round" stroke-linejoin="round" />
-                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                d="M16.9089 21C19.9502 21.0084 22 18.5095 22 15.4384V8.57001C22 5.49883 19.9502 3 16.9089 3H7.09114C4.04979 3 2 5.49883 2 8.57001V15.4384C2 18.5095 4.04979 21.0084 7.09114 21H16.9089Z"
-                                                                stroke="var(--primary)" stroke-width="1.5"
-                                                                stroke-linecap="round" stroke-linejoin="round" />
-                                                        </svg>
-
-                                                        <span class="ms-2">Message </span>
-                                                    </a>
-                                                    <a href="notifications.html" class="dropdown-item ai-icon ">
-                                                        <svg width="20" height="20" viewBox="0 0 24 24"
-                                                            fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                d="M12 17.8476C17.6392 17.8476 20.2481 17.1242 20.5 14.2205C20.5 11.3188 18.6812 11.5054 18.6812 7.94511C18.6812 5.16414 16.0452 2 12 2C7.95477 2 5.31885 5.16414 5.31885 7.94511C5.31885 11.5054 3.5 11.3188 3.5 14.2205C3.75295 17.1352 6.36177 17.8476 12 17.8476Z"
-                                                                stroke="var(--primary)" stroke-width="1.5"
-                                                                stroke-linecap="round" stroke-linejoin="round" />
-                                                            <path
-                                                                d="M14.3888 20.8572C13.0247 22.372 10.8967 22.3899 9.51947 20.8572"
-                                                                stroke="var(--primary)" stroke-width="1.5"
-                                                                stroke-linecap="round" stroke-linejoin="round" />
-                                                        </svg>
-
-                                                        <span class="ms-2">Notification </span>
-                                                    </a>
                                                 </div>
                                                 <div class="card-footer px-0 py-2">
                                                     <a href="javascript:void(0);" class="dropdown-item ai-icon ">
@@ -1142,9 +239,10 @@
 
                                                         <span class="ms-2">Settings </span>
                                                     </a>
-                                                    <a   href="{{ route('logout') }}"
+                                                    <a href="{{ route('logout') }}"
                                                         onclick="event.preventDefault();
-                                                            document.getElementById('logout-form').submit();" class="dropdown-item ai-icon">
+                                                            document.getElementById('logout-form').submit();"
+                                                        class="dropdown-item ai-icon">
                                                         <svg class="logout-svg" xmlns="http://www.w3.org/2000/svg"
                                                             width="18" height="18" viewBox="0 0 24 24"
                                                             fill="none" stroke="currentColor" stroke-width="2"
@@ -1186,7 +284,7 @@
                 <ul class="metismenu" id="menu">
                     <li class="menu-title">Cuentas</li>
 
-                    @can('seguridad')
+                
                         <li><a class="has-arrow " href="javascript:void(0);" aria-expanded="false">
                                 <div class="menu-icon">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -1208,14 +306,14 @@
                                     </svg>
 
                                 </div>
-                                <span class="nav-text">Seguridad</span>
+                                <span class="nav-text">Catalogos</span>
                             </a>
                             <ul aria-expanded="false">
-                                <li><a href="{{ url('seguridad/usuario') }}">User</a></li>
-                                <li><a href="{{ url('seguridad/roles') }}">Roles</a></li>
-                                <li><a href="{{ url('seguridad/permisos') }}">Permisos</a></li>
+                                <li><a href="{{ url('prestamo_catalogo') }}">Prestamo</a></li>
+                                {{-- <li><a href="{{ url('seguridad/roles') }}">Roles</a></li>
+                                <li><a href="{{ url('seguridad/permisos') }}">Permisos</a></li> --}}
                             </ul>
-                        @endcan
+                  
                     </li>
 
                     @can('administracion')
@@ -1311,29 +409,29 @@
 
 
                     <li><a href="{{ url('credenciales_web') }}" class="" aria-expanded="false">
-                        <div class="menu-icon">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
-                                xmlns="http://www.w3.org/2000/svg">
-                                <g clip-path="url(#clip0_113_177)">
-                                    <path
-                                        d="M17 4H6C4.79111 4 4 4.7 4 6V18C4 19.3 4.79111 20 6 20H18C19.2 20 20 19.3 20 18V7.20711C20 7.0745 19.9473 6.94732 19.8536 6.85355L17 4ZM17 11H7V4H17V11Z"
-                                        fill="#90959F" />
-                                    <path opacity="0.3"
-                                        d="M14.5 4H12.5C12.2239 4 12 4.22386 12 4.5V8.5C12 8.77614 12.2239 9 12.5 9H14.5C14.7761 9 15 8.77614 15 8.5V4.5C15 4.22386 14.7761 4 14.5 4Z"
-                                        fill="white" />
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_113_177">
-                                        <rect width="24" height="24" fill="white" />
-                                    </clipPath>
-                                </defs>
-                            </svg>
-                        </div>
-                        <span class="nav-text">Credenciales </span>
-                    </a>
+                            <div class="menu-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <g clip-path="url(#clip0_113_177)">
+                                        <path
+                                            d="M17 4H6C4.79111 4 4 4.7 4 6V18C4 19.3 4.79111 20 6 20H18C19.2 20 20 19.3 20 18V7.20711C20 7.0745 19.9473 6.94732 19.8536 6.85355L17 4ZM17 11H7V4H17V11Z"
+                                            fill="#90959F" />
+                                        <path opacity="0.3"
+                                            d="M14.5 4H12.5C12.2239 4 12 4.22386 12 4.5V8.5C12 8.77614 12.2239 9 12.5 9H14.5C14.7761 9 15 8.77614 15 8.5V4.5C15 4.22386 14.7761 4 14.5 4Z"
+                                            fill="white" />
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_113_177">
+                                            <rect width="24" height="24" fill="white" />
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <span class="nav-text">Credenciales </span>
+                        </a>
 
 
-                </li>
+                    </li>
 
 
 
@@ -1424,19 +522,33 @@
         Scripts
     ***********************************-->
     <!-- Required vendors -->
-    <script src="{{ asset('template/vendor/global/global.min.js') }}"></script>
+    <script src="{{ asset('vendor/global/global.min.js') }}"></script>
 
 
     <!-- Datatable -->
-    <script src="{{ asset('template/vendor/sweetalert2/sweetalert2.min.js') }}"></script>
-    <script src="{{ asset('template/vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('template/vendor/datatables/responsive/responsive.js') }}"></script>
-    <script src="{{ asset('template/js/plugins-init/datatables.init.js') }}"></script>
-    <script src="{{ asset('template/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
-    <script src="{{ asset('template/js/custom.min.js') }}"></script>
-    <script src="{{ asset('template/js/deznav-init.js') }}"></script>
+    <script src="{{ asset('vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('vendor/datatables/responsive/responsive.js') }}"></script>
+    <script src="{{ asset('js/plugins-init/datatables.init.js') }}"></script>
+    <script src="{{ asset('vendor/select2/js/select2.full.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('js/custom.min.js') }}"></script>
+    <script src="{{ asset('js/deznav-init.js') }}"></script>
 
-    <script src="{{ asset('template/js/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
+
+    <script>
+        (function($) {
+            "use strict";
+            // Aplicar Select2 a todos los elementos con la clase .select2
+            $(".select2").select2({
+                placeholder: "Seleccione una opción",
+                allowClear: true
+            });
+        })(jQuery);
+    </script>
+
+
 </body>
 
 </html>

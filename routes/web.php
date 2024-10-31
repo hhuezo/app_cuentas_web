@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\catalogo\PrestamoCatalogoController;
+use App\Http\Controllers\catalogo\ReciboCatalogoController;
 use App\Http\Controllers\web\PersonaWebController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\web\CredencialesController;
@@ -38,3 +40,8 @@ Route::resource('recibo_fijo_web', ReciboFijoWebController::class);
 Route::resource('persona_web', PersonaWebController::class);
 
 Route::resource('credenciales_web', CredencialesController::class);
+
+//catalogos
+Route::resource('prestamo_catalogo', PrestamoCatalogoController::class);
+Route::get('recibo_catalogo/create/{prestamo}', [ReciboCatalogoController::class,'create']);
+Route::resource('recibo_catalogo', ReciboCatalogoController::class);
