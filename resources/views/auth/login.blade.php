@@ -82,13 +82,13 @@
     <title>YashAdmin -Sales Management System Admin Dashboard Bootstrap HTML Template | DexignZone</title>
 
     <!-- FAVICONS ICON -->
-    <link rel="shortcut icon" type="image/png" href="{{ asset('template/images/favicon.png') }}">
-    <link href="{{ asset('template/vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
-    <link class="main-css" href="{{ asset('template/css/style.css') }}" rel="stylesheet">
+    <link rel="shortcut icon" type="image/png" href="{{ asset('images/favicon.png') }}">
+    <link href="{{ asset('vendor/bootstrap-select/dist/css/bootstrap-select.min.css') }}" rel="stylesheet">
+    <link class="main-css" href="{{ asset('css/style.css') }}" rel="stylesheet">
 
 </head>
 
-<body style="background-image:url('images/bg.png'); background-position:center;">
+<body style="background-image:url('template/images/bg.png'); background-position:center;">
     <div class="authincation fix-wrapper">
         <div class="container h-100">
             <div class="row justify-content-center h-100 align-items-center">
@@ -163,10 +163,10 @@
  Scripts
 ***********************************-->
     <!-- Required vendors -->
-    <script src="{{ asset('template/vendor/global/global.min.js') }}"></script>
+    <script src="{{ asset('vendor/global/global.min.js') }}"></script>
 
-    <script src="{{ asset('template/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
-    <script src="{{ asset('template/js/custom.min.js') }}"></script>
+    <script src="{{ asset('vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
+    <script src="{{ asset('js/custom.min.js') }}"></script>
     {{-- <script src="{{ asset('template/js/deznav-init.js') }}"></script> --}}
 
 
