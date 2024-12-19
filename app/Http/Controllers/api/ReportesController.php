@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cargo;
 use App\Models\Prestamo;
 use App\Models\Recibo;
+use App\Models\ReciboFijo;
 use App\Models\TempPago;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -238,6 +240,7 @@ class ReportesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function show($id)
     {
         try {
@@ -250,34 +253,75 @@ class ReportesController extends Controller
             // Primer día de hace 6 meses
             $primerDiaHace6Meses = Carbon::now()->subMonths(5)->startOfMonth()->format('Y-m-d');
 
-            $gananciasPrestamo = [];
-            $gananciasPrestamoMes = [];
+            // Inicializar las variables para almacenar los resultados
+            $gananciasRecibo = [];
+            $gananciasReciboMes = [];
+            $gananciasReciboFijo = [];
+            $gananciasReciboFijoMes = [];
 
-            // Consulta para obtener los intereses por mes entre el primer día de hace 6 meses y el último día del mes actual
-            $interesesPorMes = Recibo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
+            // Consultar los intereses de Recibo
+            $interesesRecibo = Recibo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
                 ->where('estado', 2)
-                ->whereBetween('fecha', [$primerDiaHace6Meses, $ultimoDiaMesActual]) // Filtro entre las fechas
+                ->whereBetween('fecha', [$primerDiaHace6Meses, $ultimoDiaMesActual])
                 ->groupByRaw('YEAR(fecha), MONTH(fecha)')
                 ->get();
 
-            // Usar pluck para obtener los valores y meses en arrays separados
-            // Convertir los valores a números (float)
-            $gananciasPrestamo = $interesesPorMes->map(function ($item) {
-                // Convertir a float y redondear a dos decimales, pero como números (sin comillas)
+            // Consultar los intereses de ReciboFijo
+            $interesesReciboFijo = ReciboFijo::selectRaw('SUM(cantidad) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
+                ->where('estado', 2)
+                ->whereBetween('fecha', [$primerDiaHace6Meses, $ultimoDiaMesActual])
+                ->groupByRaw('YEAR(fecha), MONTH(fecha)')
+                ->get();
+
+            // Procesar los resultados de Recibo
+            $gananciasRecibo = $interesesRecibo->map(function ($item) {
                 return round((float) $item->total_interes, 2);
             })->toArray();
-            $mesesIds = $interesesPorMes->pluck('mes')->toArray();
-
-            // Convertir los números de los meses a los nombres de los meses
-            $gananciasPrestamoMes = array_map(function ($mes) use ($meses) {
+            $mesesIdsRecibo = $interesesRecibo->pluck('mes')->toArray();
+            $gananciasReciboMes = array_map(function ($mes) use ($meses) {
                 return $meses[$mes];
-            }, $mesesIds);
+            }, $mesesIdsRecibo);
+
+            // Procesar los resultados de ReciboFijo
+            $gananciasReciboFijo = $interesesReciboFijo->map(function ($item) {
+                return round((float) $item->total_interes, 2);
+            })->toArray();
+            $mesesIdsReciboFijo = $interesesReciboFijo->pluck('mes')->toArray();
+            $gananciasReciboFijoMes = array_map(function ($mes) use ($meses) {
+                return $meses[$mes];
+            }, $mesesIdsReciboFijo);
+
+
+
+
+            //data general
+            $count_prestamos = Prestamo::count('id');
+            $total_prestado = Prestamo::sum('cantidad');
+            $total_cargos = Cargo::sum('cantidad');
+            $total_reintegrado = Recibo::where('estado', 2)->sum('cantidad');
+            $total_interes_reintegrado = Recibo::where('estado', 2)->sum('interes');
+            $total_fijo_reintegrado = ReciboFijo::sum('cantidad');
+            $data_general = [
+                "countPrestamos" => $count_prestamos,
+                "totalPrestado" => number_format($total_prestado +  $total_cargos + 0, 2, '.', ','),
+                "totalReintegrado" => number_format($total_reintegrado - $total_interes_reintegrado + 0, 2, '.', ','),
+                "dineroInvertido" => number_format(($total_prestado + $total_cargos) - ($total_reintegrado - $total_interes_reintegrado) +0, 2, '.', ','),
+                "totalCargos" => number_format($total_cargos, 2, '.', ','),
+                "totalInteresReintegrado" => number_format($total_interes_reintegrado, 2, '.', ','),
+                "totalFijoReintegrado" => number_format($total_fijo_reintegrado, 2, '.', ',')
+            ];
+
+
 
             return response()->json([
                 'success' => true,
-                'gananciasPrestamo' => $gananciasPrestamo,
-                'gananciasPrestamoMes' => $gananciasPrestamoMes
+                'gananciasPrestamo' => $gananciasRecibo,
+                'gananciasPrestamoMes' => $gananciasReciboMes,
+                'gananciasReciboFijo' => $gananciasReciboFijo,
+                'gananciasReciboFijoMes' => $gananciasReciboFijoMes,
+                'dataGeneral' => $data_general
             ]);
+
         } catch (\Exception $e) {
             // Retornar respuesta en caso de error
             return response()->json([
@@ -286,6 +330,7 @@ class ReportesController extends Controller
             ]);
         }
     }
+
 
 
     /**
