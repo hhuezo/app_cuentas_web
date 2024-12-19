@@ -148,10 +148,9 @@ class ReportesController extends Controller
                 ->orderBy('recibo.fecha')
                 ->get();
 
-                foreach($pagos as $pago)
-                {
-                    $pago->pagado = $pago->pagado-1;
-                }
+            foreach ($pagos as $pago) {
+                $pago->pagado = $pago->pagado - 1;
+            }
 
 
             $data = ["pagos" => $pagos];
@@ -241,8 +240,53 @@ class ReportesController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            // Definir los meses
+            $meses = ["", "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+
+            // Último día del mes actual
+            $ultimoDiaMesActual = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+            // Primer día de hace 6 meses
+            $primerDiaHace6Meses = Carbon::now()->subMonths(5)->startOfMonth()->format('Y-m-d');
+
+            $gananciasPrestamo = [];
+            $gananciasPrestamoMes = [];
+
+            // Consulta para obtener los intereses por mes entre el primer día de hace 6 meses y el último día del mes actual
+            $interesesPorMes = Recibo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
+                ->where('estado', 2)
+                ->whereBetween('fecha', [$primerDiaHace6Meses, $ultimoDiaMesActual]) // Filtro entre las fechas
+                ->groupByRaw('YEAR(fecha), MONTH(fecha)')
+                ->get();
+
+            // Usar pluck para obtener los valores y meses en arrays separados
+            // Convertir los valores a números (float)
+            $gananciasPrestamo = $interesesPorMes->map(function ($item) {
+                // Convertir a float y redondear a dos decimales, pero como números (sin comillas)
+                return round((float) $item->total_interes, 2);
+            })->toArray();
+            $mesesIds = $interesesPorMes->pluck('mes')->toArray();
+
+            // Convertir los números de los meses a los nombres de los meses
+            $gananciasPrestamoMes = array_map(function ($mes) use ($meses) {
+                return $meses[$mes];
+            }, $mesesIds);
+
+            return response()->json([
+                'success' => true,
+                'gananciasPrestamo' => $gananciasPrestamo,
+                'gananciasPrestamoMes' => $gananciasPrestamoMes
+            ]);
+        } catch (\Exception $e) {
+            // Retornar respuesta en caso de error
+            return response()->json([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
     }
+
 
     /**
      * Show the form for editing the specified resource.
