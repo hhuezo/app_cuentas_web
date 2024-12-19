@@ -10,6 +10,7 @@ use App\Models\ReciboFijo;
 use App\Models\TempPago;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReportesController extends Controller
 {
@@ -305,12 +306,34 @@ class ReportesController extends Controller
                 "countPrestamos" => $count_prestamos,
                 "totalPrestado" => number_format($total_prestado +  $total_cargos + 0, 2, '.', ','),
                 "totalReintegrado" => number_format($total_reintegrado - $total_interes_reintegrado + 0, 2, '.', ','),
-                "dineroInvertido" => number_format(($total_prestado + $total_cargos) - ($total_reintegrado - $total_interes_reintegrado) +0, 2, '.', ','),
+                "dineroInvertido" => number_format(($total_prestado + $total_cargos) - ($total_reintegrado - $total_interes_reintegrado) + 0, 2, '.', ','),
                 "totalCargos" => number_format($total_cargos, 2, '.', ','),
                 "totalInteresReintegrado" => number_format($total_interes_reintegrado, 2, '.', ','),
                 "totalFijoReintegrado" => number_format($total_fijo_reintegrado, 2, '.', ',')
             ];
 
+
+
+
+            $fechaInicio = Carbon::now()->startOfMonth()->format('Y-m-d');
+            $fechaFin = Carbon::now()->endOfMonth()->format('Y-m-d');
+
+            $recibos = Recibo::join('prestamo as p', 'recibo.prestamo_id', '=', 'p.id')
+                ->join('persona as pe', 'pe.id', '=', 'p.persona_id')
+                ->join('tipo_pago as t', 't.id', '=', 'p.tipo_pago_id')
+                ->select(
+                    'recibo.id',
+                    DB::raw("DATE_FORMAT(recibo.fecha, '%d/%m/%Y') as fecha"),
+                    'p.cantidad',
+                    'p.numero_pagos as numeroPagos',
+                    'recibo.cantidad as cantidadRecibo',
+                    'pe.nombre',
+                    't.nombre as tipo'
+                )
+                ->whereBetween('recibo.fecha', [$fechaInicio, $fechaFin])
+                ->where('recibo.remanente', 0.00)
+                ->orderBy('recibo.fecha')
+                ->get();
 
 
             return response()->json([
@@ -319,9 +342,9 @@ class ReportesController extends Controller
                 'gananciasPrestamoMes' => $gananciasReciboMes,
                 'gananciasReciboFijo' => $gananciasReciboFijo,
                 'gananciasReciboFijoMes' => $gananciasReciboFijoMes,
-                'dataGeneral' => $data_general
+                'dataGeneral' => $data_general,
+                'prestamosFinalizados' => $recibos
             ]);
-
         } catch (\Exception $e) {
             // Retornar respuesta en caso de error
             return response()->json([
