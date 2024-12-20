@@ -148,12 +148,32 @@ class ReciboController extends Controller
                 'r.interes',
                 DB::raw('(r.cantidad + r.interes + 0) as total'),
                 'r.estado',
-                'r.comprobante'
+                'r.comprobante_url as comprobante'
             ])
             ->join('prestamo as p', 'p.id', '=', 'r.prestamo_id')
             ->join('persona as pe', 'pe.id', '=', 'p.persona_id')
             ->where('r.id', $id)
             ->first();
+
+
+        // Verificar si el archivo existe
+        $comprobantePath = public_path('comprobantes/' . $recibo->comprobante);
+
+        if (file_exists($comprobantePath)) {
+            // Leer el archivo y convertirlo a Base64
+            $imageData = file_get_contents($comprobantePath);
+            $base64Image = base64_encode($imageData);
+
+            // Si el Base64 tiene un prefijo, quitarlo
+            $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
+
+            // Ahora $base64Cleaned contiene solo la parte Base64 sin el prefijo
+        } else {
+            // El archivo no existe
+            $base64Cleaned = null;
+        }
+
+        $recibo->comprobante = $base64Cleaned;
 
 
         return response()->json([
