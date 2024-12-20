@@ -8,6 +8,7 @@ use App\Models\Prestamo;
 use App\Models\Recibo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ReciboController extends Controller
 {
@@ -17,9 +18,7 @@ class ReciboController extends Controller
         //
     }
 
-    public function create()
-    {
-    }
+    public function create() {}
 
     public function store(Request $request)
     {
@@ -79,10 +78,8 @@ class ReciboController extends Controller
                 $remanente = $recibo->remanente;
                 $cargo_prestamo = Cargo::where('prestamo_id', $prestamo->id)->orderBy('id', 'desc')->first();
 
-                if($cargo_prestamo)
-                {
-                    if($cargo_prestamo->fecha > $recibo->fecha)
-                    {
+                if ($cargo_prestamo) {
+                    if ($cargo_prestamo->fecha > $recibo->fecha) {
 
                         $prestamo->remanente = $cargo_prestamo->saldo;
                         $remanente = $cargo_prestamo->saldo;
@@ -95,11 +92,9 @@ class ReciboController extends Controller
             if ($prestamo->pago_especifico && $prestamo->amortizacion == 1) {
                 $cuota = $prestamo->pago_especifico;
                 $tasa = $prestamo->interes;
-                $interes = number_format($remanente * ($tasa/100), 2);
+                $interes = number_format($remanente * ($tasa / 100), 2);
                 $total = number_format($cuota, 2);
-
-            }
-            else if ($prestamo->pago_especifico) {
+            } else if ($prestamo->pago_especifico) {
                 $cuota = $prestamo->cantidad / $prestamo->numero_pagos;
                 $interes = number_format($prestamo->pago_especifico - $cuota, 2);
                 $total = number_format($prestamo->pago_especifico, 2);
@@ -144,7 +139,27 @@ class ReciboController extends Controller
 
     public function edit($id)
     {
-        //
+        $recibo = DB::table('recibo as r')
+            ->selectRaw("DATE_FORMAT(r.fecha, '%d/%m/%Y') AS fecha")
+            ->addSelect([
+                'r.id',
+                'pe.nombre',
+                'r.cantidad',
+                'r.interes',
+                DB::raw('(r.cantidad + r.interes + 0) as total'),
+                'r.estado',
+                'r.comprobante'
+            ])
+            ->join('prestamo as p', 'p.id', '=', 'r.prestamo_id')
+            ->join('persona as pe', 'pe.id', '=', 'p.persona_id')
+            ->where('r.id', $id)
+            ->first();
+
+
+        return response()->json([
+            'success' => true,
+            'data' => $recibo,
+        ], 201);
     }
 
     /**
@@ -156,8 +171,29 @@ class ReciboController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $recibo = Recibo::findOrFail($id);
+
+            // Establecer el estado
+            $recibo->estado = $request->estado ? 2 : 1;
+
+            // Asignar el comprobante solo si no es nulo
+            $recibo->comprobante = $request->comprobante ?? $recibo->comprobante;
+
+            $recibo->save();
+
+            return response()->json([
+                'success' => true,
+                'id' => $recibo->id
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al actualizar el recibo: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
