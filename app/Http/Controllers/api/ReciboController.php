@@ -9,6 +9,7 @@ use App\Models\Recibo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReciboController extends Controller
 {
@@ -159,17 +160,20 @@ class ReciboController extends Controller
         // Verificar si el archivo existe
         $comprobantePath = public_path('comprobantes/' . $recibo->comprobante);
 
-        if (file_exists($comprobantePath)) {
-            // Leer el archivo y convertirlo a Base64
-            $imageData = file_get_contents($comprobantePath);
-            $base64Image = base64_encode($imageData);
+        if (is_readable($comprobantePath)) {
+            try {
+                // Leer el archivo y convertirlo a Base64
+                $imageData = file_get_contents($comprobantePath);
+                $base64Image = base64_encode($imageData);
 
-            // Si el Base64 tiene un prefijo, quitarlo
-            $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
-
-            // Ahora $base64Cleaned contiene solo la parte Base64 sin el prefijo
+                // Si el Base64 tiene un prefijo, quitarlo
+                $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
+            } catch (\Exception $e) {
+                // Si ocurre un error al leer el archivo, devolver null
+                $base64Cleaned = null;
+            }
         } else {
-            // El archivo no existe
+            // Si el archivo no existe o no es legible, asignar null
             $base64Cleaned = null;
         }
 

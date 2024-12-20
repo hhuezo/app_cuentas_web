@@ -73,8 +73,7 @@ class PrestamoController extends Controller
                     $prestamo->cuota = $prestamo->pago_especifico;
                 }
 
-                if($prestamo->cuota == null)
-                {
+                if ($prestamo->cuota == null) {
                     $prestamo->cuota = "0.00";
                 }
             }
@@ -192,13 +191,38 @@ class PrestamoController extends Controller
                 DB::raw("CAST(prestamo.interes AS CHAR) AS interes"),
                 'prestamo.estado',
                 DB::raw("ifnull(prestamo.amortizacion,'') AS amortizacion"),
-                 DB::raw("ifnull(prestamo.pago_especifico,0.00) AS pago_especifico"),
+                DB::raw("ifnull(prestamo.pago_especifico,0.00) AS pago_especifico"),
                 DB::raw("DATE_FORMAT(prestamo.fecha, '%d/%m/%Y') AS fecha"),
-                'tipo_pago.nombre AS tipo'            )
+                'tipo_pago.nombre AS tipo',
+                'prestamo.comprobante_url as comprobante'
+            )
+
                 ->join('persona', 'prestamo.persona_id', '=', 'persona.id')
                 ->join('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
                 ->where('prestamo.id', $id)
                 ->first();
+
+            // Verificar si el archivo existe
+            $comprobantePath = public_path('comprobantes/' . $prestamo->comprobante);
+
+            if (is_readable($comprobantePath)) {
+                try {
+                    // Leer el archivo y convertirlo a Base64
+                    $imageData = file_get_contents($comprobantePath);
+                    $base64Image = base64_encode($imageData);
+
+                    // Si el Base64 tiene un prefijo, quitarlo
+                    $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
+                } catch (\Exception $e) {
+                    // Si ocurre un error al leer el archivo, devolver null
+                    $base64Cleaned = null;
+                }
+            } else {
+                // Si el archivo no existe o no es legible, asignar null
+                $base64Cleaned = null;
+            }
+
+            $prestamo->comprobante = $base64Cleaned;
 
 
 
@@ -250,17 +274,14 @@ class PrestamoController extends Controller
             $saldo = 0;
             foreach ($resultados as $resultado) {
                 if ($resultado->tipo == 1) {
-                    $saldo = $resultado->remanente."";
+                    $saldo = $resultado->remanente . "";
                 } else {
-                    if($resultado->remanente == 0)
-                    {
+                    if ($resultado->remanente == 0) {
                         $saldo =  $saldo + $resultado->cantidad;
-                        $resultado->remanente = $saldo."";
+                        $resultado->remanente = $saldo . "";
+                    } else {
+                        $saldo = $resultado->remanente . "";
                     }
-                    else{
-                        $saldo = $resultado->remanente."";
-                    }
-
                 }
             }
 
