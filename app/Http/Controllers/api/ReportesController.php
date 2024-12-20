@@ -11,6 +11,7 @@ use App\Models\TempPago;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class ReportesController extends Controller
 {
@@ -221,7 +222,59 @@ class ReportesController extends Controller
      */
     public function create()
     {
-        //
+        /*$recibos = Recibo::get();
+
+        foreach ($recibos as $recibo) {
+            // Verificar si el comprobante no es nulo
+            if ($recibo->comprobante != null) {
+
+                // Verificar si el archivo ya existe
+                $fileName = 'recibo_' . $recibo->id . '.jpg';
+                $filePath = 'comprobantes/' . $fileName;
+
+                // Si el archivo no existe
+                if (!file_exists(public_path('comprobantes/' . $fileName))) {
+
+                    // Decodificar el base64 y obtener la parte de la imagen sin el prefijo
+                    $base64Image = preg_replace('/^data:image\/jpeg;base64,/', '', $recibo->comprobante);
+                    $imageData = base64_decode($base64Image);
+
+                    // Guardar el archivo de imagen en el directorio 'public/comprobantes'
+                    file_put_contents(public_path($filePath), $imageData);
+
+                    // Actualizar el registro con la URL del archivo
+                    $recibo->comprabante_url =  $fileName;
+                    $recibo->save();
+                }
+            }
+        }*/
+
+        /*$prestamos = Prestamo::get();
+
+        foreach ($prestamos as $prestamo) {
+            // Verificar si el comprobante no es nulo
+            if ($prestamo->comprobante != null) {
+
+                // Verificar si el archivo ya existe
+                $fileName = 'prestamo_' . $prestamo->id . '.jpg';
+                $filePath = 'comprobantes/' . $fileName;
+
+                // Si el archivo no existe
+                if (!file_exists(public_path('comprobantes/' . $fileName))) {
+
+                    // Decodificar el base64 y obtener la parte de la imagen sin el prefijo
+                    $base64Image = preg_replace('/^data:image\/jpeg;base64,/', '', $prestamo->comprobante);
+                    $imageData = base64_decode($base64Image);
+
+                    // Guardar el archivo de imagen en el directorio 'public/comprobantes'
+                    file_put_contents(public_path($filePath), $imageData);
+
+                    // Actualizar el registro con la URL del archivo
+                    $prestamo->comprobante_url = $fileName;
+                    $prestamo->save();
+                }
+            }
+        }*/
     }
 
     /**
