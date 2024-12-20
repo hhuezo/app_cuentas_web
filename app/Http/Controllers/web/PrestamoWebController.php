@@ -10,8 +10,10 @@ use App\Models\Recibo;
 use App\Models\TipoPago;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class PrestamoWebController extends Controller
@@ -78,13 +80,12 @@ class PrestamoWebController extends Controller
         $prestamo->interes = $request->interes;
         $prestamo->tipo_pago_id = $request->tipo_pago_id;
         $prestamo->primer_pago = $request->fecha;
-        if($request->amortizacion == null){
+        if ($request->amortizacion == null) {
             $prestamo->amortizacion = 0;
-        }
-        else{
+        } else {
             $prestamo->amortizacion = 1;
         }
-        $prestamo->comprobante = $request->comprobante;
+        //$prestamo->comprobante = $request->comprobante;
         $prestamo->administrador = $request->administrador;
         $prestamo->pago_especifico = $request->pago_especifico;
         $prestamo->observacion = $request->observacion;
@@ -92,11 +93,53 @@ class PrestamoWebController extends Controller
         $prestamo->numero_pagos = $request->numero_pagos;
         $prestamo->save();
 
+
+
+        // Verificar si el comprobante existe y no está vacío
+        if ($request->has('comprobante') && $request->comprobante) {
+            // Buscar el préstamo
+
+            if (!$prestamo) {
+                return response()->json(['error' => 'Préstamo no encontrado'], 404);
+            }
+
+            // Ruta donde se guardará el archivo
+            $fileName = 'prestamo_' . $prestamo->id . '.jpg';
+            $filePath = public_path('comprobantes/' . $fileName);
+
+            // Decodificar el Base64 y guardar el archivo
+            try {
+                // Remover el prefijo "data:image/jpeg;base64," si existe
+                $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $request->comprobante);
+
+                // Decodificar el Base64
+                $imageData = base64_decode($base64Image);
+
+                // Verificar si la decodificación fue exitosa
+                if ($imageData === false) {
+                    throw new Exception('La imagen no pudo ser decodificada');
+                }
+
+                // Guardar el archivo en la carpeta public/comprobantes
+                file_put_contents($filePath, $imageData);
+
+                // Actualizar el registro del préstamo
+                $prestamo->comprobante_url = $fileName;
+                $prestamo->save();
+            } catch (Exception $e) {
+                // Loguear errores para depuración
+                Log::error('Error al guardar el comprobante: ' . $e->getMessage());
+            }
+        }
+
+
+
+
         $capital = 0;
         $interes = 0;
         $fecha_temp = Carbon::createFromFormat('Y-m-d', $request->fecha);
         //calculando cuota mensual
-        if (($request->tipo_pago_id == 1 || $request->tipo_pago_id == 4) && $request->numero_pagos > 0 ) {
+        if (($request->tipo_pago_id == 1 || $request->tipo_pago_id == 4) && $request->numero_pagos > 0) {
             $capital = $request->cantidad / $request->numero_pagos;
             $interes = ($request->cantidad * $request->interes) / 100;
 
