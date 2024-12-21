@@ -222,7 +222,7 @@ class ReportesController extends Controller
      */
     public function create()
     {
-        /*$recibos = Recibo::get();
+        $recibos = Recibo::get();
 
         foreach ($recibos as $recibo) {
             // Verificar si el comprobante no es nulo
@@ -243,11 +243,11 @@ class ReportesController extends Controller
                     file_put_contents(public_path($filePath), $imageData);
 
                     // Actualizar el registro con la URL del archivo
-                    $recibo->comprabante_url =  $fileName;
+                    $recibo->comprobante_url =  $fileName;
                     $recibo->save();
                 }
             }
-        }*/
+        }
 
         /*$prestamos = Prestamo::get();
 
