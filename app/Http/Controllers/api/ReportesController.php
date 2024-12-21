@@ -222,7 +222,7 @@ class ReportesController extends Controller
      */
     public function create()
     {
-        /*$recibos = Recibo::get();
+        $recibos = Recibo::get();
 
         foreach ($recibos as $recibo) {
             // Verificar si el comprobante no es nulo
@@ -247,7 +247,7 @@ class ReportesController extends Controller
                     $recibo->save();
                 }
             }
-        }*/
+        }
 
         $prestamos = Prestamo::get();
 
