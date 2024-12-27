@@ -73,7 +73,7 @@ class ReciboWebController extends Controller
                 }
 
                 // Ruta donde se guardará el archivo
-                $fileName = 'recibo_' . $prestamo->id . '.jpg';
+                $fileName = 'recibo_' . $recibo->id . '.jpg';
                 $filePath = public_path('comprobantes/' . $fileName);
 
                 // Decodificar el Base64 y guardar el archivo

@@ -148,7 +148,7 @@
 
                             <div class="col-md-6 mb-3">
                                 <center>
-                                    <img src="data:image/png;base64,{{ $prestamo->comprobante }}" alt="Vista previa"
+                                    <img src="{{ asset('comprobantes') }}/{{ $prestamo->comprobante_url }}" alt="Vista previa"
                                         style="max-width: 200px; height: 200px;">
                                 </center>
                             </div>
