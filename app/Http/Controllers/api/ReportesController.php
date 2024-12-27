@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Models\Cargo;
 use App\Models\Prestamo;
+use App\Models\PrestamoFijo;
 use App\Models\Recibo;
 use App\Models\ReciboFijo;
 use App\Models\TempPago;
@@ -222,14 +223,14 @@ class ReportesController extends Controller
      */
     public function create()
     {
-        $recibos = Recibo::get();
+        $recibos = ReciboFijo::get();
 
         foreach ($recibos as $recibo) {
             // Verificar si el comprobante no es nulo
             if ($recibo->comprobante != null) {
 
                 // Verificar si el archivo ya existe
-                $fileName = 'recibo_' . $recibo->id . '.jpg';
+                $fileName = 'recibo_fijo_' . $recibo->id . '.jpg';
                 $filePath = 'comprobantes/' . $fileName;
 
                 // Si el archivo no existe
@@ -249,14 +250,14 @@ class ReportesController extends Controller
             }
         }
 
-        $prestamos = Prestamo::get();
+        $prestamos = PrestamoFijo::get();
 
         foreach ($prestamos as $prestamo) {
             // Verificar si el comprobante no es nulo
             if ($prestamo->comprobante != null) {
 
                 // Verificar si el archivo ya existe
-                $fileName = 'prestamo_' . $prestamo->id . '.jpg';
+                $fileName = 'prestamo_fijo_' . $prestamo->id . '.jpg';
                 $filePath = 'comprobantes/' . $fileName;
 
                 // Si el archivo no existe

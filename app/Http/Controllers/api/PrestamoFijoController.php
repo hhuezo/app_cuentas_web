@@ -169,6 +169,7 @@ class PrestamoFijoController extends Controller
 
     public function show($id)
     {
+
         try {
             $prestamo = PrestamoFijo::join('persona', 'persona.id', '=', 'prestamo_fijo.persona_id')
                 ->select(
@@ -178,9 +179,35 @@ class PrestamoFijoController extends Controller
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") as fecha'),
                     DB::raw('LPAD(codigo, 3, "0") as codigo'),
                     'estado',
-                    DB::raw('"" as comprobante'),
+                    'prestamo_fijo.comprobante_url as comprobante',
                     DB::raw('IFNULL(observacion, "") as observacion')
                 )->findOrFail($id);
+
+
+            // Verificar si el archivo existe
+            $comprobantePath = public_path('comprobantes/' . $prestamo->comprobante);
+
+            if (is_readable($comprobantePath)) {
+                try {
+                    // Leer el archivo y convertirlo a Base64
+                    $imageData = file_get_contents($comprobantePath);
+                    $base64Image = base64_encode($imageData);
+
+                    // Si el Base64 tiene un prefijo, quitarlo
+                    $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
+                } catch (\Exception $e) {
+                    // Si ocurre un error al leer el archivo, devolver null
+                    $base64Cleaned = null;
+                }
+            } else {
+                // Si el archivo no existe o no es legible, asignar null
+                $base64Cleaned = null;
+            }
+            $prestamo->comprobante = $base64Cleaned;
+
+
+
+
 
             $sum_recibo = ReciboFijo::where('prestamo_fijo_id', $prestamo->id)->sum('cantidad');
             $sum_cargos = CargoFijo::where('prestamo_fijo_id', $prestamo->id)->sum('cantidad');
@@ -206,7 +233,7 @@ class PrestamoFijoController extends Controller
                     'id',
                     DB::raw('DATE_FORMAT(fecha, "%d/%m/%Y") AS fecha'),
                     'cantidad',
-                    'comprobante',
+                    DB::raw('"" as comprobante'),
                     DB::raw('0 as estado'),
                     DB::raw('2 as tipo'),
                     'observacion',
