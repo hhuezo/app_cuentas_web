@@ -270,9 +270,48 @@ class ReciboWebController extends Controller
         $recibo->cantidad = $request->cantidad;
         $recibo->interes =  $request->interes;
         //$recibo->remanente =  $request->remanente;
-        $recibo->comprobante =  $request->comprobante;
+        //$recibo->comprobante =  $request->comprobante;
         $recibo->estado = $request->estado != null ? 2 : 1;
         $recibo->save();
+
+
+
+        // Verificar si el comprobante existe y no está vacío
+        if ($request->has('comprobante') && $request->comprobante) {
+            // Buscar el préstamo
+
+            if (!$recibo) {
+                return response()->json(['error' => 'Préstamo no encontrado'], 404);
+            }
+
+            // Ruta donde se guardará el archivo
+            $fileName = 'recibo_' . $recibo->id . '.jpg';
+            $filePath = public_path('comprobantes/' . $fileName);
+
+            // Decodificar el Base64 y guardar el archivo
+            try {
+                // Remover el prefijo "data:image/jpeg;base64," si existe
+                $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $request->comprobante);
+
+                // Decodificar el Base64
+                $imageData = base64_decode($base64Image);
+
+                // Verificar si la decodificación fue exitosa
+                if ($imageData === false) {
+                    throw new Exception('La imagen no pudo ser decodificada');
+                }
+
+                // Guardar el archivo en la carpeta public/comprobantes
+                file_put_contents($filePath, $imageData);
+
+                // Actualizar el registro del préstamo
+                $recibo->comprobante_url = $fileName;
+                $recibo->save();
+            } catch (Exception $e) {
+                // Loguear errores para depuración
+                Log::error('Error al guardar el comprobante: ' . $e->getMessage());
+            }
+        }
 
 
 
@@ -281,6 +320,7 @@ class ReciboWebController extends Controller
             $prestamo->estado = 2;
             $prestamo->save();
         }
+
 
         alert()->success('El registro ha sido guardado correctamente');
         return redirect('prestamo_web/' . $recibo->prestamo_id);

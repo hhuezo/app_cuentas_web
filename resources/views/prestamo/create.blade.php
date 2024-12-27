@@ -148,7 +148,7 @@
                             <div class="input-area relative">
                                 <label for="largeInput" class="form-label">Interes</label>
                                 <input type="number" name="interes" required class="form-control"
-                                    value="{{ old('interes') }}">
+                                    value="10">
                             </div>
                         </div>
 

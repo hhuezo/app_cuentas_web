@@ -160,7 +160,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <center>
-                                <img id="preview" src="data:image/png;base64,{{ $recibo->comprobante }}"
+                                <img id="preview" src="{{ asset('comprobantes') }}/{{ $recibo->comprobante_url }}"
                                     alt="Vista previa" style="max-width: 200px; height: auto;">
                             </center>
                         </div>
