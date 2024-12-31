@@ -66,11 +66,6 @@ class ReciboWebController extends Controller
 
             // Verificar si el comprobante existe y no está vacío
             if ($request->has('comprobante') && $request->comprobante) {
-                // Buscar el préstamo
-
-                if (!$prestamo) {
-                    return response()->json(['error' => 'Préstamo no encontrado'], 404);
-                }
 
                 // Ruta donde se guardará el archivo
                 $fileName = 'recibo_' . $recibo->id . '.jpg';
