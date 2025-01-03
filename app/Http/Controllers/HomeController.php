@@ -48,8 +48,14 @@ class HomeController extends Controller
         $total_reintegrado = Recibo::where('estado', 2)->sum('cantidad');
         $total_interes_reintegrado = Recibo::where('estado', 2)->sum('interes');
         $total_fijo_reintegrado = ReciboFijo::sum('cantidad');
-        $data_general = ["count_prestamos" => $count_prestamos, "total_prestado" => $total_prestado, "total_cargos" => $total_cargos,
-         "total_reintegrado" => $total_reintegrado, "total_interes_reintegrado" => $total_interes_reintegrado,"total_fijo_reintegrado"=>$total_fijo_reintegrado];
+        $data_general = [
+            "count_prestamos" => $count_prestamos,
+            "total_prestado" => $total_prestado,
+            "total_cargos" => $total_cargos,
+            "total_reintegrado" => $total_reintegrado,
+            "total_interes_reintegrado" => $total_interes_reintegrado,
+            "total_fijo_reintegrado" => $total_fijo_reintegrado
+        ];
 
         $meses = ["", "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
@@ -65,28 +71,41 @@ class HomeController extends Controller
             if ($interesesPorMes) {
                 $total = $interesesPorMes->total_interes + 0;
                 $array = ["name" => $meses[$i], "y" => $total, "drilldown" => $meses[$i]];
-                array_push($interesesPorMesArray,$array);
+                array_push($interesesPorMesArray, $array);
             } else {
                 $total = 0;
             }
 
+            $ultimoMes = Carbon::now()->month; // El mes actual
+            $anioActual = Carbon::now()->year; // El año actual
+
             $interesesPorMes = ReciboFijo::selectRaw('SUM(cantidad) as total, YEAR(fecha) as anio, MONTH(fecha) as mes')
-            ->whereYear('fecha', 2024)
-            ->whereMonth('fecha', $i)
-            ->groupByRaw('YEAR(fecha), MONTH(fecha)')
-            ->first();
+                ->whereBetween('fecha', [
+                    Carbon::now()->subMonths(12)->startOfMonth(), // Fecha de hace 12 meses
+                    Carbon::now()->endOfMonth() // Fecha actual
+                ])
+                ->groupByRaw('YEAR(fecha), MONTH(fecha)')
+                ->orderByRaw('YEAR(fecha) DESC, MONTH(fecha) DESC') // Ordenar por año y mes de forma descendente
+                ->get();
+
 
             if ($interesesPorMes) {
                 $total = $interesesPorMes->total + 0;
                 $array = ["name" => $meses[$i], "y" => $total, "drilldown" => $meses[$i]];
-                array_push($gananciaPorMesArray,$array);
+                array_push($gananciaPorMesArray, $array);
             } else {
                 $total = 0;
             }
         }
 
 
-        return view('home', compact('pagos', 'data_general', 'fechaInicio', 'fechaFinal',
-        'interesesPorMesArray','gananciaPorMesArray'));
+        return view('home', compact(
+            'pagos',
+            'data_general',
+            'fechaInicio',
+            'fechaFinal',
+            'interesesPorMesArray',
+            'gananciaPorMesArray'
+        ));
     }
 }
