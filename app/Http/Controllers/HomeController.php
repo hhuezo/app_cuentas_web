@@ -81,7 +81,7 @@ class HomeController extends Controller
 
 
         for ($i = 0; $i < 12; $i++) {
-            //echo "Mes: " . $months[$i] . " Año: " . $years[$i] . "\n";
+           // echo "Mes: " . $months[$i] ."-".$meses[$months[$i]]. " Año: " . $years[$i] . "\n";
 
             $interesesPorMes = Recibo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')
                 ->where('estado', 2)
@@ -91,7 +91,7 @@ class HomeController extends Controller
                 ->first();
             if ($interesesPorMes) {
                 $total = $interesesPorMes->total_interes + 0;
-                $array = ["name" => $meses[$i+1]."-".$years[$i], "y" => $total, "drilldown" => $meses[$i+1]];
+                $array = ["name" => $meses[$months[$i]]."-".$years[$i], "y" => $total, "drilldown" => $meses[$months[$i]]];
                 array_push($interesesPorMesArray, $array);
             } else {
                 $total = 0;
@@ -105,13 +105,13 @@ class HomeController extends Controller
 
             if ($interesesPorMes) {
                 $total = $interesesPorMes->total + 0;
-                $array = ["name" => $meses[$i+1]."-".$years[$i], "y" => $total, "drilldown" => $meses[$i+1]];
+                $array = ["name" => $meses[$months[$i]]."-".$years[$i], "y" => $total, "drilldown" => $meses[$months[$i]]];
                 array_push($gananciaPorMesArray, $array);
             } else {
                 $total = 0;
             }
         }
-
+        //dd($months, $years);
         //dd($interesesPorMesArray, $gananciaPorMesArray);
 
 
