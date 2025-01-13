@@ -10,10 +10,8 @@ use App\Models\Recibo;
 use App\Models\TipoPago;
 use App\Models\User;
 use Carbon\Carbon;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class PrestamoController extends Controller
@@ -75,7 +73,8 @@ class PrestamoController extends Controller
                     $prestamo->cuota = $prestamo->pago_especifico;
                 }
 
-                if ($prestamo->cuota == null) {
+                if($prestamo->cuota == null)
+                {
                     $prestamo->cuota = "0.00";
                 }
             }
@@ -167,47 +166,6 @@ class PrestamoController extends Controller
             $prestamo->numero_pagos = $request->numero_pagos;
             $prestamo->save();
 
-
-            // Verificar si el comprobante existe y no está vacío
-            if ($request->has('comprobante') && $request->comprobante) {
-                // Buscar el préstamo
-
-                if (!$prestamo) {
-                    return response()->json(['error' => 'Préstamo no encontrado'], 404);
-                }
-
-                // Ruta donde se guardará el archivo
-                $fileName = 'prestamo_' . $prestamo->id . '.jpg';
-                $filePath = public_path('comprobantes/' . $fileName);
-
-                // Decodificar el Base64 y guardar el archivo
-                try {
-                    // Remover el prefijo "data:image/jpeg;base64," si existe
-                    $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $request->comprobante);
-
-                    // Decodificar el Base64
-                    $imageData = base64_decode($base64Image);
-
-                    // Verificar si la decodificación fue exitosa
-                    if ($imageData === false) {
-                        throw new Exception('La imagen no pudo ser decodificada');
-                    }
-
-                    // Guardar el archivo en la carpeta public/comprobantes
-                    file_put_contents($filePath, $imageData);
-
-                    // Actualizar el registro del préstamo
-                    $prestamo->comprobante_url = $fileName;
-                    $prestamo->save();
-                } catch (Exception $e) {
-                    // Loguear errores para depuración
-                    Log::error('Error al guardar el comprobante: ' . $e->getMessage());
-                }
-            }
-
-
-
-
             return response()->json([
                 'success' => true,
                 'message' => 'Prestamo creado exitosamente',
@@ -234,38 +192,13 @@ class PrestamoController extends Controller
                 DB::raw("CAST(prestamo.interes AS CHAR) AS interes"),
                 'prestamo.estado',
                 DB::raw("ifnull(prestamo.amortizacion,'') AS amortizacion"),
-                DB::raw("ifnull(prestamo.pago_especifico,0.00) AS pago_especifico"),
+                 DB::raw("ifnull(prestamo.pago_especifico,0.00) AS pago_especifico"),
                 DB::raw("DATE_FORMAT(prestamo.fecha, '%d/%m/%Y') AS fecha"),
-                'tipo_pago.nombre AS tipo',
-                'prestamo.comprobante_url as comprobante'
-            )
-
+                'tipo_pago.nombre AS tipo'            )
                 ->join('persona', 'prestamo.persona_id', '=', 'persona.id')
                 ->join('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
                 ->where('prestamo.id', $id)
                 ->first();
-
-            // Verificar si el archivo existe
-            $comprobantePath = public_path('comprobantes/' . $prestamo->comprobante);
-
-            if (is_readable($comprobantePath)) {
-                try {
-                    // Leer el archivo y convertirlo a Base64
-                    $imageData = file_get_contents($comprobantePath);
-                    $base64Image = base64_encode($imageData);
-
-                    // Si el Base64 tiene un prefijo, quitarlo
-                    $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
-                } catch (\Exception $e) {
-                    // Si ocurre un error al leer el archivo, devolver null
-                    $base64Cleaned = null;
-                }
-            } else {
-                // Si el archivo no existe o no es legible, asignar null
-                $base64Cleaned = null;
-            }
-
-            $prestamo->comprobante = $base64Cleaned;
 
 
 
@@ -317,14 +250,17 @@ class PrestamoController extends Controller
             $saldo = 0;
             foreach ($resultados as $resultado) {
                 if ($resultado->tipo == 1) {
-                    $saldo = $resultado->remanente . "";
+                    $saldo = $resultado->remanente."";
                 } else {
-                    if ($resultado->remanente == 0) {
+                    if($resultado->remanente == 0)
+                    {
                         $saldo =  $saldo + $resultado->cantidad;
-                        $resultado->remanente = $saldo . "";
-                    } else {
-                        $saldo = $resultado->remanente . "";
+                        $resultado->remanente = $saldo."";
                     }
+                    else{
+                        $saldo = $resultado->remanente."";
+                    }
+
                 }
             }
 

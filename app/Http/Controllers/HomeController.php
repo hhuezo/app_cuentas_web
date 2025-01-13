@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\MiCorreo;
 use App\Models\Cargo;
 use App\Models\Prestamo;
 use App\Models\Recibo;
 use App\Models\ReciboFijo;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class HomeController extends Controller
 {
@@ -28,6 +30,17 @@ class HomeController extends Controller
      */
     public function index(Request $request)
     {
+
+        /*$datos = [
+            'nombre' => 'Juan Pérez',
+            'mensaje' => 'Este es un mensaje de prueba.'
+        ];
+
+        Mail::to('hugo.alex.huezo@gmail.com')->send(new MiCorreo($datos));
+
+        return "Correo enviado correctamente";*/
+
+
         $fechaInicio = Carbon::now()->firstOfMonth()->format('Y-m-d');
         if ($request->fechaInicio) {
             $fechaInicio = $request->fechaInicio;

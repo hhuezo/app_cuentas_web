@@ -1,0 +1,5 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Bloquear acceso a .env
+    RewriteRule ^\.env - [F,L]
+</IfModule>
