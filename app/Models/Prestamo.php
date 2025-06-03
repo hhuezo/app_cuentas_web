@@ -10,7 +10,7 @@ class Prestamo extends Model
     use HasFactory;
 
     protected $table = 'prestamo';
-    public $timestamps = false; // Poner true si quieres usar los campos timestamps (created_at, updated_at)
+    public $timestamps = false;
 
     protected $fillable = [
         'persona_id',

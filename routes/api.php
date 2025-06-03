@@ -31,7 +31,7 @@ Route::post('login', [AuthController::class,'login']);
 Route::resource('persona', PersonaController::class);
 Route::resource('prestamo', PrestamoController::class);
 Route::resource('recibo', ReciboController::class);
-Route::resource('reportes', ReportesController::class);
+Route::resource('pagos', ReportesController::class);
 Route::resource('cargo', CargoController::class);
 Route::resource('prestamo_fijo', PrestamoFijoController::class);
 Route::resource('recibo_fijo', ReciboFijoController::class);

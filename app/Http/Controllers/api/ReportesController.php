@@ -20,63 +20,39 @@ class ReportesController extends Controller
     public function index(Request $request)
     {
         try {
-            // Obtener la fecha actual
             $now = Carbon::now();
 
-            if ($request->fecha_inicio) {
-                $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha_inicio);
-                $fecha_inicio = $fechaCarbon->format('Y-m-d');
-            } else {
-                // Obtener el primer día del mes actual
-                $fecha_inicio = $now->firstOfMonth()->format('Y-m-d');
-            }
-            if ($request->fecha_final) {
-                $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha_final);
-                $fecha_final = $fechaCarbon->format('Y-m-d');
-            } else {
-                // Obtener la fecha actual
-                $now = Carbon::now();
+            // Manejo de fechas con valores por defecto
+            $fecha_inicio = $request->filled('fecha_inicio')
+                ? Carbon::createFromFormat('d/m/Y', $request->fecha_inicio)->format('Y-m-d')
+                : $now->copy()->firstOfMonth()->format('Y-m-d');
 
-                // Obtener el último día del mes actual
-                $fecha_final = $now->endOfMonth()->format('Y-m-d');
-            }
+            $fecha_final = $request->filled('fecha_final')
+                ? Carbon::createFromFormat('d/m/Y', $request->fecha_final)->format('Y-m-d')
+                : $now->copy()->endOfMonth()->format('Y-m-d');
 
+            // Asignar valores por defecto si no están presentes
+            $usuario_id = $request->input('usuario_id', 1);
+            $rol = $request->input('rol', 1);
 
-            $rol = 1;
-            $usuario_id = 1;
-
-            if ($request->usuario_id) {
-                $usuario_id = $request->usuario_id;
-            }
-
-            if ($request->rol) {
-                $rol = $request->rol;
-            }
-
-
-
-
+            // Obtener pagos con filtros aplicados
             $pagos = Recibo::join('prestamo', 'prestamo.id', '=', 'recibo.prestamo_id')
                 ->join('persona', 'persona.id', '=', 'prestamo.persona_id')
                 ->whereBetween('recibo.fecha', [$fecha_inicio, $fecha_final])
-                ->when($rol != 1, function ($query) use ($usuario_id) {
-                    $query->where('administrador', $usuario_id);
-                })
-                ->selectRaw('recibo.id, recibo.prestamo_id,recibo.fecha, DATE_FORMAT(recibo.fecha, "%d/%m/%Y") AS fecha_formato, recibo.cantidad, recibo.estado as pagado,persona.nombre')
+                ->when($rol != 1, fn($query) => $query->where('administrador', $usuario_id))
+                ->selectRaw('recibo.id, recibo.prestamo_id, recibo.fecha, DATE_FORMAT(recibo.fecha, "%d/%m/%Y") AS fecha_formato, recibo.cantidad, recibo.estado as pagado, persona.nombre')
                 ->orderBy('recibo.fecha')
                 ->get();
 
+            // Ajuste al estado de pago
             foreach ($pagos as $pago) {
-                $pago->pagado = $pago->pagado - 1;
+                $pago->pagado -= 1;
             }
-
-
-            $data = ["pagos" => $pagos];
 
             return response()->json([
                 'success' => true,
                 'message' => 'Datos encontrados',
-                'data' => $data
+                'data' => ['pagos' => $pagos]
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -84,8 +60,6 @@ class ReportesController extends Controller
                 'message' => 'Error: ' . $e->getMessage(),
             ], 500);
         }
-
-        dd($data);
     }
 
     public function calculoCuota($id)

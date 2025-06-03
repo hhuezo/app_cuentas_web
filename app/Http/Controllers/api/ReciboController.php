@@ -7,6 +7,7 @@ use App\Models\Cargo;
 use App\Models\Prestamo;
 use App\Models\Recibo;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -156,60 +157,71 @@ class ReciboController extends Controller
             ->where('r.id', $id)
             ->first();
 
+        $base64Cleaned = null;  // Valor por defecto
 
-        // Verificar si el archivo existe
-        $comprobantePath = public_path('comprobantes/' . $recibo->comprobante);
+        if ($recibo && $recibo->comprobante) {
+            $comprobantePath = public_path('comprobantes/' . $recibo->comprobante);
 
-        if (is_readable($comprobantePath)) {
-            try {
-                // Leer el archivo y convertirlo a Base64
-                $imageData = file_get_contents($comprobantePath);
-                $base64Image = base64_encode($imageData);
-
-                // Si el Base64 tiene un prefijo, quitarlo
-                $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
-            } catch (\Exception $e) {
-                // Si ocurre un error al leer el archivo, devolver null
-                $base64Cleaned = null;
+            if ($comprobantePath && is_readable($comprobantePath)) {
+                try {
+                    $imageData = file_get_contents($comprobantePath);
+                    $base64Image = base64_encode($imageData);
+                    // Si el base64 tiene un prefijo, lo quitamos (aunque en este caso no debería tener)
+                    $base64Cleaned = str_replace('data:image/jpeg;base64,', '', $base64Image);
+                } catch (\Exception $e) {
+                    $base64Cleaned = null;
+                }
             }
-        } else {
-            // Si el archivo no existe o no es legible, asignar null
-            $base64Cleaned = null;
         }
 
-        $recibo->comprobante = $base64Cleaned;
-
+        // Solo si $recibo no es null, asignamos el base64
+        if ($recibo) {
+            $recibo->comprobante = $base64Cleaned;
+        }
 
         return response()->json([
             'success' => true,
             'data' => $recibo,
-        ], 201);
+        ], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         try {
             $recibo = Recibo::findOrFail($id);
 
-            // Establecer el estado
-            $recibo->estado = $request->estado ? 2 : 1;
+            // Establecer el estado: true => 2, false => 1
+            $recibo->estado = $request->estado ?? 1;
 
-            // Asignar el comprobante solo si no es nulo
-            $recibo->comprobante = $request->comprobante ?? $recibo->comprobante;
+            // Guardar el comprobante si existe
+            if ($request->has('comprobante') && $request->comprobante) {
+                $fileName = 'recibo_' . $recibo->id . '.jpg';
+                $filePath = public_path('comprobantes/' . $fileName);
+
+                try {
+                    // Limpiar base64 si tiene prefijo
+                    $base64Image = preg_replace('/^data:image\/\w+;base64,/', '', $request->comprobante);
+                    $imageData = base64_decode($base64Image);
+
+                    if ($imageData === false) {
+                        throw new Exception('La imagen no pudo ser decodificada');
+                    }
+
+                    file_put_contents($filePath, $imageData);
+
+                    // Guardar solo el nombre del archivo en la base de datos
+                    $recibo->comprobante_url = $fileName;
+                } catch (Exception $e) {
+                    Log::error('Error al guardar el comprobante: ' . $e->getMessage());
+                }
+            }
 
             $recibo->save();
 
             return response()->json([
                 'success' => true,
                 'id' => $recibo->id
-            ], 201);
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -218,13 +230,6 @@ class ReciboController extends Controller
         }
     }
 
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
         //

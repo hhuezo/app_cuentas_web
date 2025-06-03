@@ -19,21 +19,12 @@ class PrestamoController extends Controller
     public function index(Request $request)
     {
         try {
-            $rol = 1;
-            $id_usuario = 1;
-            if ($request->rol) {
-                $rol = $request->rol;
-            }
+            // Obtener parámetros con valores por defecto
+            $rol = $request->get('rol', 1);
+            $id_usuario = $request->get('id_usuario', 1);
+            $search = $request->get('search', '');
 
-            if ($request->rol) {
-                $id_usuario = $request->id_usuario;
-            }
-
-            $search = "";
-            if ($request->search) {
-                $search = $request->search;
-            }
-
+            // Consulta principal
             $prestamos = DB::table('prestamo')
                 ->select(
                     'prestamo.id',
@@ -52,50 +43,37 @@ class PrestamoController extends Controller
                     DB::raw('IFNULL(prestamo.observacion, "") as observacion'),
                     DB::raw('DATE_FORMAT(prestamo.fecha, "%d/%m/%Y") as fecha'),
                     DB::raw('IFNULL((SELECT remanente FROM recibo WHERE recibo.prestamo_id = prestamo.id and recibo.estado = 2  ORDER BY recibo.id DESC LIMIT 1), prestamo.cantidad) AS deuda'),
-                    DB::raw('ROUND((prestamo.cantidad / prestamo.numero_pagos) + (prestamo.cantidad * (prestamo.interes / 100) *
-                    IF(prestamo.tipo_pago_id = 2, 0.5, IF(prestamo.tipo_pago_id = 5, 0.25, 1))), 2) AS cuota')
+                    DB::raw('ROUND((prestamo.cantidad / prestamo.numero_pagos) + (prestamo.cantidad * (prestamo.interes / 100) * IF(prestamo.tipo_pago_id = 2, 0.5, IF(prestamo.tipo_pago_id = 5, 0.25, 1))), 2) AS cuota')
                 )
                 ->leftJoin('persona', 'prestamo.persona_id', '=', 'persona.id')
                 ->leftJoin('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
-                ->when($rol > 1, function ($query) use ($id_usuario) {
-                    $query->where('administrador', $id_usuario);
-                })
-                ->when($search, function ($query, $search) {
-                    $query->where('persona.nombre', 'like', '%' . $search . '%');
-                })
+                ->when($rol > 1, fn($query) => $query->where('administrador', $id_usuario))
+                ->when($search, fn($query) => $query->where('persona.nombre', 'like', "%$search%"))
                 ->orderBy('prestamo.estado')
                 ->orderBy('prestamo.fecha', 'desc')
-                //->take(5)
                 ->get();
 
+            // Ajuste de cuotas
             foreach ($prestamos as $prestamo) {
-                if ($prestamo->pago_especifico > 0) {
-                    $prestamo->cuota = $prestamo->pago_especifico;
-                }
-
-                if($prestamo->cuota == null)
-                {
-                    $prestamo->cuota = "0.00";
-                }
+                $prestamo->cuota = $prestamo->pago_especifico > 0
+                    ? $prestamo->pago_especifico
+                    : ($prestamo->cuota ?? "0.00");
             }
 
-
-
-            // Devolver respuesta JSON con los datos obtenidos
             return response()->json([
                 'success' => true,
-                'message' => 'Prestamos encontrados',
+                'message' => 'Préstamos encontrados',
                 'data' => $prestamos
             ]);
         } catch (\Exception $e) {
-            // Devolver respuesta JSON en caso de error
             return response()->json([
                 'success' => false,
-                'message' => 'Error al obtener los prestamos',
+                'message' => 'Error al obtener los préstamos',
                 'error' => $e->getMessage()
             ], 500);
         }
     }
+
 
     public function create()
     {
@@ -130,7 +108,7 @@ class PrestamoController extends Controller
             'tipo_pago_id' => 'required|integer',
             'fecha' => 'required|date_format:d/m/Y',
             'amortizacion' => 'nullable|boolean',
-            'comprobante' => 'nullable|string', // Dependiendo de cómo manejes los largos textos, podrías necesitar ajustar esto
+            'comprobante' => 'nullable|string',
             'administrador' => 'required|integer',
             'pago_especifico' => 'nullable|numeric|min:0',
             'observacion' => 'nullable|string|max:255'
@@ -145,12 +123,55 @@ class PrestamoController extends Controller
         }
 
         try {
+            DB::beginTransaction(); // Iniciar transacción
+
             $max = Prestamo::max('codigo');
             $codigo = is_null($max) ? 1 : $max + 1;
 
             $fechaCarbon = Carbon::createFromFormat('d/m/Y', $request->fecha);
+            $imageName = null;
 
+            // Procesamiento de la imagen
+            if (!is_null($request->comprobante)) {
+                if (preg_match('/^data:image\/(\w+);base64,/', $request->comprobante, $matches)) {
+                    $extension = $matches[1];
+                    $allowedExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
+                    if ($extension === 'jpeg') {
+                        $extension = 'jpg';
+                    }
+
+                    if (!in_array($extension, $allowedExtensions)) {
+                        throw new \Exception("Formato de imagen no permitido. Use: " . implode(', ', $allowedExtensions));
+                    }
+
+                    $imageData = explode(',', $request->comprobante)[1];
+                    $imageBinary = base64_decode($imageData);
+
+                    if ($imageBinary === false) {
+                        throw new \Exception("Error al decodificar la imagen Base64");
+                    }
+
+                    if (@imagecreatefromstring($imageBinary) === false) {
+                        throw new \Exception("Los datos no corresponden a una imagen válida");
+                    }
+
+                    if (!file_exists(public_path('comprobantes'))) {
+                        mkdir(public_path('comprobantes'), 0755, true);
+                    }
+
+                    $imageName = 'prestamo_' . $codigo . '.' . $extension;
+                    $imagePath = public_path('comprobantes/' . $imageName);
+
+                    if (file_put_contents($imagePath, $imageBinary) === false) {
+                        throw new \Exception("Error al guardar la imagen en el servidor");
+                    }
+                } else {
+                    throw new \Exception("El formato de la imagen debe ser un Data URI válido (data:image/...)");
+                }
+            }
+
+            // Creación del préstamo
             $prestamo = new Prestamo();
             $prestamo->persona_id = $request->persona_id;
             $prestamo->cantidad = $request->cantidad;
@@ -158,7 +179,7 @@ class PrestamoController extends Controller
             $prestamo->tipo_pago_id = $request->tipo_pago_id;
             $prestamo->primer_pago = $fechaCarbon->format('Y-m-d');
             $prestamo->amortizacion = $request->amortizacion;
-            $prestamo->comprobante = $request->comprobante;
+            $prestamo->comprobante_url = $imageName;
             $prestamo->administrador = $request->administrador;
             $prestamo->pago_especifico = $request->pago_especifico;
             $prestamo->observacion = $request->observacion;
@@ -166,18 +187,108 @@ class PrestamoController extends Controller
             $prestamo->numero_pagos = $request->numero_pagos;
             $prestamo->save();
 
+            // Generación de recibos según tipo de pago
+            $capital = 0;
+            $interes = 0;
+            $fecha_temp = Carbon::createFromFormat('Y-m-d', $fechaCarbon->format('Y-m-d'));
+            $remanente = $request->cantidad;
+
+            switch ($request->tipo_pago_id) {
+                case 1: // Mensual (último día del mes)
+                case 4: // Otro tipo mensual
+                    if ($request->numero_pagos > 0) {
+                        $capital = $request->cantidad / $request->numero_pagos;
+                        $interes = ($request->cantidad * $request->interes) / 100;
+
+                        for ($i = 0; $i < $request->numero_pagos; $i++) {
+                            $remanente -= $capital;
+                            $this->crearRecibo($prestamo->id, $fecha_temp, $capital, $interes, $remanente);
+                            $fecha_temp->addDay()->endOfMonth();
+                        }
+                    }
+                    break;
+
+                case 2: // Quincenal (días 15 y último día del mes)
+                    if ($request->numero_pagos > 0) {
+                        $capital = $request->cantidad / $request->numero_pagos;
+                        $interes = ($request->cantidad * $request->interes) / 100 / 2;
+
+                        for ($i = 0; $i < $request->numero_pagos; $i++) {
+                            $remanente -= $capital;
+                            $this->crearRecibo($prestamo->id, $fecha_temp, $capital, $interes, $remanente);
+
+                            if ($fecha_temp->day == 15) {
+                                $fecha_temp->endOfMonth();
+                            } else {
+                                $fecha_temp->endOfMonth()->addDay()->day(15);
+                            }
+                        }
+                    }
+                    break;
+
+                case 3: // Mensual (mismo día cada mes)
+                case 3: // Mensual (mismo día cada mes)
+                    if ($request->numero_pagos > 0) {
+                        $capital = $request->cantidad / $request->numero_pagos;
+                        $interes = ($request->cantidad * $request->interes) / 100;
+
+                        for ($i = 0; $i < $request->numero_pagos; $i++) {
+                            $remanente -= $capital;
+                            $this->crearRecibo($prestamo->id, $fecha_temp, $capital, $interes, $remanente);
+                            $fecha_temp->addMonth();
+                        }
+                    }
+                    break;
+
+                case 5: // Semanal
+                    if ($request->numero_pagos > 0) {
+                        $capital = $request->cantidad / $request->numero_pagos;
+                        $interes = ($request->cantidad * $request->interes) / 100 / 4;
+
+                        for ($i = 0; $i < $request->numero_pagos; $i++) {
+                            $remanente -= $capital;
+                            $this->crearRecibo($prestamo->id, $fecha_temp, $capital, $interes, $remanente);
+                            $fecha_temp->addWeek();
+                        }
+                    }
+                    break;
+            }
+
+            DB::commit(); // Confirmar transacción si todo fue exitoso
+
             return response()->json([
                 'success' => true,
-                'message' => 'Prestamo creado exitosamente',
+                'message' => 'Préstamo creado exitosamente',
                 'data' => $prestamo
             ]);
         } catch (\Exception $e) {
+            DB::rollBack(); // Revertir transacción en caso de error
+
+            // Eliminar la imagen si se creó pero falló la transacción
+            if (isset($imageName) && file_exists(public_path('comprobantes/' . $imageName))) {
+                unlink(public_path('comprobantes/' . $imageName));
+            }
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error al crear el prestamo',
+                'message' => 'Error al crear el préstamo',
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+
+    private function crearRecibo($prestamoId, $fecha, $capital, $interes, $remanente)
+    {
+        $recibo = new Recibo();
+        $recibo->prestamo_id = $prestamoId;
+        $recibo->fecha = $fecha->format('Y-m-d');
+        $recibo->cantidad = $capital + $interes;
+        $recibo->interes = $interes;
+        $recibo->remanente = $remanente;
+        $recibo->save();
+
+        return $recibo;
     }
 
     public function show($id)
@@ -192,9 +303,10 @@ class PrestamoController extends Controller
                 DB::raw("CAST(prestamo.interes AS CHAR) AS interes"),
                 'prestamo.estado',
                 DB::raw("ifnull(prestamo.amortizacion,'') AS amortizacion"),
-                 DB::raw("ifnull(prestamo.pago_especifico,0.00) AS pago_especifico"),
+                DB::raw("ifnull(prestamo.pago_especifico,0.00) AS pago_especifico"),
                 DB::raw("DATE_FORMAT(prestamo.fecha, '%d/%m/%Y') AS fecha"),
-                'tipo_pago.nombre AS tipo'            )
+                'tipo_pago.nombre AS tipo'
+            )
                 ->join('persona', 'prestamo.persona_id', '=', 'persona.id')
                 ->join('tipo_pago', 'prestamo.tipo_pago_id', '=', 'tipo_pago.id')
                 ->where('prestamo.id', $id)
@@ -250,17 +362,14 @@ class PrestamoController extends Controller
             $saldo = 0;
             foreach ($resultados as $resultado) {
                 if ($resultado->tipo == 1) {
-                    $saldo = $resultado->remanente."";
+                    $saldo = $resultado->remanente . "";
                 } else {
-                    if($resultado->remanente == 0)
-                    {
+                    if ($resultado->remanente == 0) {
                         $saldo =  $saldo + $resultado->cantidad;
-                        $resultado->remanente = $saldo."";
+                        $resultado->remanente = $saldo . "";
+                    } else {
+                        $saldo = $resultado->remanente . "";
                     }
-                    else{
-                        $saldo = $resultado->remanente."";
-                    }
-
                 }
             }
 
@@ -327,69 +436,5 @@ class PrestamoController extends Controller
         //
     }
 
-    /*
 
-
-
-
-
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="8dp">
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Préstamo"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-
-                <Space
-                    android:layout_width="match_parent"
-                    android:layout_height="16dp" />
-
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Comprobante"
-                    android:textSize="14sp" />
-
-                <ImageView
-                    android:id="@+id/comprobanteImageView"
-                    android:layout_width="250dp"
-                    android:layout_height="150dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="8dp"
-                    android:background="@android:drawable/ic_menu_gallery"
-                    android:contentDescription="comprobante"
-                    android:scaleType="centerCrop" />
-
-                <Button
-                    android:id="@+id/aceptarButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Aceptar" />
-
-            </LinearLayout>
-        </ScrollView>
-    </androidx.cardview.widget.CardView>
-
-
-
-    */
 }
