@@ -153,7 +153,7 @@ class ReciboController extends Controller
                 'pe.nombre',
                 'r.cantidad',
                 'r.interes',
-                DB::raw('(r.cantidad + r.interes + 0) as total'),
+                DB::raw('(r.cantidad + 0) as total'),
                 'r.estado',
                 'r.comprobante_url as comprobante'
             ])
