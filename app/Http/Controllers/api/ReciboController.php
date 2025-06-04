@@ -91,11 +91,16 @@ class ReciboController extends Controller
                 $remanente = $prestamo->cantidad;
             }
 
-            if ($prestamo->pago_especifico && $prestamo->amortizacion == 1) {
+            if ($prestamo->pago_especifico || $prestamo->amortizacion == 1) {
                 $cuota = $prestamo->pago_especifico;
                 $tasa = $prestamo->interes;
                 $interes = number_format($remanente * ($tasa / 100), 2);
-                $total = number_format($cuota, 2);
+                if ($prestamo->pago_especifico > 0) {
+                    $total = number_format($cuota, 2);
+                }
+                else{
+                    $total = number_format($remanente + $interes, 2);
+                }
             } else if ($prestamo->pago_especifico) {
                 $cuota = $prestamo->cantidad / $prestamo->numero_pagos;
                 $interes = number_format($prestamo->pago_especifico - $cuota, 2);
