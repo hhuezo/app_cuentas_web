@@ -151,7 +151,7 @@ class ReciboController extends Controller
             ->addSelect([
                 'r.id',
                 'pe.nombre',
-                'r.cantidad',
+                 DB::raw('(r.cantidad  - r.interes) as cantidad'),
                 'r.interes',
                 DB::raw('(r.cantidad + 0) as total'),
                 'r.estado',

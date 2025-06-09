@@ -10,6 +10,7 @@ use App\Http\Controllers\web\PrestamoFijoWebController;
 use App\Http\Controllers\web\PrestamoWebController;
 use App\Http\Controllers\web\ReciboFijoWebController;
 use App\Http\Controllers\web\ReciboWebController;
+use App\Http\Controllers\web\TipoPagoCatalogoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -47,3 +48,5 @@ Route::resource('prestamo_catalogo', PrestamoCatalogoController::class);
 Route::get('recibo_catalogo/create/{prestamo}', [ReciboCatalogoController::class,'create']);
 Route::resource('recibo_catalogo', ReciboCatalogoController::class);
 Route::resource('cargo_catalogo', CargoCatalogoController::class);
+
+Route::resource('tipo_pago', TipoPagoCatalogoController::class);
