@@ -49,7 +49,6 @@ class PrestamoWebController extends Controller
 
     public function store(Request $request)
     {
-
         $validator = Validator::make($request->all(), [
             'persona_id' => 'required|integer',
             'cantidad' => 'required|numeric|min:0',
@@ -146,7 +145,7 @@ class PrestamoWebController extends Controller
 
             $remanente = $request->cantidad;
             for ($i = 0; $i < $request->numero_pagos; $i++) {
-                $remanente = $remanente - $capital;
+                $remanente -= $capital;
 
                 $recibo = new Recibo();
                 $recibo->prestamo_id = $prestamo->id;
@@ -156,13 +155,12 @@ class PrestamoWebController extends Controller
                 $recibo->remanente = $remanente;
                 $recibo->save();
 
-                // Añadir 1 día para pasar al primer día del siguiente mes
-                $fecha_temp->addDay();
-
-                // Ajustar la fecha al último día del mes
-                $fecha_temp->endOfMonth();
+                // avanzar al mismo día del mes siguiente
+                $fecha_temp->addMonthsNoOverflow();
             }
         }
+
+
         // Calculando cuota quincenal
         else if ($request->tipo_pago_id == 2) {
             $capital = $request->cantidad / ($request->numero_pagos); // Dividir por 2 para pagos quincenales

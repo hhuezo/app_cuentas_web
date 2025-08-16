@@ -97,8 +97,7 @@ class ReciboController extends Controller
                 $interes = number_format($remanente * ($tasa / 100), 2);
                 if ($prestamo->pago_especifico > 0) {
                     $total = number_format($cuota, 2);
-                }
-                else{
+                } else {
                     $total = number_format($remanente + $interes, 2);
                 }
             } else if ($prestamo->pago_especifico) {
@@ -151,7 +150,7 @@ class ReciboController extends Controller
             ->addSelect([
                 'r.id',
                 'pe.nombre',
-                 DB::raw('(r.cantidad  - r.interes) as cantidad'),
+                DB::raw('(r.cantidad  - r.interes) as cantidad'),
                 'r.interes',
                 DB::raw('(r.cantidad + 0) as total'),
                 'r.estado',
@@ -222,6 +221,12 @@ class ReciboController extends Controller
             }
 
             $recibo->save();
+
+            if ($recibo->remanente == 0.00) {
+                $prestamo = Prestamo::findOrFail($recibo->prestamo_id);
+                $prestamo->estado = 2;
+                $prestamo->save();
+            }
 
             return response()->json([
                 'success' => true,
