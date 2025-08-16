@@ -195,6 +195,17 @@ class PrestamoController extends Controller
 
             switch ($request->tipo_pago_id) {
                 case 1: // Mensual (último día del mes)
+                    if ($request->numero_pagos > 0) {
+                        $capital = $request->cantidad / $request->numero_pagos;
+                        $interes = ($request->cantidad * $request->interes) / 100;
+
+                        for ($i = 0; $i < $request->numero_pagos; $i++) {
+                            $remanente -= $capital;
+                            $this->crearRecibo($prestamo->id, $fecha_temp, $capital, $interes, $remanente);
+                            $fecha_temp->addMonthsNoOverflow();
+                        }
+                    }
+                    break;
                 case 4: // Otro tipo mensual
                     if ($request->numero_pagos > 0) {
                         $capital = $request->cantidad / $request->numero_pagos;
@@ -435,6 +446,4 @@ class PrestamoController extends Controller
     {
         //
     }
-
-
 }
