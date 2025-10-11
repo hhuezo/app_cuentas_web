@@ -37,13 +37,39 @@ class ReciboWebController extends Controller
      */
     public function store(Request $request)
     {
-        $recibo = Recibo::where('prestamo_id', $request->prestamo_id)->orderBy('id', 'desc')->first();
-        if ($recibo) {
-            $remanente = $recibo->remanente - ($request->cantidad - $request->interes);
+
+        $recibo = Recibo::where('prestamo_id', $request->prestamo_id)
+            ->orderBy('fecha', 'desc')
+            ->first();
+
+        $cargo = Cargo::where('prestamo_id', $request->prestamo_id)
+            ->orderBy('fecha', 'desc')
+            ->first();
+
+        // Determinar cuál tiene la fecha más alta
+        $registroMasReciente = null;
+
+        if ($recibo && $cargo) {
+            $registroMasReciente = ($recibo->fecha >= $cargo->fecha) ? $recibo : $cargo;
+        } elseif ($recibo) {
+            $registroMasReciente = $recibo;
+        } elseif ($cargo) {
+            $registroMasReciente = $cargo;
+        }
+
+        if ($registroMasReciente) {
+            if ($registroMasReciente instanceof Recibo) {
+                $remanente = $registroMasReciente->remanente - ($request->cantidad - $request->interes);
+            } else {
+                // Es un Cargo
+                $remanente = $registroMasReciente->saldo - ($request->cantidad - $request->interes);
+            }
         } else {
+            // Si no hay ni recibo ni cargo
             $prestamo = Prestamo::findOrFail($request->prestamo_id);
             $remanente = $prestamo->cantidad - ($request->cantidad - $request->interes);
         }
+
 
         if ($remanente >= 0) {
 
@@ -57,7 +83,7 @@ class ReciboWebController extends Controller
             $recibo->estado = 2;
             $recibo->save();
 
-            if (($remanente - ($request->cantidad - $request->interes)) == 0) {
+            if ($remanente  == 0) {
                 $prestamo = Prestamo::findOrFail($request->prestamo_id);
                 $prestamo->estado = 2;
                 $prestamo->save();
