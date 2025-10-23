@@ -83,7 +83,7 @@ class HomeController extends Controller
         // Calcular los últimos 12 meses
         $months = [];
         $years = [];
-        for ($i = 0; $i < 12; $i++) {
+        for ($i = 0; $i < 24; $i++) {
             $months[] = Carbon::now()->subMonths($i)->month;
             $years[] = Carbon::now()->subMonths($i)->year;
         }
@@ -93,7 +93,7 @@ class HomeController extends Controller
         $years = array_reverse($years);
 
 
-        for ($i = 0; $i < 12; $i++) {
+        for ($i = 0; $i < 24; $i++) {
            // echo "Mes: " . $months[$i] ."-".$meses[$months[$i]]. " Año: " . $years[$i] . "\n";
 
             $interesesPorMes = Recibo::selectRaw('SUM(interes) as total_interes, YEAR(fecha) as anio, MONTH(fecha) as mes')

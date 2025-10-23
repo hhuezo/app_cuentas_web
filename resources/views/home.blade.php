@@ -430,7 +430,7 @@
         </div>
 
 
-        <div class="col-xl-6 col-xxl-12">
+        <div class="col-xl-12 col-xxl-12">
             <div class="card">
                 <div class="card-body px-0 pb-0">
                     <div id="container"></div>
@@ -439,7 +439,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-6 col-xxl-12">
+        <div class="col-xl-12 col-xxl-12">
             <div class="card">
                 <div class="card-body px-0 pb-0">
                     <div id="container2"></div>
