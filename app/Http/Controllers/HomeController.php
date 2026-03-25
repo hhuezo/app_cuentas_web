@@ -55,6 +55,34 @@ class HomeController extends Controller
 
         $pagos = Recibo::whereBetween('fecha', [$fechaInicio, $fechaFinal])->orderBy('fecha')->get();
 
+        $prestamosCulminanMes = Recibo::with(['prestamo.persona'])
+            ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
+            ->where('remanente', 0)
+            ->orderBy('fecha')
+            ->get();
+
+        $personaIdsCulminan = $prestamosCulminanMes
+            ->pluck('prestamo.persona_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $prestamosPosterioresPorPersona = [];
+        if ($personaIdsCulminan->isNotEmpty()) {
+            $prestamosPosterioresPorPersona = Prestamo::select('id', 'persona_id')
+                ->whereIn('persona_id', $personaIdsCulminan)
+                ->whereHas('recibos', function ($query) use ($fechaFinal) {
+                    $query->whereDate('fecha', '>', $fechaFinal)
+                        ->where('remanente', '>', 0);
+                })
+                ->get()
+                ->groupBy('persona_id')
+                ->map(function ($items) {
+                    return $items->pluck('id')->values()->all();
+                })
+                ->all();
+        }
+
         $count_prestamos = Prestamo::count('id');
         $total_prestado = Prestamo::sum('cantidad');
         $total_cargos = Cargo::sum('cantidad');
@@ -74,6 +102,7 @@ class HomeController extends Controller
 
         $interesesPorMesArray = [];
         $gananciaPorMesArray = [];
+        $gananciaProyectadaPorMesArray = [];
 
 
 
@@ -102,13 +131,9 @@ class HomeController extends Controller
                 ->whereMonth('fecha', $months[$i])
                 ->groupByRaw('YEAR(fecha), MONTH(fecha)')
                 ->first();
-            if ($interesesPorMes) {
-                $total = $interesesPorMes->total_interes + 0;
-                $array = ["name" => $meses[$months[$i]]."-".$years[$i], "y" => $total, "drilldown" => $meses[$months[$i]]];
-                array_push($interesesPorMesArray, $array);
-            } else {
-                $total = 0;
-            }
+            $totalInteres = $interesesPorMes ? ($interesesPorMes->total_interes + 0) : 0;
+            $arrayInteres = ["name" => $meses[$months[$i]]."-".$years[$i], "y" => $totalInteres, "drilldown" => $meses[$months[$i]]];
+            array_push($interesesPorMesArray, $arrayInteres);
 
             $interesesPorMes = ReciboFijo::selectRaw('SUM(cantidad) as total, YEAR(fecha) as anio, MONTH(fecha) as mes')
                 ->whereYear('fecha', $years[$i])
@@ -116,13 +141,26 @@ class HomeController extends Controller
                 ->groupByRaw('YEAR(fecha), MONTH(fecha)')
                 ->first();
 
-            if ($interesesPorMes) {
-                $total = $interesesPorMes->total + 0;
-                $array = ["name" => $meses[$months[$i]]."-".$years[$i], "y" => $total, "drilldown" => $meses[$months[$i]]];
-                array_push($gananciaPorMesArray, $array);
-            } else {
-                $total = 0;
-            }
+            $totalGanancia = $interesesPorMes ? ($interesesPorMes->total + 0) : 0;
+            $arrayGanancia = ["name" => $meses[$months[$i]]."-".$years[$i], "y" => $totalGanancia, "drilldown" => $meses[$months[$i]]];
+            array_push($gananciaPorMesArray, $arrayGanancia);
+        }
+
+        // Proyección: recibos pendientes (estado = 1), 24 meses desde el mes pasado hacia adelante.
+        for ($i = -1; $i < 23; $i++) {
+            $periodo = Carbon::now()->startOfMonth()->addMonths($i);
+            $mes = $periodo->month;
+            $anio = $periodo->year;
+
+            $proyeccionMes = Recibo::selectRaw('SUM(interes) as total_interes')
+                ->where('estado', 1)
+                ->whereYear('fecha', $anio)
+                ->whereMonth('fecha', $mes)
+                ->first();
+
+            $totalProyectado = $proyeccionMes ? ($proyeccionMes->total_interes + 0) : 0;
+            $arrayProyectado = ["name" => $meses[$mes]."-".$anio, "y" => $totalProyectado, "drilldown" => $meses[$mes]];
+            array_push($gananciaProyectadaPorMesArray, $arrayProyectado);
         }
         //dd($months, $years);
         //dd($interesesPorMesArray, $gananciaPorMesArray);
@@ -162,11 +200,14 @@ class HomeController extends Controller
 
         return view('home', compact(
             'pagos',
+            'prestamosCulminanMes',
+            'prestamosPosterioresPorPersona',
             'data_general',
             'fechaInicio',
             'fechaFinal',
             'interesesPorMesArray',
-            'gananciaPorMesArray'
+            'gananciaPorMesArray',
+            'gananciaProyectadaPorMesArray'
         ));
     }
 }

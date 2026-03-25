@@ -204,9 +204,62 @@
                     </div>
                 </div>
             </div>
+            <div class="col-xl-12 col-xxl-12">
+                <div class="card">
+                    <div class="card-header border-0 pb-0">
+                        <h4 class="heading mb-0">Préstamos que culminan este mes</h4>
+                    </div>
+                    <div class="card-body pt-3">
+                        <div class="table-responsive">
+                            <table class="table card-table border-no">
+                                <thead>
+                                    <tr>
+                                        <th>Fecha</th>
+                                        <th>Nombre</th>
+                                        <th>Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($prestamosCulminanMes as $reciboFinMes)
+                                        @php
+                                            $personaId = optional($reciboFinMes->prestamo)->persona_id;
+                                            $prestamoIdActual = $reciboFinMes->prestamo_id;
+                                            $prestamosPosteriores = $prestamosPosterioresPorPersona[$personaId] ?? [];
+                                            $tieneOtroPrestamoPosterior = collect($prestamosPosteriores)
+                                                ->contains(fn($id) => (int) $id !== (int) $prestamoIdActual);
+                                        @endphp
+                                        <tr >
+                                            <td>{{ date('d/m/Y', strtotime($reciboFinMes->fecha)) }}</td>
+                                            <td>{{ optional(optional($reciboFinMes->prestamo)->persona)->nombre ?? 'Sin nombre' }}</td>
 
+                                            <td>
+                                                @if ($tieneOtroPrestamoPosterior)
+                                                    <span class="badge badge-warning light border-0">
+                                                        Tiene otro préstamo activo posterior
+                                                    </span>
+                                                @else
+                                                    <span class="badge badge-success light border-0">
+                                                        Culminado este mes
+                                                    </span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center text-muted">No hay préstamos que culminen este
+                                                mes.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
+
+
 
         <div class="col-md-6 col-xl-6 col-sm-12">
 
@@ -215,6 +268,10 @@
                     <h4 class="heading mb-0">Pagos</h4>
                 </div>
                 <div class="card-body px-0 pb-0">
+                    <div class="px-3 mb-3">
+                        <input type="text" id="pagosNombreFilter" class="form-control"
+                            placeholder="Filtrar por nombre...">
+                    </div>
                     <ul class="nav nav-pills success-tab" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" style="width: 100px" data-series="social"
@@ -305,7 +362,7 @@
                                                 <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <div class="ms-2 cat-name">
+                                                        <div class="ms-2 cat-name nombre-col">
                                                             {{ $pago->prestamo->persona->nombre }}
                                                         </div>
                                                     </div>
@@ -349,19 +406,19 @@
                                         @php($total = 0)
                                         @foreach ($pagos->where('estado', 2) as $pago)
                                             <tr>
-                                                <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}
+                                                <td style="color: #198754 !important;">{{ date('d/m/Y', strtotime($pago->fecha)) }}
                                                 </td>
-                                                <td>
+                                                <td style="color: #198754 !important;">
                                                     <div class="d-flex align-items-center">
-                                                        <div class="ms-2 cat-name">
+                                                        <div class="ms-2 cat-name nombre-col">
                                                             {{ $pago->prestamo->persona->nombre }}
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td style="text-align: right;">
+                                                <td style="text-align: right; color: #198754 !important;">
                                                     ${{ $pago->interes }}
                                                 </td>
-                                                <td style="text-align: right;">${{ $pago->cantidad }}</td>
+                                                <td style="text-align: right; color: #198754 !important;">${{ $pago->cantidad }}</td>
                                             </tr>
                                             @php($total_interes += $pago->interes)
                                             @php($total += $pago->cantidad)
@@ -401,7 +458,7 @@
                                                 </td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
-                                                        <div class="ms-2 cat-name">
+                                                        <div class="ms-2 cat-name nombre-col">
                                                             {{ $pago->prestamo->persona->nombre }}
                                                         </div>
                                                     </div>
@@ -444,9 +501,20 @@
         <div class="col-xl-12 col-xxl-12">
             <div class="card">
                 <div class="card-body px-0 pb-0">
+                    <div class="d-flex justify-content-end gap-2 px-3 pt-3">
+                        <button type="button" id="prevMonthsBtn" class="btn btn-sm btn-outline-primary">Anterior</button>
+                        <button type="button" id="nextMonthsBtn" class="btn btn-sm btn-outline-primary">Siguiente</button>
+                    </div>
                     <div id="container"></div>
 
 
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-12 col-xxl-12">
+            <div class="card">
+                <div class="card-body px-0 pb-0">
+                    <div id="container3"></div>
                 </div>
             </div>
         </div>
@@ -462,6 +530,7 @@
 
 
 
+
     </div>
 
 
@@ -473,106 +542,205 @@
     <script src="{{ asset('vendor/highcharts/modules/accessibility.js') }}"></script>
 
     <script>
-        Highcharts.chart('container', {
+        const WINDOW_SIZE = 6;
+        const interesesPorMesData = @json($interesesPorMesArray);
+        const gananciaPorMesData = @json($gananciaPorMesArray);
+        const gananciaProyectadaPorMesData = @json($gananciaProyectadaPorMesArray);
+        const totalPoints = interesesPorMesData.length;
+        let windowStart = Math.max(0, totalPoints - WINDOW_SIZE);
+
+        const getMaxWindowStart = () => Math.max(0, totalPoints - WINDOW_SIZE);
+
+        const getWindowData = (data, start) => {
+            if (!Array.isArray(data) || data.length === 0) return [];
+            const safeStart = Math.max(0, Math.min(start, getMaxWindowStart()));
+            return data.slice(safeStart, safeStart + WINDOW_SIZE);
+        };
+
+        const getWindowCategories = (data, start) =>
+            getWindowData(data, start).map((p) => (p && typeof p.name === 'string' ? p.name : ''));
+
+        const getWindowValues = (data, start) =>
+            getWindowData(data, start).map((p) => (p && typeof p.y === 'number' ? p.y : 0));
+
+        const baseChartOptions = {
             chart: {
                 type: 'column'
             },
+            subtitle: {
+                align: 'left',
+                text: ''
+            },
+            accessibility: {
+                announceNewData: {
+                    enabled: true
+                }
+            },
+            xAxis: {
+                categories: []
+            },
+            yAxis: {
+                title: {
+                    text: ''
+                }
+            },
+            legend: {
+                enabled: false
+            },
+            plotOptions: {
+                series: {
+                    borderWidth: 0,
+                    dataLabels: {
+                        enabled: true,
+                        format: '${point.y:.2f}'
+                    }
+                }
+            },
+            tooltip: {
+                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
+                pointFormat: '<span style="color:{point.color}">{point.category}</span>: <b>{point.y:.0f}</b> of total<br/>'
+            }
+        };
+
+        const chart1 = Highcharts.chart('container', {
+            ...baseChartOptions,
             title: {
                 align: 'left',
                 text: 'Ganancias mensuales'
             },
-            subtitle: {
-                align: 'left',
-                text: ''
-            },
-            accessibility: {
-                announceNewData: {
-                    enabled: true
-                }
-            },
             xAxis: {
-                type: 'category'
+                categories: getWindowCategories(interesesPorMesData, windowStart)
             },
-            yAxis: {
-                title: {
-                    text: ''
-                }
-
-            },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                series: {
-                    borderWidth: 0,
-                    dataLabels: {
-                        enabled: true,
-                        format: '${point.y:.2f}'
-                    }
-                }
-            },
-
-            tooltip: {
-                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.0f}</b> of total<br/>'
-            },
-
             series: [{
-                name: 'Browsers',
+                name: 'Interes',
                 colorByPoint: true,
-                data: @json($interesesPorMesArray)
+                data: getWindowValues(interesesPorMesData, windowStart)
             }]
         });
 
-        Highcharts.chart('container2', {
-            chart: {
-                type: 'column'
-            },
+        const chart2 = Highcharts.chart('container2', {
+            ...baseChartOptions,
             title: {
                 align: 'left',
                 text: 'Ganancias mensuales(Fijos)'
             },
-            subtitle: {
-                align: 'left',
-                text: ''
-            },
-            accessibility: {
-                announceNewData: {
-                    enabled: true
-                }
-            },
             xAxis: {
-                type: 'category'
+                categories: gananciaPorMesData
+                    .slice(-12)
+                    .map((p) => (p && typeof p.name === 'string' ? p.name : ''))
             },
-            yAxis: {
-                title: {
-                    text: ''
-                }
-
-            },
-            legend: {
-                enabled: false
-            },
-            plotOptions: {
-                series: {
-                    borderWidth: 0,
-                    dataLabels: {
-                        enabled: true,
-                        format: '${point.y:.2f}'
-                    }
-                }
-            },
-
-            tooltip: {
-                headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-                pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.y:.0f}</b> of total<br/>'
-            },
-
             series: [{
-                name: 'Browsers',
+                name: 'Ganancia',
                 colorByPoint: true,
-                data: @json($gananciaPorMesArray)
+                data: gananciaPorMesData
+                    .slice(-12)
+                    .map((p) => (p && typeof p.y === 'number' ? p.y : 0))
             }]
         });
+
+        const projectedInitialStart = (() => {
+            const now = new Date();
+            now.setMonth(now.getMonth() - 1);
+            const monthsEs = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            const prevMonthLabel = `${monthsEs[now.getMonth()]}-${now.getFullYear()}`;
+            const prevMonthIndex = gananciaProyectadaPorMesData.findIndex((p) => p && p.name === prevMonthLabel && p.y > 0);
+
+            if (prevMonthIndex >= 0) {
+                return Math.max(0, Math.min(prevMonthIndex, Math.max(0, gananciaProyectadaPorMesData.length - WINDOW_SIZE)));
+            }
+
+            return Math.max(0, Math.min(1, Math.max(0, gananciaProyectadaPorMesData.length - WINDOW_SIZE)));
+        })();
+
+        const projectedCategories = gananciaProyectadaPorMesData
+            .slice(projectedInitialStart, projectedInitialStart + WINDOW_SIZE)
+            .map((p) => (p && typeof p.name === 'string' ? p.name : ''));
+
+        const projectedValues = gananciaProyectadaPorMesData
+            .slice(projectedInitialStart, projectedInitialStart + WINDOW_SIZE)
+            .map((p) => (p && typeof p.y === 'number' ? p.y : 0));
+
+        Highcharts.chart('container3', {
+            ...baseChartOptions,
+            title: {
+                align: 'left',
+                text: 'Ganancias proyectadas (pendientes)'
+            },
+            xAxis: {
+                categories: projectedCategories
+            },
+            series: [{
+                name: 'Proyectado',
+                colorByPoint: true,
+                data: projectedValues
+            }]
+        });
+
+        const updateWindowCharts = () => {
+            const maxStart = getMaxWindowStart();
+            windowStart = Math.max(0, Math.min(windowStart, maxStart));
+            chart1.xAxis[0].setCategories(getWindowCategories(interesesPorMesData, windowStart), false);
+            chart1.series[0].setData(getWindowValues(interesesPorMesData, windowStart), false);
+            chart1.redraw();
+
+            const prevBtn = document.getElementById('prevMonthsBtn');
+            const nextBtn = document.getElementById('nextMonthsBtn');
+
+            if (prevBtn) prevBtn.disabled = windowStart <= 0;
+            if (nextBtn) nextBtn.disabled = windowStart >= maxStart;
+        };
+
+        const prevBtn = document.getElementById('prevMonthsBtn');
+        const nextBtn = document.getElementById('nextMonthsBtn');
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                if (windowStart > 0) {
+                    windowStart -= 1;
+                    updateWindowCharts();
+                }
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                if (windowStart < getMaxWindowStart()) {
+                    windowStart += 1;
+                    updateWindowCharts();
+                }
+            });
+        }
+
+        updateWindowCharts();
+
+        (function() {
+            const input = document.getElementById('pagosNombreFilter');
+            if (!input) return;
+
+            const tableSelectors = [
+                '#pills-social table tbody tr',
+                '#pills-project table tbody tr',
+                '#pills-all1 table tbody tr'
+            ];
+
+            const filterRows = () => {
+                const value = input.value.trim().toLowerCase();
+
+                tableSelectors.forEach((selector) => {
+                    document.querySelectorAll(selector).forEach((row) => {
+                        const nombre = row.querySelector('.nombre-col');
+                        if (!nombre) return;
+
+                        const match = nombre.textContent.toLowerCase().includes(value);
+                        row.style.display = match ? '' : 'none';
+                    });
+                });
+            };
+
+            input.addEventListener('input', filterRows);
+        })();
     </script>
 @endsection
