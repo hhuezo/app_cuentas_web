@@ -42,6 +42,7 @@ class ReportesController extends Controller
                 ->when($rol != 1, fn($query) => $query->where('administrador', $usuario_id))
                 ->selectRaw('recibo.id, recibo.prestamo_id, recibo.fecha, DATE_FORMAT(recibo.fecha, "%d/%m/%Y") AS fecha_formato, recibo.cantidad, recibo.estado as pagado, persona.nombre')
                 ->orderBy('recibo.fecha')
+                ->orderBy('persona.nombre')
                 ->get();
 
             // Ajuste al estado de pago
