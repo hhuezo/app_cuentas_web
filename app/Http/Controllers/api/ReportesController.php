@@ -22,14 +22,19 @@ class ReportesController extends Controller
         try {
             $now = Carbon::now();
 
-            // Manejo de fechas con valores por defecto
-            $fecha_inicio = $request->filled('fecha_inicio')
-                ? Carbon::createFromFormat('d/m/Y', $request->fecha_inicio)->format('Y-m-d')
-                : $now->copy()->firstOfMonth()->format('Y-m-d');
+            if (!$request->filled('fecha_inicio') && !$request->filled('fecha_final')) {
+                $mesReferencia = $now->day <= 3 ? $now->copy()->subMonth() : $now->copy();
+                $fecha_inicio = $mesReferencia->copy()->firstOfMonth()->format('Y-m-d');
+                $fecha_final = $mesReferencia->copy()->endOfMonth()->format('Y-m-d');
+            } else {
+                $fecha_inicio = $request->filled('fecha_inicio')
+                    ? Carbon::createFromFormat('d/m/Y', $request->fecha_inicio)->format('Y-m-d')
+                    : $now->copy()->firstOfMonth()->format('Y-m-d');
 
-            $fecha_final = $request->filled('fecha_final')
-                ? Carbon::createFromFormat('d/m/Y', $request->fecha_final)->format('Y-m-d')
-                : $now->copy()->endOfMonth()->format('Y-m-d');
+                $fecha_final = $request->filled('fecha_final')
+                    ? Carbon::createFromFormat('d/m/Y', $request->fecha_final)->format('Y-m-d')
+                    : $now->copy()->endOfMonth()->format('Y-m-d');
+            }
 
             // Asignar valores por defecto si no están presentes
             $usuario_id = $request->input('usuario_id', 1);
