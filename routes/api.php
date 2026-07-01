@@ -31,6 +31,7 @@ Route::post('login', [AuthController::class,'login']);
 Route::resource('persona', PersonaController::class);
 Route::resource('prestamo', PrestamoController::class);
 Route::resource('recibo', ReciboController::class);
+Route::get('pagos/prestamos-finalizados', [ReportesController::class, 'prestamosFinalizados']);
 Route::resource('pagos', ReportesController::class);
 Route::resource('cargo', CargoController::class);
 Route::resource('prestamo_fijo', PrestamoFijoController::class);

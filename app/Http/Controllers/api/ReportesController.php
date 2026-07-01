@@ -68,6 +68,96 @@ class ReportesController extends Controller
         }
     }
 
+    public function prestamosFinalizados(Request $request)
+    {
+        try {
+            $now = Carbon::now();
+
+            if (!$request->filled('fecha_inicio') && !$request->filled('fecha_final')) {
+                $mesReferencia = $now->day <= 3 ? $now->copy()->subMonth() : $now->copy();
+                $fechaInicio = $mesReferencia->copy()->firstOfMonth()->format('Y-m-d');
+                $fechaFin = $mesReferencia->copy()->endOfMonth()->format('Y-m-d');
+            } else {
+                $fechaInicio = $request->filled('fecha_inicio')
+                    ? Carbon::createFromFormat('d/m/Y', $request->fecha_inicio)->format('Y-m-d')
+                    : $now->copy()->firstOfMonth()->format('Y-m-d');
+
+                $fechaFin = $request->filled('fecha_final')
+                    ? Carbon::createFromFormat('d/m/Y', $request->fecha_final)->format('Y-m-d')
+                    : $now->copy()->endOfMonth()->format('Y-m-d');
+            }
+
+            $recibos = Recibo::join('prestamo as p', 'recibo.prestamo_id', '=', 'p.id')
+                ->join('persona as pe', 'pe.id', '=', 'p.persona_id')
+                ->join('tipo_pago as t', 't.id', '=', 'p.tipo_pago_id')
+                ->select(
+                    'recibo.id',
+                    'recibo.prestamo_id',
+                    'pe.id as persona_id',
+                    DB::raw("DATE_FORMAT(recibo.fecha, '%d/%m/%Y') as fecha"),
+                    'p.cantidad',
+                    'p.numero_pagos as numeroPagos',
+                    'recibo.cantidad as cantidadRecibo',
+                    'pe.nombre',
+                    't.nombre as tipo'
+                )
+                ->whereBetween('recibo.fecha', [$fechaInicio, $fechaFin])
+                ->where('recibo.remanente', 0.00)
+                ->orderBy('recibo.fecha')
+                ->get();
+
+            $personaIdsCulminan = $recibos
+                ->pluck('persona_id')
+                ->filter()
+                ->unique()
+                ->values();
+
+            $prestamosPosterioresPorPersona = [];
+            if ($personaIdsCulminan->isNotEmpty()) {
+                $prestamosPosterioresPorPersona = Prestamo::select('id', 'persona_id')
+                    ->whereIn('persona_id', $personaIdsCulminan)
+                    ->whereHas('recibos', function ($query) use ($fechaFin) {
+                        $query->whereDate('fecha', '>', $fechaFin)
+                            ->where('remanente', '>', 0);
+                    })
+                    ->get()
+                    ->groupBy('persona_id')
+                    ->map(function ($items) {
+                        return $items->pluck('id')->values()->all();
+                    })
+                    ->all();
+            }
+
+            $prestamosFinalizados = $recibos->map(function ($recibo) use ($prestamosPosterioresPorPersona) {
+                $prestamosPosteriores = $prestamosPosterioresPorPersona[$recibo->persona_id] ?? [];
+                $otrosPrestamosPosteriores = collect($prestamosPosteriores)
+                    ->reject(fn($id) => (int) $id === (int) $recibo->prestamo_id)
+                    ->values()
+                    ->all();
+
+                $recibo->tienePrestamoPosterior = !empty($otrosPrestamosPosteriores);
+                $recibo->prestamosPosteriores = $otrosPrestamosPosteriores;
+
+                return $recibo;
+            })->sortBy('tienePrestamoPosterior')->values();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Datos encontrados',
+                'data' => [
+                    'fecha_inicio' => $fechaInicio,
+                    'fecha_final' => $fechaFin,
+                    'prestamosFinalizados' => $prestamosFinalizados,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function calculoCuota($id)
     {
         $prestamo = Prestamo::findOrFail($id);
