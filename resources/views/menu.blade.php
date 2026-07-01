@@ -482,7 +482,6 @@
             <!-- row -->
             <div class="container-fluid">
                 @yield('contenido')
-                @include('sweetalert::alert')
             </div>
         </div>
         <!--**********************************
@@ -527,6 +526,7 @@
 
     <!-- Datatable -->
     <script src="{{ asset('vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+    @include('sweetalert::alert')
     <script src="{{ asset('vendor/datatables/js/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('vendor/datatables/responsive/responsive.js') }}"></script>
     <script src="{{ asset('js/plugins-init/datatables.init.js') }}"></script>
@@ -536,6 +536,8 @@
     <script src="{{ asset('js/deznav-init.js') }}"></script>
 
     <script src="{{ asset('js/jquery-ui.min.js') }}"></script>
+
+    @stack('scripts')
 
     <script>
         (function($) {

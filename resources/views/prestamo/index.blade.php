@@ -60,10 +60,15 @@
                                                         class="btn btn-info shadow btn sharp me-1"><i
                                                             class="fas fa-eye"></i></a> &nbsp;
 
-                                                    <a href="#" data-bs-toggle="modal"
-                                                        data-bs-target="#modal-delete-{{ $obj->id }}"
-                                                        class="btn btn-danger shadow btn sharp"><i
-                                                            class="fa fa-trash"></i></a>
+                                                    @php
+                                                        $puedeEliminar = !$obj->recibos->contains('estado', 2);
+                                                    @endphp
+                                                    @if ($puedeEliminar)
+                                                        <a href="#" data-bs-toggle="modal"
+                                                            data-bs-target="#modal-delete-{{ $obj->id }}"
+                                                            class="btn btn-danger shadow btn sharp"><i
+                                                                class="fa fa-trash"></i></a>
+                                                    @endif
 
                                                 </div>
                                             </td>
@@ -76,6 +81,9 @@
 
 
                                         </tr>
+                                        @if ($puedeEliminar)
+                                            @include('prestamo.modal', ['obj' => $obj])
+                                        @endif
                                     @endforeach
 
                                 </tbody>
@@ -89,7 +97,9 @@
         <!-- /tab-content -->
     </div>
 
-    <script src="{{ asset('template/js/jquery-3.6.0.min.js') }}"></script>
+@endsection
+
+@push('scripts')
     <script>
         $(document).ready(function() {
             if ($.fn.DataTable.isDataTable('#example')) {
@@ -119,10 +129,8 @@
                         "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
                         "sSortDescending": ": Activar para ordenar la columna de manera descendente"
                     }
-                }, //"ordering": false
+                },
             });
         });
     </script>
-
-
-@endsection
+@endpush

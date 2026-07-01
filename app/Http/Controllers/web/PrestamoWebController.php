@@ -14,13 +14,18 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class PrestamoWebController extends Controller
 {
     public function index()
     {
-        $prestamos = Prestamo::orderBy('estado')->orderBy('primer_pago', 'desc')->get();
+        $prestamos = Prestamo::with(['persona', 'recibos:id,prestamo_id,estado'])
+            ->orderBy('estado')
+            ->orderBy('primer_pago', 'desc')
+            ->get();
+
         return view('prestamo.index', compact('prestamos'));
     }
 
@@ -328,6 +333,20 @@ class PrestamoWebController extends Controller
 
     public function destroy($id)
     {
-        //
+        $prestamo = Prestamo::with('recibos')->findOrFail($id);
+
+        if ($prestamo->recibos->contains('estado', 2)) {
+            alert()->error('No se puede eliminar: el préstamo tiene recibos finalizados');
+            return back();
+        }
+
+        DB::transaction(function () use ($prestamo) {
+            Recibo::where('prestamo_id', $prestamo->id)->delete();
+            Cargo::where('prestamo_id', $prestamo->id)->delete();
+            $prestamo->delete();
+        });
+
+        alert()->success('El préstamo y sus registros han sido eliminados correctamente');
+        return Redirect::to('prestamo_web');
     }
 }
