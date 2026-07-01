@@ -342,6 +342,12 @@ class ReciboWebController extends Controller
             $prestamo->save();
         }
 
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'El registro ha sido guardado correctamente',
+            ]);
+        }
 
         alert()->success('El registro ha sido guardado correctamente');
         return redirect('prestamo_web/' . $recibo->prestamo_id);

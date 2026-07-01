@@ -13,6 +13,49 @@ use Illuminate\Support\Facades\Mail;
 
 class HomeController extends Controller
 {
+    private function mesLabel(Carbon $fecha): string
+    {
+        $meses = [
+            '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
+        ];
+
+        return $meses[(int) $fecha->format('n')] . ' ' . $fecha->format('Y');
+    }
+
+    private function getPrestamosCulminanMesData(string $fechaInicio, string $fechaFinal): array
+    {
+        $prestamosCulminanMes = Recibo::with(['prestamo.persona'])
+            ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
+            ->where('remanente', 0)
+            ->orderBy('fecha')
+            ->get();
+
+        $personaIdsCulminan = $prestamosCulminanMes
+            ->pluck('prestamo.persona_id')
+            ->filter()
+            ->unique()
+            ->values();
+
+        $prestamosPosterioresPorPersona = [];
+        if ($personaIdsCulminan->isNotEmpty()) {
+            $prestamosPosterioresPorPersona = Prestamo::select('id', 'persona_id')
+                ->whereIn('persona_id', $personaIdsCulminan)
+                ->whereHas('recibos', function ($query) use ($fechaFinal) {
+                    $query->whereDate('fecha', '>', $fechaFinal)
+                        ->where('remanente', '>', 0);
+                })
+                ->get()
+                ->groupBy('persona_id')
+                ->map(function ($items) {
+                    return $items->pluck('id')->values()->all();
+                })
+                ->all();
+        }
+
+        return compact('prestamosCulminanMes', 'prestamosPosterioresPorPersona');
+    }
+
     /**
      * Create a new controller instance.
      *
@@ -53,35 +96,20 @@ class HomeController extends Controller
             $fechaFinal = $request->fechaFinal;
         }
 
-        $pagos = Recibo::whereBetween('fecha', [$fechaInicio, $fechaFinal])->orderBy('fecha')->get();
-
-        $prestamosCulminanMes = Recibo::with(['prestamo.persona'])
+        $pagos = Recibo::with(['prestamo.persona'])
             ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
-            ->where('remanente', 0)
             ->orderBy('fecha')
             ->get();
 
-        $personaIdsCulminan = $prestamosCulminanMes
-            ->pluck('prestamo.persona_id')
-            ->filter()
-            ->unique()
-            ->values();
+        $mesPagos = Carbon::parse($fechaInicio);
+        $mesPagosLabel = $this->mesLabel($mesPagos);
 
-        $prestamosPosterioresPorPersona = [];
-        if ($personaIdsCulminan->isNotEmpty()) {
-            $prestamosPosterioresPorPersona = Prestamo::select('id', 'persona_id')
-                ->whereIn('persona_id', $personaIdsCulminan)
-                ->whereHas('recibos', function ($query) use ($fechaFinal) {
-                    $query->whereDate('fecha', '>', $fechaFinal)
-                        ->where('remanente', '>', 0);
-                })
-                ->get()
-                ->groupBy('persona_id')
-                ->map(function ($items) {
-                    return $items->pluck('id')->values()->all();
-                })
-                ->all();
-        }
+        $prestamosCulminanData = $this->getPrestamosCulminanMesData($fechaInicio, $fechaFinal);
+        $prestamosCulminanMes = $prestamosCulminanData['prestamosCulminanMes'];
+        $prestamosPosterioresPorPersona = $prestamosCulminanData['prestamosPosterioresPorPersona'];
+
+        $mesCulminan = $mesPagos->copy();
+        $mesCulminanLabel = $mesPagosLabel;
 
         $count_prestamos = Prestamo::count('id');
         $total_prestado = Prestamo::sum('cantidad');
@@ -205,9 +233,61 @@ class HomeController extends Controller
             'data_general',
             'fechaInicio',
             'fechaFinal',
+            'mesPagos',
+            'mesPagosLabel',
+            'mesCulminan',
+            'mesCulminanLabel',
             'interesesPorMesArray',
             'gananciaPorMesArray',
             'gananciaProyectadaPorMesArray'
         ));
+    }
+
+    public function pagosPorMes(Request $request)
+    {
+        $request->validate([
+            'mes' => 'required|date_format:Y-m',
+        ]);
+
+        $mesReferencia = Carbon::createFromFormat('Y-m', $request->mes);
+        $fechaInicio = $mesReferencia->copy()->startOfMonth()->format('Y-m-d');
+        $fechaFinal = $mesReferencia->copy()->endOfMonth()->format('Y-m-d');
+
+        $pagos = Recibo::with(['prestamo.persona'])
+            ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
+            ->orderBy('fecha')
+            ->get();
+
+        return view('home.partials.pagos-tablas', compact('pagos'));
+    }
+
+    public function prestamosCulminanMes(Request $request)
+    {
+        $request->validate([
+            'mes' => 'required|date_format:Y-m',
+        ]);
+
+        $mesReferencia = Carbon::createFromFormat('Y-m', $request->mes);
+        $fechaInicio = $mesReferencia->copy()->startOfMonth()->format('Y-m-d');
+        $fechaFinal = $mesReferencia->copy()->endOfMonth()->format('Y-m-d');
+
+        return view(
+            'home.partials.prestamos-culminan',
+            $this->getPrestamosCulminanMesData($fechaInicio, $fechaFinal)
+        );
+    }
+
+    public function reciboDrawer($id)
+    {
+        $recibo = Recibo::with(['prestamo.persona'])->findOrFail($id);
+
+        $pagosAnterioresPendientes = Recibo::where('prestamo_id', $recibo->prestamo_id)
+            ->where('id', '!=', $recibo->id)
+            ->whereDate('fecha', '<', $recibo->fecha)
+            ->where('estado', 1)
+            ->orderBy('fecha')
+            ->get(['id', 'fecha']);
+
+        return view('home.partials.recibo-drawer-content', compact('recibo', 'pagosAnterioresPendientes'));
     }
 }

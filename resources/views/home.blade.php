@@ -47,6 +47,88 @@
         .highcharts-data-table tr:hover {
             background: #f1f7ff;
         }
+
+        .pagos-mes-nav .btn {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pagos-mes-swipe {
+            touch-action: pan-y;
+        }
+
+        .pagos-mes-swipe.is-loading {
+            opacity: 0.55;
+            pointer-events: none;
+        }
+
+        .pago-recibo-drawer {
+            width: 50% !important;
+        }
+
+        @media (max-width: 767.98px) {
+            .pago-recibo-drawer {
+                width: 100% !important;
+            }
+        }
+
+        .btn-ver-recibo {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .btn-ver-recibo:hover {
+            color: var(--primary);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .switch .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .switch .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .switch input:checked+.slider {
+            background-color: #2196F3;
+        }
+
+        .switch input:checked+.slider:before {
+            transform: translateX(24px);
+        }
     </style>
 
 
@@ -206,52 +288,22 @@
             </div>
             <div class="col-xl-12 col-xxl-12">
                 <div class="card">
-                    <div class="card-header border-0 pb-0">
+                    <div class="card-header border-0 pb-0 flex-wrap d-flex justify-content-between align-items-center">
                         <h4 class="heading mb-0">Préstamos que culminan este mes</h4>
+                        <div class="d-flex align-items-center pagos-mes-nav">
+                            <button type="button" id="culminanMesPrev" class="btn btn-sm btn-outline-primary" title="Mes anterior">
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <span id="culminanMesLabel" class="fw-semibold px-3 text-nowrap"
+                                data-mes="{{ $mesCulminan->format('Y-m') }}">{{ $mesCulminanLabel }}</span>
+                            <button type="button" id="culminanMesNext" class="btn btn-sm btn-outline-primary" title="Mes siguiente">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body pt-3">
-                        <div class="table-responsive">
-                            <table class="table card-table border-no">
-                                <thead>
-                                    <tr>
-                                        <th>Fecha</th>
-                                        <th>Nombre</th>
-                                        <th>Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse ($prestamosCulminanMes as $reciboFinMes)
-                                        @php
-                                            $personaId = optional($reciboFinMes->prestamo)->persona_id;
-                                            $prestamoIdActual = $reciboFinMes->prestamo_id;
-                                            $prestamosPosteriores = $prestamosPosterioresPorPersona[$personaId] ?? [];
-                                            $tieneOtroPrestamoPosterior = collect($prestamosPosteriores)
-                                                ->contains(fn($id) => (int) $id !== (int) $prestamoIdActual);
-                                        @endphp
-                                        <tr >
-                                            <td>{{ date('d/m/Y', strtotime($reciboFinMes->fecha)) }}</td>
-                                            <td>{{ optional(optional($reciboFinMes->prestamo)->persona)->nombre ?? 'Sin nombre' }}</td>
-
-                                            <td>
-                                                @if ($tieneOtroPrestamoPosterior)
-                                                    <span class="badge badge-warning light border-0">
-                                                        Tiene otro préstamo activo posterior
-                                                    </span>
-                                                @else
-                                                    <span class="badge badge-success light border-0">
-                                                        Culminado este mes
-                                                    </span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center text-muted">No hay préstamos que culminen este
-                                                mes.</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                        <div id="culminanMesContainer" class="pagos-mes-swipe">
+                            @include('home.partials.prestamos-culminan')
                         </div>
                     </div>
                 </div>
@@ -264,8 +316,18 @@
         <div class="col-md-6 col-xl-6 col-sm-12">
 
             <div class="card">
-                <div class="card-header border-0 pb-0 flex-wrap">
+                <div class="card-header border-0 pb-0 flex-wrap d-flex justify-content-between align-items-center">
                     <h4 class="heading mb-0">Pagos</h4>
+                    <div class="d-flex align-items-center pagos-mes-nav">
+                        <button type="button" id="pagosMesPrev" class="btn btn-sm btn-outline-primary" title="Mes anterior">
+                            <i class="fa fa-chevron-left"></i>
+                        </button>
+                        <span id="pagosMesLabel" class="fw-semibold px-3 text-nowrap"
+                            data-mes="{{ $mesPagos->format('Y-m') }}">{{ $mesPagosLabel }}</span>
+                        <button type="button" id="pagosMesNext" class="btn btn-sm btn-outline-primary" title="Mes siguiente">
+                            <i class="fa fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body px-0 pb-0">
                     <div class="px-3 mb-3">
@@ -334,160 +396,8 @@
                             </button>
                         </li>
                     </ul>
-                    <div class="tab-content" id="pills-tabContent">
-                        <div class="tab-pane fade show active" id="pills-social" role="tabpanel"
-                            aria-labelledby="pills-social-tab">
-                            <div class="table-responsive">
-                                <table class="table  card-table border-no success-tbl">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Fecha</th>
-                                            <th>Nombre</th>
-                                            <th style="text-align: right;">Interes</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php($total_interes = 0)
-                                        @php($total = 0)
-                                        @foreach ($pagos->where('estado', 1) as $pago)
-                                            <tr>
-
-                                                <td>
-                                                    <a href="{{ url('prestamo_web') }}/{{ $pago->prestamo_id }}">
-                                                        <i class="fa fa-eye fa-lg"></i>
-                                                    </a>
-                                                </td>
-                                                <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}</td>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="ms-2 cat-name nombre-col">
-                                                            {{ $pago->prestamo->persona->nombre }}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td style="text-align: right;">
-                                                    ${{ $pago->interes }}
-                                                </td>
-                                                <td>${{ $pago->cantidad }}</td>
-
-                                            </tr>
-
-                                            @php($total_interes += $pago->interes)
-                                            @php($total += $pago->cantidad)
-                                        @endforeach
-                                        <tr>
-                                            <th colspan="3" style="text-align: right;">TOTAL</th>
-                                            <th style="text-align: right;">
-                                                ${{ number_format($total_interes, 2, '.', ',') }}</th>
-                                            <th style="text-align: right;">${{ number_format($total, 2, '.', ',') }}</th>
-                                        </tr>
-
-                                    </tbody>
-
-                                </table>
-                            </div>
-                        </div>
-                        <div class="tab-pane fade" id="pills-project" role="tabpanel"
-                            aria-labelledby="pills-project-tab">
-                            <div class="table-responsive">
-                                <table class="table  card-table border-no success-tbl">
-                                    <thead>
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Nombre</th>
-                                            <th>Interes</th>
-                                            <th>Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php($total_interes = 0)
-                                        @php($total = 0)
-                                        @foreach ($pagos->where('estado', 2) as $pago)
-                                            <tr>
-                                                <td style="color: #198754 !important;">{{ date('d/m/Y', strtotime($pago->fecha)) }}
-                                                </td>
-                                                <td style="color: #198754 !important;">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="ms-2 cat-name nombre-col">
-                                                            {{ $pago->prestamo->persona->nombre }}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td style="text-align: right; color: #198754 !important;">
-                                                    ${{ $pago->interes }}
-                                                </td>
-                                                <td style="text-align: right; color: #198754 !important;">${{ $pago->cantidad }}</td>
-                                            </tr>
-                                            @php($total_interes += $pago->interes)
-                                            @php($total += $pago->cantidad)
-                                        @endforeach
-                                        <tr>
-                                            <th colspan="2" style="text-align: right;">TOTAL</th>
-                                            <th style="text-align: right;">
-                                                ${{ number_format($total_interes, 2, '.', ',') }}</th>
-                                            <th style="text-align: right;">${{ number_format($total, 2, '.', ',') }}</th>
-                                        </tr>
-
-                                    </tbody>
-
-                                </table>
-                            </div>
-                        </div>
-
-
-                        <div class="tab-pane fade" id="pills-all1" role="tabpanel" aria-labelledby="pills-all1-tab">
-                            <div class="table-responsive">
-                                <table class="table  card-table border-no success-tbl">
-                                    <thead>
-                                        <tr>
-                                            <th>Fecha</th>
-                                            <th>Nombre</th>
-                                            <th>Interes</th>
-                                            <th>Total</th>
-                                            <th>Estado</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php($total_interes = 0)
-                                        @php($total = 0)
-                                        @foreach ($pagos as $pago)
-                                            <tr>
-                                                <td>{{ date('d/m/Y', strtotime($pago->fecha)) }}
-                                                </td>
-                                                <td>
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="ms-2 cat-name nombre-col">
-                                                            {{ $pago->prestamo->persona->nombre }}
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td style="text-align: right;">
-                                                    ${{ $pago->interes }}
-                                                </td>
-                                                <td style="text-align: right;">${{ $pago->cantidad }}</td>
-                                                <td><span
-                                                        class="badge badge-{{ $pago->estado == 1 ? 'danger' : 'success' }} light border-0">{{ $pago->estado == 1 ? 'Pendiente' : 'Pagado' }}</span>
-                                                </td>
-
-                                            </tr>
-                                            @php($total_interes += $pago->interes)
-                                            @php($total += $pago->cantidad)
-                                        @endforeach
-                                        <tr>
-                                            <th colspan="2" style="text-align: right;">TOTAL</th>
-                                            <th style="text-align: right;">
-                                                ${{ number_format($total_interes, 2, '.', ',') }}</th>
-                                            <th style="text-align: right;">${{ number_format($total, 2, '.', ',') }}</th>
-                                            <th colspan="3" style="text-align: right;"></th>
-                                        </tr>
-
-                                    </tbody>
-
-                                </table>
-                            </div>
-                        </div>
+                    <div id="pagosMesContainer" class="pagos-mes-swipe">
+                        @include('home.partials.pagos-tablas')
                     </div>
                 </div>
             </div>
@@ -533,6 +443,14 @@
 
     </div>
 
+    <div class="offcanvas offcanvas-end pago-recibo-drawer" tabindex="-1" id="reciboDrawer"
+        aria-labelledby="reciboDrawerLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title" id="reciboDrawerLabel">Recibo</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body" id="reciboDrawerBody"></div>
+    </div>
 
     <script src="{{ asset('vendor/highcharts/highcharts.js') }}"></script>
     <script src="{{ asset('vendor/highcharts/modules/data.js') }}"></script>
@@ -717,8 +635,17 @@
         updateWindowCharts();
 
         (function() {
-            const input = document.getElementById('pagosNombreFilter');
-            if (!input) return;
+            const meses = [
+                '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            const container = document.getElementById('pagosMesContainer');
+            const label = document.getElementById('pagosMesLabel');
+            const prevBtn = document.getElementById('pagosMesPrev');
+            const nextBtn = document.getElementById('pagosMesNext');
+            const filterInput = document.getElementById('pagosNombreFilter');
+
+            if (!container || !label || !prevBtn || !nextBtn) return;
 
             const tableSelectors = [
                 '#pills-social table tbody tr',
@@ -726,9 +653,10 @@
                 '#pills-all1 table tbody tr'
             ];
 
-            const filterRows = () => {
-                const value = input.value.trim().toLowerCase();
+            const applyNombreFilter = () => {
+                if (!filterInput) return;
 
+                const value = filterInput.value.trim().toLowerCase();
                 tableSelectors.forEach((selector) => {
                     document.querySelectorAll(selector).forEach((row) => {
                         const nombre = row.querySelector('.nombre-col');
@@ -740,7 +668,317 @@
                 });
             };
 
-            input.addEventListener('input', filterRows);
+            const formatMesLabel = (year, month) => `${meses[month]} ${year}`;
+
+            const parseMes = (mes) => {
+                const [year, month] = mes.split('-').map(Number);
+                return { year, month };
+            };
+
+            const buildMes = (year, month) => {
+                const date = new Date(year, month - 1, 1);
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                return `${y}-${m}`;
+            };
+
+            const shiftMes = (mes, delta) => {
+                const { year, month } = parseMes(mes);
+                const date = new Date(year, month - 1 + delta, 1);
+                return buildMes(date.getFullYear(), date.getMonth() + 1);
+            };
+
+            const restoreActiveTab = (activeTabId) => {
+                if (!activeTabId) return;
+
+                const tabButton = document.getElementById(activeTabId);
+                const tabPane = tabButton ? document.querySelector(tabButton.getAttribute('data-bs-target')) : null;
+
+                if (tabButton && tabPane) {
+                    document.querySelectorAll('#pills-tab .nav-link').forEach((btn) => {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-selected', 'false');
+                    });
+                    document.querySelectorAll('#pagosMesContainer .tab-pane').forEach((pane) => {
+                        pane.classList.remove('show', 'active');
+                    });
+
+                    tabButton.classList.add('active');
+                    tabButton.setAttribute('aria-selected', 'true');
+                    tabPane.classList.add('show', 'active');
+                }
+            };
+
+            const loadPagosMes = (mes, direction = 0) => {
+                const activeTab = document.querySelector('#pills-tab .nav-link.active');
+                const activeTabId = activeTab ? activeTab.id : null;
+
+                container.classList.add('is-loading');
+
+                fetch(`{{ route('home.pagos-mes') }}?mes=${mes}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                })
+                    .then((response) => {
+                        if (!response.ok) throw new Error('No se pudieron cargar los pagos');
+                        return response.text();
+                    })
+                    .then((html) => {
+                        container.innerHTML = html;
+
+                        const { year, month } = parseMes(mes);
+                        label.dataset.mes = mes;
+                        label.textContent = formatMesLabel(year, month);
+
+                        restoreActiveTab(activeTabId);
+                        applyNombreFilter();
+                    })
+                    .catch(() => {
+                        if (direction !== 0) {
+                            label.dataset.mes = shiftMes(mes, -direction);
+                        }
+                    })
+                    .finally(() => {
+                        container.classList.remove('is-loading');
+                    });
+            };
+
+            const changeMes = (delta) => {
+                const nuevoMes = shiftMes(label.dataset.mes, delta);
+                label.dataset.mes = nuevoMes;
+                loadPagosMes(nuevoMes, delta);
+            };
+
+            prevBtn.addEventListener('click', () => changeMes(-1));
+            nextBtn.addEventListener('click', () => changeMes(1));
+
+            let touchStartX = 0;
+            container.addEventListener('touchstart', (event) => {
+                touchStartX = event.changedTouches[0].screenX;
+            }, { passive: true });
+
+            container.addEventListener('touchend', (event) => {
+                const diff = event.changedTouches[0].screenX - touchStartX;
+                if (Math.abs(diff) < 60) return;
+
+                if (diff > 0) {
+                    changeMes(-1);
+                } else {
+                    changeMes(1);
+                }
+            }, { passive: true });
+
+            if (filterInput) {
+                filterInput.addEventListener('input', applyNombreFilter);
+            }
+
+            document.addEventListener('pagos:actualizar', () => {
+                loadPagosMes(label.dataset.mes);
+            });
+        })();
+
+        (function() {
+            const meses = [
+                '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            const container = document.getElementById('culminanMesContainer');
+            const label = document.getElementById('culminanMesLabel');
+            const prevBtn = document.getElementById('culminanMesPrev');
+            const nextBtn = document.getElementById('culminanMesNext');
+
+            if (!container || !label || !prevBtn || !nextBtn) return;
+
+            const formatMesLabel = (year, month) => `${meses[month]} ${year}`;
+
+            const parseMes = (mes) => {
+                const [year, month] = mes.split('-').map(Number);
+                return { year, month };
+            };
+
+            const buildMes = (year, month) => {
+                const date = new Date(year, month - 1, 1);
+                const y = date.getFullYear();
+                const m = String(date.getMonth() + 1).padStart(2, '0');
+                return `${y}-${m}`;
+            };
+
+            const shiftMes = (mes, delta) => {
+                const { year, month } = parseMes(mes);
+                const date = new Date(year, month - 1 + delta, 1);
+                return buildMes(date.getFullYear(), date.getMonth() + 1);
+            };
+
+            const loadCulminanMes = (mes, direction = 0) => {
+                container.classList.add('is-loading');
+
+                fetch(`{{ route('home.prestamos-culminan-mes') }}?mes=${mes}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                })
+                    .then((response) => {
+                        if (!response.ok) throw new Error('No se pudieron cargar los préstamos');
+                        return response.text();
+                    })
+                    .then((html) => {
+                        container.innerHTML = html;
+
+                        const { year, month } = parseMes(mes);
+                        label.dataset.mes = mes;
+                        label.textContent = formatMesLabel(year, month);
+                    })
+                    .catch(() => {
+                        if (direction !== 0) {
+                            label.dataset.mes = shiftMes(mes, -direction);
+                        }
+                    })
+                    .finally(() => {
+                        container.classList.remove('is-loading');
+                    });
+            };
+
+            const changeMes = (delta) => {
+                const nuevoMes = shiftMes(label.dataset.mes, delta);
+                label.dataset.mes = nuevoMes;
+                loadCulminanMes(nuevoMes, delta);
+            };
+
+            prevBtn.addEventListener('click', () => changeMes(-1));
+            nextBtn.addEventListener('click', () => changeMes(1));
+
+            let touchStartX = 0;
+            container.addEventListener('touchstart', (event) => {
+                touchStartX = event.changedTouches[0].screenX;
+            }, { passive: true });
+
+            container.addEventListener('touchend', (event) => {
+                const diff = event.changedTouches[0].screenX - touchStartX;
+                if (Math.abs(diff) < 60) return;
+
+                if (diff > 0) {
+                    changeMes(-1);
+                } else {
+                    changeMes(1);
+                }
+            }, { passive: true });
         })();
     </script>
 @endsection
+
+@push('scripts')
+    <script>
+        (function() {
+            const drawerEl = document.getElementById('reciboDrawer');
+            const drawerBody = document.getElementById('reciboDrawerBody');
+            const pagosContainer = document.getElementById('pagosMesContainer');
+
+            if (!drawerEl || !drawerBody || !pagosContainer || typeof bootstrap === 'undefined') return;
+
+            const drawer = bootstrap.Offcanvas.getOrCreateInstance(drawerEl);
+            const drawerUrlBase = @json(url('home/recibo-drawer'));
+
+            const openReciboDrawer = (reciboId) => {
+                drawerBody.innerHTML = '<div class="text-center py-5 text-muted">Cargando...</div>';
+                drawer.show();
+
+                fetch(`${drawerUrlBase}/${reciboId}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                })
+                    .then((response) => {
+                        if (!response.ok) throw new Error('No se pudo cargar el recibo');
+                        return response.text();
+                    })
+                    .then((html) => {
+                        drawerBody.innerHTML = html;
+                    })
+                    .catch(() => {
+                        drawerBody.innerHTML = '<div class="alert alert-danger mb-0">No se pudo cargar el recibo.</div>';
+                    });
+            };
+
+            pagosContainer.addEventListener('click', (event) => {
+                const button = event.target.closest('.btn-ver-recibo');
+                if (!button) return;
+
+                openReciboDrawer(button.dataset.reciboId);
+            });
+
+            drawerBody.addEventListener('change', (event) => {
+                if (event.target.id !== 'reciboDrawerComprobante') return;
+
+                const file = event.target.files[0];
+                const preview = document.getElementById('reciboDrawerPreview');
+                const base64Input = document.getElementById('reciboDrawerComprobanteBase64');
+
+                if (!file || !preview || !base64Input) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    preview.src = e.target.result;
+                    preview.style.display = '';
+                    base64Input.value = e.target.result.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+                };
+                reader.readAsDataURL(file);
+            });
+
+            drawerBody.addEventListener('submit', (event) => {
+                const form = event.target;
+                if (form.id !== 'reciboDrawerForm') return;
+
+                event.preventDefault();
+
+                const submitBtn = document.getElementById('reciboDrawerSubmit');
+                if (submitBtn) submitBtn.disabled = true;
+
+                fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                })
+                    .then(async (response) => {
+                        const data = await response.json().catch(() => ({}));
+                        if (!response.ok) {
+                            throw new Error(data.message || 'No se pudo guardar el recibo');
+                        }
+                        return data;
+                    })
+                    .then((data) => {
+                        drawer.hide();
+                        document.dispatchEvent(new CustomEvent('pagos:actualizar'));
+
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: data.message || 'Guardado correctamente',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        if (typeof Swal !== 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: error.message || 'Error al guardar'
+                            });
+                        } else {
+                            alert(error.message || 'Error al guardar');
+                        }
+                    })
+                    .finally(() => {
+                        if (submitBtn) submitBtn.disabled = false;
+                    });
+            });
+        })();
+    </script>
+@endpush

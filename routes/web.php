@@ -32,6 +32,9 @@ Auth::routes();
 Route::get('/', [HomeController::class, 'index']);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home/pagos-mes', [HomeController::class, 'pagosPorMes'])->name('home.pagos-mes');
+Route::get('/home/prestamos-culminan-mes', [HomeController::class, 'prestamosCulminanMes'])->name('home.prestamos-culminan-mes');
+Route::get('/home/recibo-drawer/{id}', [HomeController::class, 'reciboDrawer'])->name('home.recibo-drawer');
 
 
 Route::resource('prestamo_web', PrestamoWebController::class);
