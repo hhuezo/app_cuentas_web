@@ -57,11 +57,8 @@
             justify-content: center;
         }
 
-        .pagos-mes-swipe {
-            touch-action: pan-y;
-        }
-
-        .pagos-mes-swipe.is-loading {
+        #pagosMesContainer.is-loading,
+        #culminanMesContainer.is-loading {
             opacity: 0.55;
             pointer-events: none;
         }
@@ -302,7 +299,7 @@
                         </div>
                     </div>
                     <div class="card-body pt-3">
-                        <div id="culminanMesContainer" class="pagos-mes-swipe">
+                        <div id="culminanMesContainer">
                             @include('home.partials.prestamos-culminan')
                         </div>
                     </div>
@@ -396,7 +393,7 @@
                             </button>
                         </li>
                     </ul>
-                    <div id="pagosMesContainer" class="pagos-mes-swipe">
+                    <div id="pagosMesContainer">
                         @include('home.partials.pagos-tablas')
                     </div>
                 </div>
@@ -754,22 +751,6 @@
             prevBtn.addEventListener('click', () => changeMes(-1));
             nextBtn.addEventListener('click', () => changeMes(1));
 
-            let touchStartX = 0;
-            container.addEventListener('touchstart', (event) => {
-                touchStartX = event.changedTouches[0].screenX;
-            }, { passive: true });
-
-            container.addEventListener('touchend', (event) => {
-                const diff = event.changedTouches[0].screenX - touchStartX;
-                if (Math.abs(diff) < 60) return;
-
-                if (diff > 0) {
-                    changeMes(-1);
-                } else {
-                    changeMes(1);
-                }
-            }, { passive: true });
-
             if (filterInput) {
                 filterInput.addEventListener('input', applyNombreFilter);
             }
@@ -849,22 +830,6 @@
 
             prevBtn.addEventListener('click', () => changeMes(-1));
             nextBtn.addEventListener('click', () => changeMes(1));
-
-            let touchStartX = 0;
-            container.addEventListener('touchstart', (event) => {
-                touchStartX = event.changedTouches[0].screenX;
-            }, { passive: true });
-
-            container.addEventListener('touchend', (event) => {
-                const diff = event.changedTouches[0].screenX - touchStartX;
-                if (Math.abs(diff) < 60) return;
-
-                if (diff > 0) {
-                    changeMes(-1);
-                } else {
-                    changeMes(1);
-                }
-            }, { passive: true });
         })();
     </script>
 @endsection
